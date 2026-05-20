@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -12,10 +7,155 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  REQUESTER
+  DONOR
+  BOTH
+}
+
+enum VerificationStatus {
+  NONE
+  PENDING
+  SUBMITTED
+  VERIFIED
+  FAILED
+}
+
+enum RequestOfferStatus {
+  ACTIVE
+  MATCHED
+  CLOSED
+  EXPIRED
+}
+
+enum DeviceType {
+  LAPTOP
+  TABLET
+  SMARTPHONE
+  DESKTOP
+  OTHER
+}
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum OperatingSystem {
+  WINDOWS
+  MACOS
+  LINUX
+  ANDROID
+  IOS
+  CHROMEOS
+  OTHER
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
+  id                   String             @id @default(uuid(7))
+  email                String             @unique
+  emailVerified        Boolean            @default(false)
+  firstName            String
+  lastName             String
+  image                String?
+  phone                String?
+  phoneVerified        Boolean            @default(false)
+  country              String?
+  countryCode          String?
+  role                 Role               @default(REQUESTER)
+  bio                  String?
+  idVerified           Boolean            @default(false)
+  idVerificationStatus VerificationStatus @default(NONE)
+  createdAt            DateTime           @default(now())
+  lastLogin            DateTime?
+  updatedAt            DateTime           @updatedAt
+
+  requests Request[]
+  listings Listing[]
+}
+
+model Request {
+  id             String             @id @default(uuid(7))
+  requesterId    String
+  requester      User               @relation(fields: [requesterId], references: [id])
+  title          String
+  description    String
+  deviceType     DeviceType? // moved here from only being on Listing
+  preferredBrand String?
+  isUrgent       Boolean            @default(false)
+  countryCode    String
+  status         RequestOfferStatus @default(ACTIVE)
+  expiresAt      DateTime
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  spec RequestSpec?
+}
+
+model RequestSpec {
+  id        String  @id @default(uuid(7))
+  requestId String  @unique
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  // Minimum acceptable specs — all optional, requester fills what matters to them
+  minRam             Int? // in GB e.g. 8
+  minStorage         Int? // in GB e.g. 256
+  minYear            Int? // manufacture year e.g. 2018
+  preferredOs        OperatingSystem?
+  minScreenSize      Float? // in inches e.g. 13.3
+  preferredProcessor String? // e.g. "Intel i5", "Apple M1"
+  needsCamera        Boolean?
+  needsMicrophone    Boolean?
+  needsKeyboard      Boolean? // relevant for tablets
+  needsCharger       Boolean?
+  notes              String? // any extra requirements in free text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Listing {
+  id          String             @id @default(uuid(7))
+  donorId     String
+  donor       User               @relation(fields: [donorId], references: [id])
+  deviceType  DeviceType
+  title       String
+  description String
+  brand       String
+  model       String
+  condition   Condition
+  photos      String[]
+  countryCode String
+  status      RequestOfferStatus @default(ACTIVE)
+  expiresAt   DateTime
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  spec DeviceSpec?
+}
+
+model DeviceSpec {
+  id        String  @id @default(uuid(7))
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  // Actual specs of the physical device
+  ram           Int? // in GB e.g. 8
+  storage       Int? // in GB e.g. 256
+  year          Int? // manufacture year e.g. 2020
+  os            OperatingSystem?
+  screenSize    Float? // in inches e.g. 15.6
+  processor     String? // e.g. "Intel i5-10th Gen"
+  color         String?
+  hasCamera     Boolean?
+  hasMicrophone Boolean?
+  hasKeyboard   Boolean? // relevant for tablets
+  hasCharger    Boolean? // does the donation include a charger
+  notes         String? // any extra details
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
