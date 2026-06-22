@@ -99,3 +99,37 @@ export const sampleListings: ShortListing[] = [
     storage: 512,
   },
 ];
+
+export const navigationLinks = [
+  {
+    name: "Home",
+    href: "/",
+  },
+  {
+    name: "Listings",
+    href: "/listings",
+  },
+  {
+    name: "Requests",
+    href: "/requests",
+  },
+  {
+    name: "About Us",
+    href: "/about",
+  },
+];
+
+export const footerLinks = [
+  {
+    name: "Privacy Policy",
+    href: "/privacy",
+  },
+  {
+    name: "Terms of Service",
+    href: "/terms",
+  },
+  {
+    name: "Contact Us",
+    href: "/contact",
+  },
+];
