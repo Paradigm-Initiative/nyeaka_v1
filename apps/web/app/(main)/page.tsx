@@ -6,13 +6,13 @@ import Listings from "./listings/page";
 
 const HomePage = () => {
   return (
-    <>
+    <div className="flex flex-col gap-16">
       <Hero />
       <HowItWorks />
       <Listings />
       <div>recent requests</div>
       <TrustSection />
-    </>
+    </div>
   );
 };
 

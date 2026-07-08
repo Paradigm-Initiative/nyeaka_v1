@@ -4,11 +4,11 @@ import Link from "next/link";
 
 const Hero = () => {
   return (
-    <section className="bg-red-200">
+    <section className="flex items-center bg-primary min-h-[calc(100vh-4rem)] text-white">
       <div className="flex flex-col justify-center items-center mx-auto px-4 py-12 h-full text-center container">
         <div>
           <h1 className="mb-4 font-bold text-4xl">Welcome to Nyeaka</h1>
-          <p className="mb-6 text-gray-600 text-lg">
+          <p className="mb-6 text-gray-50 text-lg">
             Pass on your working laptops, tablets, and smartphones to students
             and job seekers in under-served communities.
           </p>

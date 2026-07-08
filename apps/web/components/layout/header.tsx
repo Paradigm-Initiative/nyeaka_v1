@@ -1,26 +1,52 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigationLinks } from "@/data/home-data";
 import NavLink from "../ui/navigation-link";
 
 const Header = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
   return (
-    <header className="flex bg-gray-800 w-full">
+    <header
+      className={cn(
+        "top-0 left-0 z-50 fixed w-full transition-colors duration-300",
+        isScrolled
+          ? "bg-[#0B1F3A]/95 backdrop-blur-sm shadow-md"
+          : "bg-transparent",
+      )}
+    >
       <div className="flex justify-between items-center mx-auto w-full h-16 text-white container">
-        <Link href="/" className="font-bold text-lg">
-          <h1 className="font-bold text-lg">Nyeaka</h1>
+        <Link href="/" className="font-bold text-lg" aria-label="Nyeaka home">
+          Nyeaka
         </Link>
-        <nav>
-          <ul className="flex space-x-4">
-            {navigationLinks.map((link, index) => (
-              <li key={index}>
+
+        {/* Desktop nav */}
+        <nav className="hidden md:block" aria-label="Main navigation">
+          <ul className="flex space-x-6">
+            {navigationLinks.map((link) => (
+              <li key={link.href}>
                 <NavLink
                   href={link.href}
-                  className={cn(
-                    "hover:text-gray-400",
-                    "transition-colors duration-300",
-                  )}
+                  className="hover:text-gray-300 transition-colors duration-300"
                 >
                   {link.name}
                 </NavLink>
@@ -29,15 +55,69 @@ const Header = () => {
           </ul>
         </nav>
 
-        <div className="flex items-center space-x-4">
-          <Link href="/login" className="hover:text-gray-400">
+        {/* Desktop auth buttons */}
+        <div className="hidden md:flex items-center space-x-3">
+          <Link
+            href="/sign-in"
+            className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-sm transition-colors duration-300"
+          >
             Login
           </Link>
-          <Link href="/register" className="hover:text-gray-400">
+          <Link
+            href="/sign-up"
+            className="bg-white hover:bg-gray-100 px-4 py-2 rounded-md font-medium text-[#0B1F3A] text-sm transition-colors duration-300"
+          >
             Register
           </Link>
         </div>
+
+        {/* Mobile toggle */}
+        <button
+          className="md:hidden"
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMobileMenuOpen}
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {/* {isMobileMenuOpen && (
+        <div className="md:hidden bg-[#0B1F3A] px-6 pb-6">
+          <nav aria-label="Mobile navigation">
+            <ul className="flex flex-col space-y-4">
+              {navigationLinks.map((link) => (
+                <li key={link.href}>
+                  <NavLink
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block text-white hover:text-gray-300"
+                  >
+                    {link.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="flex flex-col space-y-3 mt-4">
+            <Link
+              href="/login"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-sm text-center"
+            >
+              Login
+            </Link>
+            <Link
+              href="/register"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="bg-white hover:bg-gray-100 px-4 py-2 rounded-md font-medium text-[#0B1F3A] text-sm text-center"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
+      )} */}
     </header>
   );
 };

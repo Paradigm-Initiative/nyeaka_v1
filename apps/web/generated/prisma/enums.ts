@@ -9,7 +9,66 @@
 * 🟢 You can import this file directly.
 */
 
+export const Role = {
+  REQUESTER: 'REQUESTER',
+  DONOR: 'DONOR',
+  BOTH: 'BOTH'
+} as const
+
+export type Role = (typeof Role)[keyof typeof Role]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const VerificationStatus = {
+  NONE: 'NONE',
+  PENDING: 'PENDING',
+  SUBMITTED: 'SUBMITTED',
+  VERIFIED: 'VERIFIED',
+  FAILED: 'FAILED'
+} as const
+
+export type VerificationStatus = (typeof VerificationStatus)[keyof typeof VerificationStatus]
+
+
+export const RequestOfferStatus = {
+  ACTIVE: 'ACTIVE',
+  MATCHED: 'MATCHED',
+  CLOSED: 'CLOSED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type RequestOfferStatus = (typeof RequestOfferStatus)[keyof typeof RequestOfferStatus]
+
+
+export const DeviceType = {
+  LAPTOP: 'LAPTOP',
+  TABLET: 'TABLET',
+  SMARTPHONE: 'SMARTPHONE',
+  DESKTOP: 'DESKTOP',
+  OTHER: 'OTHER'
+} as const
+
+export type DeviceType = (typeof DeviceType)[keyof typeof DeviceType]
+
+
+export const Condition = {
+  NEW: 'NEW',
+  LIKE_NEW: 'LIKE_NEW',
+  GOOD: 'GOOD',
+  FAIR: 'FAIR',
+  POOR: 'POOR'
+} as const
+
+export type Condition = (typeof Condition)[keyof typeof Condition]
+
+
+export const OperatingSystem = {
+  WINDOWS: 'WINDOWS',
+  MACOS: 'MACOS',
+  LINUX: 'LINUX',
+  ANDROID: 'ANDROID',
+  IOS: 'IOS',
+  CHROMEOS: 'CHROMEOS',
+  OTHER: 'OTHER'
+} as const
+
+export type OperatingSystem = (typeof OperatingSystem)[keyof typeof OperatingSystem]
