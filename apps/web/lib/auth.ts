@@ -41,6 +41,7 @@ export const auth = betterAuth({
   }),
   trustedOrigins: [
     "http://localhost:3000",
+    "https://nyeaka-v1.vercel.app",
     // "https://your-production-domain.com",
   ],
 
