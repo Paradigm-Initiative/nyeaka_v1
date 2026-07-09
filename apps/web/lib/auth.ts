@@ -5,11 +5,37 @@ import { emailOTP } from "better-auth/plugins";
 
 // const prisma = new PrismaClient();
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET,
+  user: {
+    additionalFields: {
+      firstName: {
+        type: "string",
+        required: true,
+      },
+      lastName: {
+        type: "string",
+        required: true,
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          return {
+            data: {
+              ...user,
+              name: `${user.firstName} ${user.lastName}`.trim(),
+            },
+          };
+        },
+      },
+    },
+  },
+
+  // secret: process.env.BETTER_AUTH_SECRET,
   emailAndPassword: {
     enabled: true,
   },
-
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

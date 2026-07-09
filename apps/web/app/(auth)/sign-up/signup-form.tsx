@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -15,21 +15,20 @@ import {
   FieldDescription,
   FieldError,
   FieldGroup,
-  FieldLabel,
 } from "@/components/ui/field";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { SignUpSchema, signUpSchema } from "@/validations/auth";
 
-import PasswordInput from "@/components/ui/password";
+import { SignUpSchema, signUpSchema } from "@/validations/auth-validation";
 
 // import sign up function from better auth client
 import { signUp } from "@/lib/auth-client";
 import LabelInputWithAnimation from "@/components/custom/label-animation-input";
+import { useState } from "react";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   const {
     control,
@@ -48,8 +47,25 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   const submitHandler = async (values: SignUpSchema) => {
     console.log("Form values: ", values);
-    // const { error } = await signUp();
-    // console.log(error);
+    const { email, firstName, lastName, password } = values;
+    setError(null); // Reset error state before submission
+    const { data, error } = await signUp.email({
+      email,
+      password,
+      name: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
+      callbackURL: "/email-verified",
+    });
+
+    if (error) {
+      setError(error.message || "Something went wrong");
+    } else {
+      console.log(data);
+      toast.success("Account created successfully");
+      router.push("/");
+      ``;
+    }
   };
 
   return (
@@ -75,8 +91,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                       type="text"
                       name="firstName"
                       field={field}
+                      errorMessage={errors.firstName?.message}
                     />
-                    <FieldError>{errors.firstName?.message}</FieldError>
                   </Field>
                 )}
               />
@@ -90,8 +106,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                       type="text"
                       name="lastName"
                       field={field}
+                      errorMessage={errors.lastName?.message}
                     />
-                    <FieldError>{errors.lastName?.message}</FieldError>
                   </Field>
                 )}
               />
@@ -107,8 +123,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     name="email"
                     type="email"
                     field={field}
+                    errorMessage={errors.email?.message}
                   />
-                  <FieldError>{errors.email?.message}</FieldError>
                 </Field>
               )}
             />
@@ -126,16 +142,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     type="password"
                     isPassword
                     field={field}
+                    errorMessage={errors.password?.message}
+                    description="Must be at least 10 characters long."
                   />
-                  {errors.password ? (
-                    <FieldError className="text-xs">
-                      {errors.password?.message}
-                    </FieldError>
-                  ) : (
-                    <FieldDescription>
-                      Must be at least 10 characters long.
-                    </FieldDescription>
-                  )}
                 </Field>
               )}
             />
@@ -152,18 +161,21 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     type="password"
                     isRepeatPassword
                     field={field}
+                    errorMessage={errors.confirmPassword?.message}
                   />
-                  <FieldError>{errors.confirmPassword?.message}</FieldError>
-                  <FieldDescription>
-                    Must be at least 10 characters long.
-                  </FieldDescription>
                 </Field>
               )}
             />
 
+            {error && (
+              <FieldError className="font-semibold text-xs">{error}</FieldError>
+            )}
+
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  Create Account
+                </Button>
                 <Button variant="outline" type="button">
                   Sign up with Google
                 </Button>

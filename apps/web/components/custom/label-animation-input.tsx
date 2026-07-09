@@ -1,15 +1,13 @@
 import { useState } from "react";
-import { FieldLabel } from "../ui/field";
+import { FieldDescription, FieldError, FieldLabel } from "../ui/field";
 import { FieldValues } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
 import {
   InputGroup,
-  InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from "../ui/input-group";
-import { Button } from "../ui/button";
+
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 interface Props {
@@ -19,6 +17,8 @@ interface Props {
   isPassword?: boolean;
   isRepeatPassword?: boolean;
   field: FieldValues;
+  description?: string;
+  errorMessage?: string;
 }
 
 export default function LabelInputWithAnimation({
@@ -27,6 +27,8 @@ export default function LabelInputWithAnimation({
   name,
   isPassword = false,
   isRepeatPassword = false,
+  description,
+  errorMessage,
   field,
 }: Props) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -35,42 +37,55 @@ export default function LabelInputWithAnimation({
   const inputType =
     isPassword || isRepeatPassword ? (isVisible ? "text" : "password") : type;
 
+  const renderErrorDescription = () => {
+    if (errorMessage) {
+      return (
+        <FieldError className="font-semibold text-xs">
+          {errorMessage}
+        </FieldError>
+      );
+    }
+    if (description && !errorMessage) {
+      return <FieldDescription>{description}</FieldDescription>;
+    }
+  };
+
   return (
-    <div className="group relative w-full">
-      <FieldLabel
-        className="block top-1/2 has-[+div_input:not(:placeholder-shown)]:top-0 group-focus-within:top-0 z-10 absolute px-1 has-[+div_input:not(:placeholder-shown)]:font-medium group-focus-within:font-medium text-muted-foreground/70 has-[+div_input:not(:placeholder-shown)]:text-foreground group-focus-within:text-foreground has-[+div_input:not(:placeholder-shown)]:text-xs group-focus-within:text-xs text-sm origin-start transition-all -translate-y-1/2 cursor-text has-[+div_input:not(:placeholder-shown)]:cursor-default group-focus-within:cursor-default has-[+div_input:not(:placeholder-shown)]:pointer-events-none group-focus-within:pointer-events-none"
-        htmlFor={name}
-      >
-        <span className="inline-flex bg-background px-2">{label}</span>
-      </FieldLabel>
-      {/* input field, catering also for password and the toggle functionality */}
-      <div className="relative w-full">
-        <Input
-          id={name}
-          name={name}
-          placeholder=" "
-          type={inputType}
-          className="bg-background border-border min-w-full"
-          {...field}
-        />
-        {(isPassword || isRepeatPassword) && (
-          <Button
-            aria-controls="password"
-            aria-label={isVisible ? "Hide password" : "Show password"}
-            aria-pressed={isVisible}
-            className="focus:z-10 absolute inset-e-0 inset-y-0 flex justify-center items-center bg-transparent hover:bg-transparent disabled:opacity-50 focus-visible:border-ring rounded-e-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 w-9 h-full text-muted-foreground/80 hover:text-foreground transition-[color,box-shadow] disabled:cursor-not-allowed disabled:pointer-events-none"
-            onClick={toggleVisibility}
-            size="icon"
-            type="button"
-          >
-            {isVisible ? (
-              <EyeOffIcon aria-hidden="true" size={16} />
-            ) : (
-              <EyeIcon aria-hidden="true" size={16} />
-            )}
-          </Button>
-        )}
+    <div className="flex flex-col w-full">
+      <div className="group relative flex flex-col w-full">
+        <FieldLabel className="z-10 mini-label" htmlFor={name}>
+          <span className="inline-flex bg-background px-2">{label}</span>
+        </FieldLabel>
+        {/* input field, catering also for password and the toggle functionality */}
+        <InputGroup className="bg-background border-border">
+          <InputGroupInput
+            id={name}
+            name={name}
+            type={inputType}
+            placeholder=" "
+            {...field}
+          />
+
+          {(isPassword || isRepeatPassword) && (
+            <InputGroupButton
+              aria-controls="password"
+              aria-label={isVisible ? "Hide password" : "Show password"}
+              aria-pressed={isVisible}
+              className="text-muted-foreground/80 hover:text-foreground transition-[color,box-shadow] disabled:cursor-not-allowed disabled:pointer-events-none"
+              onClick={toggleVisibility}
+              type="button"
+            >
+              {isVisible ? (
+                <EyeOffIcon aria-hidden="true" size={16} />
+              ) : (
+                <EyeIcon aria-hidden="true" size={16} />
+              )}
+            </InputGroupButton>
+          )}
+        </InputGroup>
       </div>
+
+      {renderErrorDescription()}
     </div>
   );
 }

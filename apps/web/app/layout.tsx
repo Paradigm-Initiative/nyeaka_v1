@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("h-full", "antialiased", inter.variable)}>
-      <body className="flex flex-col w-full min-h-full">{children}</body>
+      <body className="flex flex-col w-full min-h-full">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
