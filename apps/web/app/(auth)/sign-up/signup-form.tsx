@@ -64,7 +64,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       console.log(data);
       toast.success("Account created successfully");
       router.push("/");
-      ``;
     }
   };
 
