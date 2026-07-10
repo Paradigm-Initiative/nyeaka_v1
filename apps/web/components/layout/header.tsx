@@ -6,10 +6,13 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigationLinks } from "@/data/home-data";
 import NavLink from "../ui/navigation-link";
+import { useSession } from "@/lib/auth-client";
+import { UserDropdown } from "../user-dropdown"; // adjust path to your file
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -17,7 +20,6 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
     return () => {
@@ -39,7 +41,6 @@ const Header = () => {
           Nyeaka
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:block" aria-label="Main navigation">
           <ul className="flex space-x-6">
             {navigationLinks.map((link) => (
@@ -55,23 +56,31 @@ const Header = () => {
           </ul>
         </nav>
 
-        {/* Desktop auth buttons */}
+        {/* Desktop auth area */}
         <div className="hidden md:flex items-center space-x-3">
-          <Link
-            href="/sign-in"
-            className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-sm transition-colors duration-300"
-          >
-            Login
-          </Link>
-          <Link
-            href="/sign-up"
-            className="bg-white hover:bg-gray-100 px-4 py-2 rounded-md font-medium text-[#0B1F3A] text-sm transition-colors duration-300"
-          >
-            Register
-          </Link>
+          {isPending ? (
+            // avoid a login/register flash while session is resolving
+            <div className="bg-white/10 rounded-md w-24 h-9 animate-pulse" />
+          ) : session ? (
+            <UserDropdown />
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-sm transition-colors duration-300"
+              >
+                Login
+              </Link>
+              <Link
+                href="/sign-up"
+                className="bg-white hover:bg-gray-100 px-4 py-2 rounded-md font-medium text-[#0B1F3A] text-sm transition-colors duration-300"
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Mobile toggle */}
         <button
           className="md:hidden"
           onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -81,43 +90,6 @@ const Header = () => {
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
-
-      {/* Mobile menu */}
-      {/* {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#0B1F3A] px-6 pb-6">
-          <nav aria-label="Mobile navigation">
-            <ul className="flex flex-col space-y-4">
-              {navigationLinks.map((link) => (
-                <li key={link.href}>
-                  <NavLink
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-white hover:text-gray-300"
-                  >
-                    {link.name}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="flex flex-col space-y-3 mt-4">
-            <Link
-              href="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-sm text-center"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="bg-white hover:bg-gray-100 px-4 py-2 rounded-md font-medium text-[#0B1F3A] text-sm text-center"
-            >
-              Register
-            </Link>
-          </div>
-        </div>
-      )} */}
     </header>
   );
 };

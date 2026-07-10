@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -12,6 +11,8 @@ enum Role {
   REQUESTER
   DONOR
   BOTH
+  GUEST
+  ADMIN
 }
 
 enum VerificationStatus {
@@ -66,7 +67,7 @@ model User {
   phoneVerified        Boolean            @default(false)
   country              String?
   countryCode          String?
-  role                 Role               @default(REQUESTER)
+  role                 Role               @default(GUEST)
   bio                  String?
   idVerified           Boolean            @default(false)
   idVerificationStatus VerificationStatus @default(NONE)
