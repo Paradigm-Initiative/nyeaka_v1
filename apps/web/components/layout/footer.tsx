@@ -1,21 +1,16 @@
-import Link from "next/link";
 import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col bg-gray-800 w-full">
-      <div className="flex flex-col justify-center items-center mx-auto w-full h-16 text-white container">
-        <p className="text-sm">
-          &copy; {new Date().getFullYear()}{" "}
-          <Link
-            href="https://paradigmhq.org"
-            target="_blank"
-            className="hover:text-gray-400"
-          >
-            Paradigm Initiative
-          </Link>
-          . All rights reserved.
-        </p>
+    <footer className="bg-canvas-dark w-full">
+      <div className="flex flex-wrap justify-between items-center gap-4 py-6! section-wrapper">
+        <span className="font-heading font-bold text-lg text-pin-gray-50">
+          Nyeaka
+        </span>
+        <span className="max-w-[52ch] text-body-sm text-pin-gray-400">
+          A free device-donation marketplace for Nigeria. No fees, no
+          middlemen, no resale.
+        </span>
       </div>
     </footer>
   );

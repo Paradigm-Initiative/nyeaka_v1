@@ -10,7 +10,7 @@ type NavLinkProps = {
   className?: string;
   activeClassName?: string;
   inactiveClassName?: string;
-};
+} & Omit<React.ComponentProps<typeof Link>, "href" | "className">;
 
 const NavLink = ({
   href,
@@ -18,6 +18,7 @@ const NavLink = ({
   className,
   activeClassName = "text-white font-semibold",
   inactiveClassName = "hover:text-gray-400",
+  ...props
 }: NavLinkProps) => {
   const pathname = usePathname();
 
@@ -31,6 +32,7 @@ const NavLink = ({
         className,
         isActive ? activeClassName : inactiveClassName,
       )}
+      {...props}
     >
       {children}
     </Link>

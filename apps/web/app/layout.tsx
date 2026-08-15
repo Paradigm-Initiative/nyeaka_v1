@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat, Raleway } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
-const inter = Inter({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-sans",
+  weight: ["400", "600", "700"],
+  variable: "--font-heading",
+});
+
+const raleway = Raleway({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-body",
 });
 
 export const metadata: Metadata = {
@@ -21,9 +30,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("h-full", "antialiased", inter.variable)}>
+    <html
+      lang="en"
+      className={cn(
+        "h-full",
+        "antialiased",
+        montserrat.variable,
+        raleway.variable,
+      )}
+    >
       <body className="flex flex-col w-full min-h-full">
-        {children}
+        <Header />
+        <main className="flex flex-col flex-1">{children}</main>
+        <Footer />
         <Toaster />
       </body>
     </html>

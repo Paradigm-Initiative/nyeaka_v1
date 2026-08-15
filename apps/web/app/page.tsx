@@ -1,17 +1,17 @@
 import Hero from "@/components/home/hero";
 import HowItWorks from "@/components/home/how-it-works";
+import Listings from "@/components/home/listings";
 import TrustSection from "@/components/home/trust-section";
-import React from "react";
-import Listings from "./listings/page";
+import CtaBanner from "@/components/home/cta-banner";
 
 const HomePage = () => {
   return (
-    <div className="flex flex-col gap-16">
+    <div className="flex flex-col">
       <Hero />
       <HowItWorks />
       <Listings />
-      <div>recent requests</div>
       <TrustSection />
+      <CtaBanner />
     </div>
   );
 };

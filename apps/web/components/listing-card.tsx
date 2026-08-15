@@ -1,67 +1,30 @@
 import React from "react";
-import { Laptop, Smartphone, Tablet, MapPin } from "lucide-react";
-import { cn, formatCondition } from "@/lib/utils";
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardAction,
-  CardContent,
-} from "./ui/card";
-import { ShortListing } from "@/types/types";
 import Link from "next/link";
+import DeviceTile from "./device-tile";
+import { Card, CardContent, CardFooter } from "./ui/card";
+import { MockListing } from "@/types/types";
 
-const ListingCard = ({
-  id,
-  condition,
-  model,
-  deviceType,
-  country,
-  ram,
-  storage,
-}: ShortListing) => {
-  const deviceDiv = () => {
-    switch (deviceType) {
-      case "LAPTOP":
-        return <Laptop className="size-6" />;
-      case "SMARTPHONE":
-        return <Smartphone className="size-6" />;
-      case "TABLET":
-        return <Tablet className="size-6" />;
-      default:
-        return null;
-    }
-  };
+const ListingCard = ({ listing }: { listing: MockListing }) => {
+  const { id, kind, title, condition, city, area, posted } = listing;
 
   return (
-    <Card className="bg-blue-50 p-4">
-      <CardHeader className="flex justify-between items-start">
-        <span className="flex justify-center items-center bg-amber-200 p-2 rounded-lg size-10 text-black">
-          {deviceDiv()}
-        </span>
-        <span className="flex justify-center items-center bg-amber-200 px-4 py-1 rounded-lg font-semibold text-black text-sm">
-          {formatCondition(condition)}
-        </span>
-      </CardHeader>
-      <CardContent>
-        <h3>{model}</h3>
-        <p>
-          {ram}GB RAM / {storage}GB Storage
-        </p>
-      </CardContent>
-      <CardFooter className="justify-between items-center border-t">
-        <div className="flex items-center">
-          <MapPin className="inline size-4" />
-          <span className="ml-1 text-sm">{country}</span>
-        </div>
-
-        <Link href={`/listings/${id}`} className="hover:underline">
-          <CardAction className={cn("text-primary text-sm")}>
-            View Details
-          </CardAction>
-        </Link>
-      </CardFooter>
-    </Card>
+    <Link href={`/listings/${id}`}>
+      <Card className="gap-4 p-4">
+        <DeviceTile kind={kind} className="h-33" />
+        <CardContent className="flex flex-col gap-1 px-0">
+          <h3 className="text-heading-5">{title}</h3>
+          <p className="text-muted-foreground text-body-sm">
+            {area}, {city} · {condition}
+          </p>
+        </CardContent>
+        <CardFooter className="justify-between items-center px-0 pt-3 border-t">
+          <span className="badge badge-green">ID-verified donor</span>
+          <span className="text-muted-foreground text-caption-bold">
+            {posted}
+          </span>
+        </CardFooter>
+      </Card>
+    </Link>
   );
 };
 

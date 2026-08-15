@@ -1,6 +1,11 @@
 "use client";
 
-import { LogOutIcon, ShieldIcon, UserIcon } from "lucide-react";
+import {
+  LayoutDashboardIcon,
+  LogOutIcon,
+  ShieldIcon,
+  UserIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -48,6 +53,11 @@ export function UserDropdown() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard">
+            <LayoutDashboardIcon className="size-4" /> <span>Dashboard</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/profile">
             <UserIcon className="size-4" /> <span>Profile</span>

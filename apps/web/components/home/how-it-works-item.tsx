@@ -1,24 +1,22 @@
 import React from "react";
 
 const HIWItem = ({
-  id,
+  eyebrow,
   title,
   description,
 }: {
-  id: number;
+  eyebrow: string;
   title: string;
   description: string;
 }) => {
   return (
-    <li className="flex gap-4">
-      <div className="flex justify-center items-center bg-primary rounded-full size-8 font-bold shrink-0">
-        {id}
-      </div>
-      <div className="flex flex-col gap-1">
-        <h4 className="font-semibold">{title}</h4>
-        <p className="text-muted-foreground text-sm">{description}</p>
-      </div>
-    </li>
+    <div className="flex flex-col gap-2.5 pt-3 border-t-2 border-pin-green-600">
+      <span className="text-pin-green-600 text-micro-uppercase">
+        {eyebrow}
+      </span>
+      <h3 className="text-heading-4">{title}</h3>
+      <p className="text-muted-foreground text-body-md">{description}</p>
+    </div>
   );
 };
 

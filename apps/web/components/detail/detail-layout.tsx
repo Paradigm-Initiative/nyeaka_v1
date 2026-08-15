@@ -1,0 +1,109 @@
+import React from "react";
+import Link from "next/link";
+import DeviceTile from "../device-tile";
+import { DeviceKind } from "@/types/types";
+
+const DetailLayout = ({
+  kind,
+  eyebrow,
+  title,
+  place,
+  posted,
+  note,
+  specs,
+  who,
+  rating,
+  handoffs,
+  backHref,
+  backLabel,
+  children,
+}: {
+  kind: DeviceKind;
+  eyebrow: string;
+  title: string;
+  place: string;
+  posted: string;
+  note: string;
+  specs: { label: string; value: string }[];
+  who: string;
+  rating: number;
+  handoffs: number;
+  backHref: string;
+  backLabel: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="section-wrapper">
+      <div className="flex flex-col gap-6">
+        <Link
+          href={backHref}
+          className="self-start font-semibold text-body-sm text-link hover:underline"
+        >
+          {backLabel}
+        </Link>
+
+        <div className="items-start gap-8 grid grid-cols-1 lg:grid-cols-2">
+          <div className="flex flex-col gap-3">
+            <DeviceTile kind={kind} className="h-80" iconClassName="size-24" />
+            <div className="gap-3 grid grid-cols-3">
+              <DeviceTile kind={kind} className="h-22" />
+              <DeviceTile kind={kind} className="h-22" />
+              <DeviceTile kind={kind} className="h-22" />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <span className="text-pin-green-600 text-micro-uppercase">
+                {eyebrow}
+              </span>
+              <h1 className="text-heading-1 text-pretty">{title}</h1>
+              <span className="text-muted-foreground text-subtitle">
+                {place} · posted {posted}
+              </span>
+            </div>
+
+            <p className="text-body-lg text-pretty">{note}</p>
+
+            <div className="gap-3 grid grid-cols-1 sm:grid-cols-3 py-3 border-y">
+              {specs.map((spec) => (
+                <div key={spec.label} className="flex flex-col gap-0.5">
+                  <span className="text-micro-uppercase text-pin-gray-400">
+                    {spec.label}
+                  </span>
+                  <span className="text-body-md capitalize">
+                    {spec.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-3 p-4 border rounded-lg">
+              <div className="flex items-center gap-3">
+                <span className="flex justify-center items-center bg-pin-green-50 rounded-full size-12 font-heading font-bold text-pin-green-600 text-lg">
+                  {who[0]}
+                </span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-heading font-semibold text-heading-5">
+                    {who}
+                  </span>
+                  <span className="text-muted-foreground text-body-sm">
+                    {rating.toFixed(1)} ★ · {handoffs} completed handoffs
+                  </span>
+                </div>
+              </div>
+              <p className="text-muted-foreground text-body-sm">
+                First name and general area only until you both agree to
+                share more. Exact address is never published.
+              </p>
+            </div>
+
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DetailLayout;

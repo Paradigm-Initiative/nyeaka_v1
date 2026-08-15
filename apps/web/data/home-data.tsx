@@ -1,112 +1,53 @@
-import { ShieldCheck, Earth, Handshake } from "lucide-react";
-import React from "react";
-import { CardDetail, HowItWorksItems, ShortListing } from "../types/types";
+import { ListItem, HowItWorksStep } from "../types/types";
 
-export const cardDetails: CardDetail[] = [
+export const trustPoints: ListItem[] = [
   {
     id: 1,
-    title: "Verified Identities",
+    title: "Nothing goes through us",
     description:
-      "Trusted users only. Every participant undergoes a secure identity check.",
-    bgColor: "bg-green-300",
-    icon: <ShieldCheck className="size-8 text-green-50" />,
+      "No shipping, no commission, no platform holding your device. You agree a public spot and hand it over yourself.",
   },
   {
     id: 2,
-    title: "Country-matched",
+    title: "You see who you're meeting",
     description:
-      "Local matching within the same country to ensure fast, reliable delivery.",
-    bgColor: "bg-green-900",
-    icon: <Earth className="size-8 text-green-50" />,
+      "Everyone verifies their identity before they can list or request. Ratings and completed handoffs stay on the profile.",
   },
   {
     id: 3,
-    title: "No Middlemen",
-    description: "Direct communication between users without intermediaries.",
-    bgColor: "bg-amber-950",
-    icon: <Handshake className="size-8 text-gray-50" />,
+    title: "Free, and not for resale",
+    description:
+      "Requesters sign a no-resale pledge you can read before choosing. Money never enters the conversation.",
   },
 ];
 
-export const howItWorksData: HowItWorksItems = {
-  forRequesters: [
-    {
-      id: 1,
-      title: "Sign up and verify identity",
-      description:
-        "Create an account and complete a simple verification process to ensure a trusted community.",
-    },
-    {
-      id: 2,
-      title: "Browse available devices",
-      description:
-        "Search for laptops, tablets, or phones that meet your educational or professional needs.",
-    },
-    {
-      id: 3,
-      title: "Request a match",
-      description:
-        "Connect with donors and arrange secure, shipping/delivery once matched.",
-    },
-  ],
-  forDonors: [
-    {
-      id: 1,
-      title: "List your working device",
-      description:
-        "Provide simple details about your device's condition and specifications.",
-    },
-    {
-      id: 2,
-      title: "Get matched with a requester",
-      description:
-        "Review requester profiles and choose who you'd like to support.",
-    },
-    {
-      id: 3,
-      title: "Secure delivery",
-      description: "Securely transport your device to the requester's address.",
-    },
-  ],
-};
-
-export const sampleListings: ShortListing[] = [
+export const howItWorksData: HowItWorksStep[] = [
   {
-    id: "1",
-    condition: "Like New",
-    model: "MacBook Air M1",
-    deviceType: "LAPTOP",
-    country: "Kenya",
-    ram: 8,
-    storage: 256,
+    id: 1,
+    eyebrow: "Step one",
+    title: "List it, or ask for one",
+    description:
+      "Device type, brand, condition, a photo, your area. Requesters post what they need and why.",
   },
   {
-    id: "2",
-    condition: "Good",
-    model: "iPad Pro 2020",
-    deviceType: "TABLET",
-    country: "Nigeria",
-    ram: 6,
-    storage: 128,
+    id: 2,
+    eyebrow: "Step two",
+    title: "Get matched",
+    description:
+      "Requests come with a short note explaining the need. The donor reads them and chooses one person.",
   },
   {
-    id: "3",
-    condition: "Fair",
-    model: "Samsung Galaxy S10",
-    deviceType: "SMARTPHONE",
-    country: "Ghana",
-    ram: 8,
-    storage: 512,
+    id: 3,
+    eyebrow: "Step three",
+    title: "Coordinate the handoff",
+    description:
+      "Chat in Nyeaka, agree a public spot, swap numbers only if you both want to. Both confirm when it's done.",
   },
 ];
 
 export const navigationLinks = [
   {
-    name: "Home",
-    href: "/",
-  },
-  {
-    name: "Listings",
+    name: "Browse devices",
     href: "/listings",
   },
   {
@@ -114,8 +55,8 @@ export const navigationLinks = [
     href: "/requests",
   },
   {
-    name: "About Us",
-    href: "/about",
+    name: "How it works",
+    href: "/#how-it-works",
   },
 ];
 
