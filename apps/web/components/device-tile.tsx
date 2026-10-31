@@ -23,11 +23,11 @@ const DeviceTile = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-lg bg-pin-green-50",
+        "flex items-center justify-center rounded-lg bg-pin-gray-50",
         className,
       )}
     >
-      <Icon className={cn("size-12 text-pin-green-600", iconClassName)} />
+      <Icon className={cn("size-12 text-pin-orange-600", iconClassName)} />
     </div>
   );
 };

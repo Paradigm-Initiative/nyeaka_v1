@@ -16,7 +16,7 @@ const SignInRequired = ({
       <h1 className="text-heading-2">{title}</h1>
       <p className="text-muted-foreground text-body-lg">{description}</p>
       <div className="flex flex-wrap gap-3">
-        <Button asChild variant="secondary">
+        <Button asChild>
           <Link href={`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
             Sign in
           </Link>

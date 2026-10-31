@@ -132,6 +132,7 @@
   --shadow-sm: var(--pin-shadow-sm);
   --shadow-md: var(--pin-shadow-md);
   --shadow-lg: var(--pin-shadow-lg);
+  --shadow-xl: var(--pin-shadow-xl);
 }
 
 :root {
@@ -230,9 +231,11 @@
   --pin-radius-xl: 16px;
   --pin-radius-full: 9999px;
 
-  --pin-shadow-sm: 0 1px 2px rgba(20, 23, 27, 0.06);
-  --pin-shadow-md: 0 4px 8px rgba(20, 23, 27, 0.08);
-  --pin-shadow-lg: 0 8px 24px rgba(20, 23, 27, 0.12);
+  /* Elevation levels from the PIN design system. Level 0 (rest) has no shadow. */
+  --pin-shadow-sm: 0 1px 2px rgba(20, 23, 27, 0.06); /* level 1 · hover */
+  --pin-shadow-md: 0 4px 8px rgba(20, 23, 27, 0.08); /* level 2 · module */
+  --pin-shadow-lg: 0 8px 24px rgba(20, 23, 27, 0.12); /* level 3 · sticker */
+  --pin-shadow-xl: 0 16px 40px rgba(20, 23, 27, 0.16); /* level 4 · modal */
   --pin-shadow-focus: 0 0 0 3px rgba(75, 184, 233, 0.5);
 
   /* ---- Surface tokens (bg-canvas / bg-surface / bg-surface-feature ...) ---- */
@@ -240,7 +243,7 @@
   --canvas-dark: var(--pin-gray-900);
   --surface: var(--pin-gray-50);
   --surface-soft: var(--pin-gray-100);
-  --surface-feature: var(--pin-green-50);
+  --surface-feature: var(--pin-gray-50);
   --hairline: var(--pin-gray-200);
   --hairline-soft: var(--pin-gray-100);
   --hairline-strong: var(--pin-gray-300);
@@ -253,8 +256,9 @@
   --card-foreground: var(--pin-gray-900);
   --popover: var(--pin-white);
   --popover-foreground: var(--pin-gray-900);
-  --primary: var(--pin-red-600);
-  --primary-foreground: var(--pin-white);
+  /* Orange leads every CTA. White on orange fails AA, so CTAs use dark ink text. */
+  --primary: var(--pin-orange-600);
+  --primary-foreground: var(--pin-gray-900);
   --secondary: var(--pin-green-600);
   --secondary-foreground: var(--pin-white);
   --muted: var(--pin-gray-50);
@@ -265,16 +269,16 @@
   --border: var(--pin-gray-200);
   --input: var(--pin-gray-300);
   --ring: var(--pin-blue-500);
-  --chart-1: var(--pin-red-500);
+  --chart-1: var(--pin-orange-500);
   --chart-2: var(--pin-green-500);
-  --chart-3: var(--pin-orange-500);
+  --chart-3: var(--pin-red-500);
   --chart-4: var(--pin-blue-500);
   --chart-5: var(--pin-purple-500);
   --radius: var(--pin-radius-lg);
   --sidebar: var(--pin-gray-50);
   --sidebar-foreground: var(--pin-gray-900);
-  --sidebar-primary: var(--pin-red-600);
-  --sidebar-primary-foreground: var(--pin-white);
+  --sidebar-primary: var(--pin-orange-600);
+  --sidebar-primary-foreground: var(--pin-gray-900);
   --sidebar-accent: var(--pin-gray-100);
   --sidebar-accent-foreground: var(--pin-gray-900);
   --sidebar-border: var(--pin-gray-200);
@@ -286,7 +290,7 @@
   --canvas-dark: var(--pin-black);
   --surface: var(--pin-gray-800);
   --surface-soft: var(--pin-gray-700);
-  --surface-feature: var(--pin-green-900);
+  --surface-feature: var(--pin-gray-800);
   --hairline: var(--pin-gray-700);
   --hairline-soft: var(--pin-gray-800);
   --hairline-strong: var(--pin-gray-600);
@@ -298,8 +302,9 @@
   --card-foreground: var(--pin-gray-50);
   --popover: var(--pin-gray-800);
   --popover-foreground: var(--pin-gray-50);
-  --primary: var(--pin-red-600);
-  --primary-foreground: var(--pin-white);
+  /* Orange leads every CTA. White on orange fails AA, so CTAs use dark ink text. */
+  --primary: var(--pin-orange-600);
+  --primary-foreground: var(--pin-gray-900);
   --secondary: var(--pin-green-600);
   --secondary-foreground: var(--pin-white);
   --muted: var(--pin-gray-800);
@@ -310,15 +315,15 @@
   --border: var(--pin-gray-700);
   --input: var(--pin-gray-600);
   --ring: var(--pin-blue-500);
-  --chart-1: var(--pin-red-400);
+  --chart-1: var(--pin-orange-400);
   --chart-2: var(--pin-green-400);
-  --chart-3: var(--pin-orange-400);
+  --chart-3: var(--pin-red-400);
   --chart-4: var(--pin-blue-400);
   --chart-5: var(--pin-purple-400);
   --sidebar: var(--pin-gray-800);
   --sidebar-foreground: var(--pin-gray-50);
-  --sidebar-primary: var(--pin-red-600);
-  --sidebar-primary-foreground: var(--pin-white);
+  --sidebar-primary: var(--pin-orange-600);
+  --sidebar-primary-foreground: var(--pin-gray-900);
   --sidebar-accent: var(--pin-gray-700);
   --sidebar-accent-foreground: var(--pin-gray-50);
   --sidebar-border: var(--pin-gray-700);
@@ -330,7 +335,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background font-sans text-foreground;
   }
   h1,
   h2,
@@ -352,76 +357,80 @@
 @layer components {
   /* ---- Text hierarchy ---- */
   .text-hero-display {
-    @apply leading-[1.1] tracking-[-1.5px] text-[clamp(32px,5vw,64px)] font-bold;
+    @apply font-bold text-[clamp(32px,5vw,64px)] leading-[1.1] tracking-[-1.5px];
   }
   .text-display-lg {
-    @apply text-[56px] leading-[1.15] tracking-[-1px] font-medium;
+    @apply font-medium text-[56px] leading-[1.15] tracking-[-1px];
   }
   .text-heading-1 {
-    @apply text-[48px] leading-[56px] tracking-[-0.5px] font-bold;
+    @apply font-bold text-[48px] leading-[56px] tracking-[-0.5px];
   }
   .text-heading-2 {
-    @apply text-[36px] leading-[44px] tracking-[-0.5px] font-bold;
+    @apply font-bold text-[36px] leading-[44px] tracking-[-0.5px];
   }
   .text-heading-3 {
-    @apply text-[28px] leading-[36px] font-semibold;
+    @apply font-semibold text-[28px] leading-[36px];
   }
   .text-heading-4 {
-    @apply text-[22px] leading-[30px] font-semibold;
+    @apply font-semibold text-[22px] leading-[30px];
   }
   .text-heading-5 {
-    @apply text-[18px] leading-[26px] font-semibold;
+    @apply font-semibold text-[18px] leading-[26px];
   }
   .text-subtitle {
-    @apply text-[18px] leading-[28px] font-normal;
+    @apply font-normal text-[18px] leading-[28px];
   }
   .text-body-md {
-    @apply text-[16px] leading-[26px] font-normal;
+    @apply font-normal text-[16px] leading-[26px];
   }
   .text-body-sm {
-    @apply text-[14px] leading-[22px] font-normal;
+    @apply font-normal text-[14px] leading-[22px];
   }
   .text-body-sm-medium {
-    @apply text-[14px] leading-[22px] font-medium;
+    @apply font-medium text-[14px] leading-[22px];
   }
   .text-caption-bold {
-    @apply text-[12px] leading-[18px] font-medium;
+    @apply font-medium text-[12px] leading-[18px];
   }
   .text-micro-uppercase {
-    @apply text-[13px] leading-[18px] tracking-[1px] font-bold uppercase;
+    @apply font-bold text-[13px] uppercase leading-[18px] tracking-[1px];
   }
   .text-button-md {
-    @apply text-[16px] leading-[24px] font-semibold;
+    @apply font-semibold text-[16px] leading-[24px];
   }
   .text-code-md {
-    @apply text-[14px] leading-[1.55] font-normal font-mono;
+    @apply font-mono font-normal text-[14px] leading-[1.55];
   }
 
   /* ---- Buttons ---- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-transparent px-5 py-3 font-heading text-base font-semibold cursor-pointer transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50;
+    @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-transparent px-5 py-3 font-heading text-base font-semibold cursor-pointer transition-colors duration-200 outline-none focus-visible:ring-3 focus-visible:ring-ring/50;
   }
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-pin-red-700 active:bg-pin-red-800;
+    @apply bg-primary hover:bg-pin-orange-500 active:bg-pin-orange-700 text-primary-foreground;
   }
   .btn-secondary {
-    @apply bg-transparent text-primary border-primary hover:bg-pin-red-50;
+    @apply bg-transparent hover:bg-pin-green-50 border-secondary text-secondary;
   }
   .btn-tertiary {
-    @apply bg-transparent text-foreground border-input hover:bg-muted;
+    @apply bg-transparent hover:bg-muted border-input text-foreground;
   }
   .btn:disabled {
-    @apply bg-pin-gray-200 text-muted-foreground border-transparent cursor-not-allowed;
+    @apply bg-pin-gray-200 border-transparent text-muted-foreground cursor-not-allowed;
   }
 
-  /* ---- Card ---- */
+  /* ---- Card: hairline border at rest, shadow is earned ---- */
   .card {
-    @apply bg-card text-card-foreground border border-border rounded-lg shadow-sm p-5;
+    @apply bg-card p-5 border border-border rounded-lg text-card-foreground;
+  }
+  /* Sticker card: the one documented card with a resting shadow. One per page, maximum. */
+  .card-sticker {
+    @apply bg-card shadow-lg border border-border rounded-lg text-card-foreground;
   }
 
   /* ---- Badge ---- */
   .badge {
-    @apply inline-flex items-center rounded-full px-3 py-1 font-heading font-semibold text-xs uppercase tracking-wide;
+    @apply inline-flex items-center px-3 py-1 rounded-full font-heading font-semibold text-xs uppercase tracking-wide;
   }
   .badge-red {
     @apply bg-pin-red-50 text-pin-red-700;
@@ -441,15 +450,15 @@
 
   /* ---- Form fields ---- */
   .field-label {
-    @apply block mb-1 font-medium text-sm text-foreground;
+    @apply block mb-1 font-medium text-foreground text-sm;
   }
   .input {
-    @apply w-full rounded-sm border border-input bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus:border-pin-blue-500 focus:ring-3 focus:ring-ring/50;
+    @apply w-full rounded-md border border-input bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus:border-pin-blue-500 focus:ring-3 focus:ring-ring/50;
   }
 
   /* ---- Alerts ---- */
   .alert {
-    @apply rounded-md border-l-4 p-4;
+    @apply p-4 border-l-4 rounded-md;
   }
   .alert-success {
     @apply bg-pin-green-50 border-pin-green-600 text-pin-green-900;
@@ -463,11 +472,15 @@
   .alert-info {
     @apply bg-pin-blue-50 border-pin-blue-600 text-pin-blue-900;
   }
+
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
 }
 
 @layer utilities {
   .section-wrapper {
-    @apply max-w-300 mx-auto px-6 lg:py-16 py-10;
+    @apply mx-auto px-6 py-10 lg:py-16 max-w-300;
   }
 
   /* ---- hairline variants (border-hairline-soft / -strong / -dark) ---- */
@@ -481,11 +494,11 @@
     border-color: var(--hairline-dark);
   }
 
-  /* ---- inline text link: purple default, red on hover (matches PIN link tokens) ---- */
+  /* ---- inline text link: purple default, deeper purple on hover (matches PIN link tokens) ---- */
   .text-link {
     color: var(--pin-link);
   }
   .text-link:hover {
-    color: var(--pin-red-600);
+    color: var(--pin-link-hover);
   }
 }

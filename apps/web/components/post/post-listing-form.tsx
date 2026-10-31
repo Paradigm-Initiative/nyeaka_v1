@@ -34,7 +34,7 @@ const PostListingForm = () => {
           them, pick the one you want, and the chat opens. You are never
           obliged to give it to anyone.
         </p>
-        <Button asChild variant="secondary">
+        <Button asChild>
           <Link href="/dashboard">See my dashboard</Link>
         </Button>
       </div>
@@ -160,7 +160,7 @@ const PostListingForm = () => {
         You choose the meeting place later, in the chat.
       </div>
 
-      <Button type="submit" variant="secondary" size="lg" className="self-start">
+      <Button type="submit" size="lg" className="self-start">
         Publish listing
       </Button>
     </form>

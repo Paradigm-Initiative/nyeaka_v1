@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { navigationLinks } from "@/data/home-data";
@@ -24,10 +25,23 @@ const Header = () => {
       <div className="flex justify-between items-center mx-auto w-full h-16 text-pin-gray-50 container">
         <Link
           href="/"
-          className="font-heading font-bold text-lg"
-          aria-label="Nyeaka home"
+          className="flex items-center gap-2.5 font-heading leading-none"
+          aria-label="Nyeaka home, a Paradigm Initiative project"
         >
-          Nyeaka
+          <Image
+            src="/brand/paradigm-initiative-mark.png"
+            alt=""
+            width={512}
+            height={512}
+            priority
+            className="size-9"
+          />
+          <span className="flex flex-col gap-0.5">
+            <span className="font-bold text-lg">Nyeaka</span>
+            <span className="font-semibold text-[11px] text-pin-gray-400 tracking-wide">
+              by Paradigm Initiative
+            </span>
+          </span>
         </Link>
 
         <nav className="hidden md:block" aria-label="Main navigation">
@@ -56,13 +70,13 @@ const Header = () => {
             <>
               <Link
                 href="/sign-in"
-                className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-pin-gray-50 text-sm transition-colors duration-300"
+                className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-pin-gray-50 text-sm transition-colors duration-200"
               >
                 Sign in
               </Link>
               <Link
                 href="/sign-up"
-                className="bg-white hover:bg-pin-gray-100 px-4 py-2 rounded-md font-medium text-pin-gray-900 text-sm transition-colors duration-300"
+                className="bg-primary hover:bg-pin-orange-500 px-4 py-2 rounded-md font-heading font-semibold text-primary-foreground text-sm transition-colors duration-200"
               >
                 Create account
               </Link>
@@ -112,7 +126,7 @@ const Header = () => {
                   </Link>
                   <Link
                     href="/sign-up"
-                    className="bg-white px-4 py-2.5 rounded-md font-medium text-pin-gray-900 text-sm text-center"
+                    className="bg-primary px-4 py-2.5 rounded-md font-heading font-semibold text-primary-foreground text-sm text-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Create account

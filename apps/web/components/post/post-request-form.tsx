@@ -31,7 +31,7 @@ const PostRequestForm = () => {
           asking directly often works faster.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Button asChild variant="secondary">
+          <Button asChild>
             <Link href="/listings">Browse devices</Link>
           </Button>
           <Button asChild variant="outline">
@@ -127,7 +127,7 @@ const PostRequestForm = () => {
         </span>
       </label>
 
-      <Button type="submit" variant="secondary" size="lg" className="self-start">
+      <Button type="submit" size="lg" className="self-start">
         Post request
       </Button>
     </form>

@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import OrganicEdge from "@/components/layout/organic-edge";
 import { useSession } from "@/lib/auth-client";
 import { CITIES } from "@/data/marketplace-data";
 import { MockListing, MockRequest } from "@/types/types";
@@ -70,6 +71,7 @@ const BrowsePage = ({
           </div>
         </div>
       </div>
+      <OrganicEdge />
 
       <div className="flex flex-col gap-4 section-wrapper">
         <div className="flex flex-wrap gap-2">
@@ -119,7 +121,7 @@ const BrowsePage = ({
               You&apos;re seeing summaries only. Create an account to open a
               listing, read the note and send a request.
             </p>
-            <Button asChild variant="secondary">
+            <Button asChild>
               <Link href="/sign-up">Create an account</Link>
             </Button>
           </div>

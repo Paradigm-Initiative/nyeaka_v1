@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { Button } from "../ui/button";
+import OrganicEdge from "../layout/organic-edge";
 
 const Hero = () => {
   const devicesRehomed = 1000; // Replace with the actual count of devices rehomed
@@ -6,11 +8,12 @@ const Hero = () => {
   const citiesCovered = 10; // Replace with the actual count of cities covered
 
   return (
-    <section className="flex justify-center items-center bg-canvas-dark min-h-150 text-pin-gray-50">
+    <section className="flex flex-col">
+      <div className="flex justify-center items-center bg-canvas-dark min-h-150 text-pin-gray-50">
       <div className="items-center gap-12 grid grid-cols-1 md:grid-cols-2 section-wrapper">
         <div className="flex flex-col items-start gap-4">
-          <span className="inline-flex items-center gap-2 text-pin-green-400 text-micro-uppercase">
-            <span className="bg-pin-green-500 rounded-full size-2" />
+          <span className="inline-flex items-center gap-2 text-pin-orange-400 text-micro-uppercase">
+            <span className="bg-pin-orange-500 rounded-full size-2" />
             {devicesRehomed.toLocaleString()} devices rehomed since launch
           </span>
           <h1 className="text-hero-display text-pretty">
@@ -23,12 +26,16 @@ const Hero = () => {
             themselves.
           </p>
           <div className="flex flex-wrap gap-3 mt-2">
-            <Button variant="secondary">I have a device to give</Button>
+            <Button size="lg" asChild>
+              <Link href="/listings/new">I have a device to give</Link>
+            </Button>
             <Button
+              size="lg"
               variant="outline"
-              className="bg-transparent hover:bg-white/10 border-white/30 hover:border-white/50 text-pin-gray-50"
+              className="bg-transparent hover:bg-white/10 border-white/30 hover:border-white/50 text-pin-gray-50 hover:text-pin-gray-50"
+              asChild
             >
-              I need a device
+              <Link href="/requests/new">I need a device</Link>
             </Button>
           </div>
           <p className="mt-2 text-body-sm text-pin-gray-500">
@@ -42,7 +49,7 @@ const Hero = () => {
             Since launch
           </span>
           <div className="flex justify-between items-baseline gap-4 pb-2.5 border-white/12 border-b">
-            <span className="text-heading-3 text-pin-green-400">
+            <span className="text-heading-3 text-pin-orange-400">
               {devicesRehomed.toLocaleString()}
             </span>
             <span className="text-body-sm text-pin-gray-400 text-right">
@@ -50,7 +57,7 @@ const Hero = () => {
             </span>
           </div>
           <div className="flex justify-between items-baseline gap-4 pb-2.5 border-white/12 border-b">
-            <span className="text-heading-3 text-pin-green-400">
+            <span className="text-heading-3 text-pin-orange-400">
               {verifiedMembers.toLocaleString()}
             </span>
             <span className="text-body-sm text-pin-gray-400 text-right">
@@ -58,7 +65,7 @@ const Hero = () => {
             </span>
           </div>
           <div className="flex justify-between items-baseline gap-4">
-            <span className="text-heading-3 text-pin-green-400">
+            <span className="text-heading-3 text-pin-orange-400">
               {citiesCovered}
             </span>
             <span className="text-body-sm text-pin-gray-400 text-right">
@@ -71,6 +78,8 @@ const Hero = () => {
           </p>
         </div>
       </div>
+      </div>
+      <OrganicEdge />
     </section>
   );
 };

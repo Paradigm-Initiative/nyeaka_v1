@@ -42,7 +42,7 @@ export default function FieldInput({
           name={name}
           type={inputType}
           placeholder={placeholder}
-          className={cn("h-13.5 rounded-sm", isPassword && "pr-11")}
+          className={cn("rounded-md", isPassword && "pr-11")}
           {...field}
         />
         {isPassword && (
@@ -61,7 +61,7 @@ export default function FieldInput({
           {errorMessage}
         </FieldError>
       ) : description ? (
-        <span className="text-muted-foreground text-body-sm">
+        <span className="text-body-sm text-muted-foreground">
           {description}
         </span>
       ) : null}

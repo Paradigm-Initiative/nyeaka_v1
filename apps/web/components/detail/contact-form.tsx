@@ -28,7 +28,7 @@ const ContactForm = ({
           {mode === "request" ? "send a request" : "offer a device"} to{" "}
           {who}.
         </p>
-        <Button asChild variant="secondary">
+        <Button asChild>
           <Link href="/sign-up">Create an account</Link>
         </Button>
       </div>
@@ -47,7 +47,7 @@ const ContactForm = ({
             : `If it's what ${who} needs, they accept and a chat opens here — you can agree a public place to meet.`}
         </p>
         <div className="flex flex-wrap gap-3">
-          <Button asChild variant="secondary">
+          <Button asChild>
             <Link href="/dashboard">Go to my dashboard</Link>
           </Button>
           <Button asChild variant="outline">
@@ -103,7 +103,7 @@ const ContactForm = ({
           to meet.
         </div>
       )}
-      <Button type="submit" variant="secondary" className="self-start">
+      <Button type="submit" className="self-start">
         {mode === "request" ? "Send request" : "Offer a device"}
       </Button>
     </form>

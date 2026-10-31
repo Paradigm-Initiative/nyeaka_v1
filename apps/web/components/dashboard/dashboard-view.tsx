@@ -103,7 +103,7 @@ const DashboardView = ({ firstName }: { firstName: string }) => {
                     &ldquo;{r.note}&rdquo;
                   </p>
                   <div className="flex flex-wrap gap-3 pt-3 border-t">
-                    <Button asChild variant="secondary">
+                    <Button asChild>
                       <Link href="/messages/1">Choose {r.person}</Link>
                     </Button>
                     <Button variant="outline">Decline</Button>
@@ -173,7 +173,7 @@ const DashboardView = ({ firstName }: { firstName: string }) => {
                   <span className="badge badge-green">
                     Chosen — chat open
                   </span>
-                  <Button asChild variant="secondary">
+                  <Button asChild>
                     <Link href="/messages/1">Open chat</Link>
                   </Button>
                 </div>

@@ -123,7 +123,7 @@ const ChatThread = () => {
               Once the device has changed hands, you both confirm here.
               Ratings only open after that.
             </p>
-            <Button variant="secondary" onClick={() => setConfirmed(true)}>
+            <Button onClick={() => setConfirmed(true)}>
               Confirm handoff
             </Button>
           </div>
@@ -155,7 +155,6 @@ const ChatThread = () => {
                   ))}
                 </div>
                 <Button
-                  variant="secondary"
                   className="self-start"
                   onClick={() => setRated(true)}
                 >

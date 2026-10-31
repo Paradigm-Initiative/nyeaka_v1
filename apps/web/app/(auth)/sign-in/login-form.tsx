@@ -96,7 +96,7 @@ export function LoginForm() {
           </Link>
 
           <div className="flex flex-col items-start gap-3">
-            <Button type="submit" variant="secondary" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting}>
               Sign in
             </Button>
             <Button variant="link" type="button" asChild>

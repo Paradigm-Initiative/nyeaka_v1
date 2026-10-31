@@ -18,7 +18,7 @@ export default function EmailVerifiedPage() {
           Your email has been confirmed. You can now browse, list a device,
           or ask for one.
         </p>
-        <Button asChild variant="secondary">
+        <Button asChild>
           <Link href="/dashboard">Go to my dashboard</Link>
         </Button>
       </div>

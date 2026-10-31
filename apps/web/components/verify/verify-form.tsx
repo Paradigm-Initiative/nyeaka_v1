@@ -95,7 +95,7 @@ const VerifyForm = () => {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button variant="secondary" size="lg" onClick={finish}>
+        <Button size="lg" onClick={finish}>
           Verify and continue
         </Button>
         <Button variant="outline" size="lg" asChild>
