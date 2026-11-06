@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.gitignore
+.vscode
+.agents
+.DS_Store
+.env
+.env.*
+!.env.example
+Dockerfile
+.dockerignore
+README*.md
+"Claude outputs"
+tsconfig.tsbuildinfo
+npm-debug.log*
