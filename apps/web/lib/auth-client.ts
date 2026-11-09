@@ -4,10 +4,10 @@ import {
   inferAdditionalFields,
 } from "better-auth/client/plugins";
 import { nextCookies } from "better-auth/next-js";
-import { auth } from "./auth";
+import type { auth } from "./auth";
 
 export const { signIn, signUp, signOut, useSession } = createAuthClient({
-  baseURL: "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
   plugins: [
     emailOTPClient(),
     nextCookies(),
