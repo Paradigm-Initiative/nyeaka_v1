@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import DeviceTile from "../device-tile";
-import { DeviceKind } from "@/types/types";
+import type { DeviceType } from "@/generated/prisma/enums";
 
 const DetailLayout = ({
   kind,
@@ -18,7 +18,7 @@ const DetailLayout = ({
   backLabel,
   children,
 }: {
-  kind: DeviceKind;
+  kind: DeviceType;
   eyebrow: string;
   title: string;
   place: string;
@@ -26,7 +26,7 @@ const DetailLayout = ({
   note: string;
   specs: { label: string; value: string }[];
   who: string;
-  rating: number;
+  rating: number | null;
   handoffs: number;
   backHref: string;
   backLabel: string;
@@ -81,14 +81,14 @@ const DetailLayout = ({
             <div className="flex flex-col gap-3 p-4 border rounded-lg">
               <div className="flex items-center gap-3">
                 <span className="flex justify-center items-center bg-pin-green-50 rounded-full size-12 font-heading font-bold text-pin-green-600 text-lg">
-                  {who[0]}
+                  {who[0]?.toUpperCase()}
                 </span>
                 <div className="flex flex-col gap-0.5">
                   <span className="font-heading font-semibold text-heading-5">
                     {who}
                   </span>
                   <span className="text-muted-foreground text-body-sm">
-                    {rating.toFixed(1)} ★ · {handoffs} completed handoffs
+                    {rating !== null ? `${rating.toFixed(1)} ★` : "No ratings yet"} · {handoffs} completed handoff{handoffs === 1 ? "" : "s"}
                   </span>
                 </div>
               </div>

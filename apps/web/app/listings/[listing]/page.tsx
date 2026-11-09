@@ -2,7 +2,9 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
-import { LISTINGS } from "@/data/marketplace-data";
+import { getListingDetail } from "@/lib/queries";
+import { conditionLabel, kindLabel } from "@/lib/device-options";
+import { placeLabel, timeAgo } from "@/lib/format";
 
 export async function generateMetadata({
   params,
@@ -10,8 +12,8 @@ export async function generateMetadata({
   params: Promise<{ listing: string }>;
 }): Promise<Metadata> {
   const { listing } = await params;
-  const item = LISTINGS.find((l) => l.id === listing);
-  return { title: item ? `${item.title} - Nyeaka` : "Listing - Nyeaka" };
+  const data = await getListingDetail(listing);
+  return { title: data ? `${data.listing.title} - Nyeaka` : "Listing - Nyeaka" };
 }
 
 const ListingDetailPage = async ({
@@ -19,30 +21,36 @@ const ListingDetailPage = async ({
 }: {
   params: Promise<{ listing: string }>;
 }) => {
-  const { listing } = await params;
-  const item = LISTINGS.find((l) => l.id === listing);
-  if (!item) notFound();
+  const { listing: id } = await params;
+  const data = await getListingDetail(id);
+  if (!data) notFound();
+  const { listing: item, reputation } = data;
+
+  const extras = [
+    item.spec?.hasCharger && "Charger",
+    item.spec?.hasKeyboard && "Keyboard",
+  ].filter(Boolean) as string[];
 
   return (
     <DetailLayout
-      kind={item.kind}
-      eyebrow={`${item.condition} · ${item.kind}`}
+      kind={item.deviceType}
+      eyebrow={`${conditionLabel(item.condition)} · ${kindLabel(item.deviceType)}`}
       title={item.title}
-      place={`${item.area}, ${item.city}`}
-      posted={item.posted}
-      note={item.note}
+      place={placeLabel(item.city, item.area)}
+      posted={timeAgo(item.createdAt)}
+      note={item.description}
       specs={[
         { label: "Brand", value: item.brand },
-        { label: "Condition", value: item.condition },
-        { label: "Comes with", value: item.extras.join(", ") || "Nothing extra" },
+        { label: "Condition", value: conditionLabel(item.condition) },
+        { label: "Comes with", value: extras.join(", ") || "Nothing extra" },
       ]}
-      who={item.donor}
-      rating={item.rating}
-      handoffs={item.handoffs}
+      who={item.donor.firstName}
+      rating={reputation.rating}
+      handoffs={reputation.handoffs}
       backHref="/listings"
       backLabel="← Back to browsing"
     >
-      <ContactForm mode="request" who={item.donor} />
+      <ContactForm mode="request" who={item.donor.firstName} />
     </DetailLayout>
   );
 };

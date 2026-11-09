@@ -4,6 +4,8 @@ import Listings from "@/components/home/listings";
 import TrustSection from "@/components/home/trust-section";
 import CtaBanner from "@/components/home/cta-banner";
 
+export const dynamic = "force-dynamic";
+
 const HomePage = () => {
   return (
     <div className="flex flex-col">

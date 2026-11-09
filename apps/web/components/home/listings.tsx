@@ -1,9 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { LISTINGS } from "@/data/marketplace-data";
+import { getRecentListings } from "@/lib/queries";
 import ListingCard from "../listing-card";
 
-const Listings = () => {
+const Listings = async () => {
+  const listings = await getRecentListings(3);
   return (
     <section className="bg-canvas">
       <div className="flex flex-col gap-6 section-wrapper">
@@ -16,8 +17,13 @@ const Listings = () => {
             See all listings
           </Link>
         </div>
+        {listings.length === 0 && (
+          <p className="text-muted-foreground text-body-md">
+            No devices listed yet. Be the first to list one.
+          </p>
+        )}
         <div className="gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {LISTINGS.slice(0, 3).map((listing) => (
+          {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
         </div>

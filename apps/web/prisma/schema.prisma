@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  extensions = [pg_trgm]
 }
 
 enum Role {
@@ -148,6 +150,8 @@ model Request {
   isUrgent       Boolean            @default(false)
   countryCode    String
   city           String
+  area           String?
+  minCondition   Condition?
   status         RequestOfferStatus @default(ACTIVE)
   expiresAt      DateTime
   createdAt      DateTime           @default(now())
@@ -160,6 +164,8 @@ model Request {
 
   @@index([requesterId])
   @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "Request_title_trgm_idx")
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, map: "Request_description_trgm_idx")
 }
 
 model RequestSpec {
@@ -197,6 +203,7 @@ model Listing {
   photos      String[]
   countryCode String
   city        String
+  area        String?
   status      RequestOfferStatus @default(ACTIVE)
   expiresAt   DateTime
   createdAt   DateTime           @default(now())
@@ -209,6 +216,10 @@ model Listing {
 
   @@index([donorId])
   @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "Listing_title_trgm_idx")
+  @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "Listing_brand_trgm_idx")
+  @@index([model(ops: raw("gin_trgm_ops"))], type: Gin, map: "Listing_model_trgm_idx")
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, map: "Listing_description_trgm_idx")
 }
 
 model DeviceSpec {

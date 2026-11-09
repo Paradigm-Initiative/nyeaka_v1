@@ -1,12 +1,14 @@
 import React from "react";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DeviceKind } from "@/types/types";
+import type { DeviceType } from "@/generated/prisma/enums";
 
-const ICONS: Record<DeviceKind, React.ElementType> = {
-  phone: Smartphone,
-  laptop: Laptop,
-  tablet: Tablet,
+const ICONS: Record<DeviceType, React.ElementType> = {
+  SMARTPHONE: Smartphone,
+  LAPTOP: Laptop,
+  TABLET: Tablet,
+  DESKTOP: Laptop,
+  OTHER: Laptop,
 };
 
 const DeviceTile = ({
@@ -14,7 +16,7 @@ const DeviceTile = ({
   className,
   iconClassName,
 }: {
-  kind: DeviceKind;
+  kind: DeviceType;
   className?: string;
   iconClassName?: string;
 }) => {

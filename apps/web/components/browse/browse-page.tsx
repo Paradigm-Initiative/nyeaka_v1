@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import OrganicEdge from "@/components/layout/organic-edge";
 import { useSession } from "@/lib/auth-client";
-import { CITIES } from "@/data/marketplace-data";
-import { MockListing, MockRequest } from "@/types/types";
+import type { ListingCardData, RequestCardData } from "@/lib/queries";
+import { browseHref, type BrowseFilters } from "@/lib/browse-params";
+import { KIND_OPTIONS } from "@/lib/device-options";
 import { Button } from "../ui/button";
 import ListingCard from "../listing-card";
 import RequestCard from "../request-card";
@@ -17,18 +18,25 @@ const BrowsePage = ({
   tab,
   listings,
   requests,
+  cities,
+  total,
+  page,
+  pageCount,
+  filters,
 }: {
   tab: BrowseTab;
-  listings?: MockListing[];
-  requests?: MockRequest[];
+  listings?: ListingCardData[];
+  requests?: RequestCardData[];
+  cities: string[];
+  total: number;
+  page: number;
+  pageCount: number;
+  filters: BrowseFilters;
 }) => {
-  const [city, setCity] = useState("All cities");
+  const basePath = tab === "devices" ? "/listings" : "/requests";
+  const items = tab === "devices" ? listings ?? [] : requests ?? [];
+  const hasFilters = Boolean(filters.q || filters.type || filters.city);
   const { data: session, isPending } = useSession();
-
-  const items = useMemo(() => {
-    const source = tab === "devices" ? listings ?? [] : requests ?? [];
-    return source.filter((x) => city === "All cities" || x.city === city);
-  }, [tab, listings, requests, city]);
 
   const heading =
     tab === "devices" ? "What's available near you" : "People asking nearby";
@@ -74,45 +82,107 @@ const BrowsePage = ({
       <OrganicEdge />
 
       <div className="flex flex-col gap-4 section-wrapper">
+        <form
+          key={`${filters.q}|${filters.city}|${filters.type}`}
+          action={basePath}
+          className="flex gap-2"
+        >
+          {filters.type && <input type="hidden" name="type" value={filters.type} />}
+          <input
+            type="search"
+            name="q"
+            defaultValue={filters.q}
+            placeholder={tab === "devices" ? "Search brand or model" : "Search requests"}
+            aria-label="Search"
+            className="flex-1 bg-transparent px-3.5 border border-input rounded-sm h-11"
+          />
+          <select
+            name="city"
+            defaultValue={filters.city ?? ""}
+            aria-label="City"
+            onChange={(e) => e.currentTarget.form?.requestSubmit()}
+            className="bg-transparent px-3 border border-input rounded-sm max-w-44 h-11"
+          >
+            <option value="">All cities</option>
+            {filters.city && !cities.includes(filters.city) && (
+              <option value={filters.city}>{filters.city}</option>
+            )}
+            {cities.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <Button type="submit">Search</Button>
+        </form>
+
         <div className="flex flex-wrap gap-2">
-          {CITIES.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setCity(c)}
+          {[{ label: "All devices", value: undefined }, ...KIND_OPTIONS].map((o) => (
+            <Link
+              key={o.label}
+              href={browseHref(basePath, { ...filters, type: o.value, page: 1 })}
               className={cn(
-                "min-h-10 rounded-sm border px-3.5 py-2 font-heading text-sm font-semibold",
-                c === city
+                "min-h-10 rounded-sm border px-3.5 py-2 font-heading text-sm font-semibold capitalize",
+                o.value === filters.type
                   ? "bg-pin-gray-900 text-white border-pin-gray-900"
                   : "border-hairline-strong text-muted-foreground",
               )}
             >
-              {c}
-            </button>
+              {o.label}
+            </Link>
           ))}
         </div>
 
         <p className="text-muted-foreground text-body-sm">
-          {items.length}{" "}
-          {tab === "devices" ? "devices available" : "open requests"}
+          {total} {tab === "devices" ? "devices available" : "open requests"}
+          {hasFilters && (
+            <>
+              {" · "}
+              <Link href={basePath} className="text-link hover:underline">
+                Clear filters
+              </Link>
+            </>
+          )}
         </p>
 
         {items.length === 0 ? (
           <div className="p-14 border border-hairline-strong border-dashed rounded-lg text-body-md text-muted-foreground text-center">
-            Nothing listed in this city yet. Try another, or post a{" "}
+            {hasFilters ? "Nothing matches those filters. Try fewer filters, or post a" : "Nothing listed yet. Post a"}{" "}
             {tab === "devices" ? "request" : "listing"} so people nearby can
             see you.
           </div>
         ) : (
           <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {tab === "devices"
-              ? (items as MockListing[]).map((listing) => (
+              ? (items as ListingCardData[]).map((listing) => (
                   <ListingCard key={listing.id} listing={listing} />
                 ))
-              : (items as MockRequest[]).map((request) => (
+              : (items as RequestCardData[]).map((request) => (
                   <RequestCard key={request.id} request={request} />
                 ))}
           </div>
+        )}
+
+        {pageCount > 1 && (
+          <nav aria-label="Pagination" className="flex justify-between items-center gap-3">
+            {page > 1 ? (
+              <Button asChild variant="outline">
+                <Link href={browseHref(basePath, { ...filters, page: page - 1 })}>← Previous</Link>
+              </Button>
+            ) : (
+              <span />
+            )}
+            <span className="text-muted-foreground text-body-sm">
+              Page {page} of {pageCount}
+            </span>
+            {page < pageCount ? (
+              <Button asChild variant="outline">
+                <Link href={browseHref(basePath, { ...filters, page: page + 1 })}>Next →</Link>
+              </Button>
+            ) : (
+              <span />
+            )}
+          </nav>
         )}
 
         {!isPending && !session && (

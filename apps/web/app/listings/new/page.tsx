@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getServerSession } from "@/lib/get-session";
+import { getUserProfile } from "@/lib/queries";
+import { COUNTRIES } from "@/lib/countries";
 import PostListingForm from "@/components/post/post-listing-form";
 import SignInRequired from "@/components/auth/sign-in-required";
 
@@ -20,9 +22,11 @@ export default async function NewListingPage() {
     );
   }
 
+  const profile = await getUserProfile(session.user.id);
+
   return (
     <div className="section-wrapper">
-      <PostListingForm />
+      <PostListingForm defaultCountry={profile?.countryCode ?? ""} countries={COUNTRIES} />
     </div>
   );
 }

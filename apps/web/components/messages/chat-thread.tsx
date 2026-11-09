@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { MOCK_CHAT_THREAD } from "@/data/marketplace-data";
+import { MOCK_CHAT_THREAD } from "@/data/chat-mock";
 import { ChatMessage } from "@/types/types";
 import { Button } from "../ui/button";
 

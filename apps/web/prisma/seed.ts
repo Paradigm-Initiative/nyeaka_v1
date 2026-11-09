@@ -19,6 +19,8 @@ async function main() {
     { n: "zanele", first: "Zanele", last: "Dlamini", role: "BOTH", cc: "ZA", country: "South Africa", idv: false },
   ] as const;
 
+  const CITY = { GH: "Accra", NG: "Lagos", ZA: "Johannesburg" } as const;
+
   for (const u of users) {
     const data = {
       email: `${u.n}@seed.nyeaka.test`,
@@ -44,7 +46,7 @@ async function main() {
 
   for (const l of listings) {
     const { spec, n, donor, type, cc, ...rest } = l;
-    const data = { donorId: id(donor), deviceType: type, countryCode: cc, description: `${l.title} in ${l.condition.toLowerCase().replace("_", " ")} condition.`, photos: [], expiresAt: future, ...rest };
+    const data = { donorId: id(donor), deviceType: type, countryCode: cc, city: CITY[cc], description: `${l.title} in ${l.condition.toLowerCase().replace("_", " ")} condition.`, photos: [], expiresAt: future, ...rest };
     await prisma.listing.upsert({ where: { id: id(n) }, update: data, create: { id: id(n), ...data } });
     await prisma.deviceSpec.upsert({ where: { listingId: id(n) }, update: spec, create: { id: id(`${n}-spec`), listingId: id(n), ...spec } });
   }
@@ -56,7 +58,7 @@ async function main() {
   ] as const;
 
   for (const r of requests) {
-    const data = { requesterId: id(r.by), deviceType: r.type, title: r.title, description: r.title, countryCode: r.cc, isUrgent: r.urgent, expiresAt: future };
+    const data = { requesterId: id(r.by), deviceType: r.type, title: r.title, description: r.title, countryCode: r.cc, city: CITY[r.cc], isUrgent: r.urgent, expiresAt: future };
     await prisma.request.upsert({ where: { id: id(r.n) }, update: data, create: { id: id(r.n), ...data } });
   }
 
