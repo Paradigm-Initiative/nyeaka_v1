@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/neon-db";
 import { sendEmail } from "@/lib/email";
@@ -40,16 +41,34 @@ export const auth = betterAuth({
     resetPasswordTokenExpiresIn: 60 * 60,
     sendResetPassword: async ({ user, url }) => {
       const mail = resetPasswordEmail(user.name.split(" ")[0] || "there", url);
-      await sendEmail({ to: user.email, ...mail });
+      try {
+        await sendEmail({ to: user.email, ...mail });
+      } catch (error) {
+        // Swallowed on purpose: surfacing an error here would reveal that the
+        // address has an account.
+        console.error("Failed to send password reset email", error);
+      }
     },
   },
   emailVerification: {
     sendOnSignUp: true,
     sendOnSignIn: true,
     autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, url }) => {
+    sendVerificationEmail: async ({ user, url }, request) => {
       const mail = verificationEmail(user.name.split(" ")[0] || "there", url);
-      await sendEmail({ to: user.email, ...mail });
+      try {
+        await sendEmail({ to: user.email, ...mail });
+      } catch (error) {
+        console.error("Failed to send verification email", error);
+        // On an explicit resend, tell the user. On sign-up/sign-in the account
+        // already exists, so let the flow continue to /verify-email where they
+        // can resend.
+        if (request && new URL(request.url).pathname.endsWith("/send-verification-email")) {
+          throw new APIError("INTERNAL_SERVER_ERROR", {
+            message: "We couldn't send the email. Please try again shortly.",
+          });
+        }
+      }
     },
   },
   database: prismaAdapter(prisma, {

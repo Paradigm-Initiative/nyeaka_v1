@@ -10,11 +10,12 @@ import { toast } from "sonner";
 import FieldInput from "@/components/custom/field-input";
 import { SignInSchema, signInSchema } from "@/validations/auth-validation";
 import { useState } from "react";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = safeRedirectPath(searchParams.get("callbackUrl"));
   const [error, setError] = useState<string | null>(null);
 
   const {
