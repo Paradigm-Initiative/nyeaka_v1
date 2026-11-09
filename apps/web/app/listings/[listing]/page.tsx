@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { getServerSession } from "@/lib/get-session";
+import OwnerPanel from "@/components/detail/owner-panel";
 import type { Metadata } from "next";
 import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
@@ -12,7 +14,8 @@ export async function generateMetadata({
   params: Promise<{ listing: string }>;
 }): Promise<Metadata> {
   const { listing } = await params;
-  const data = await getListingDetail(listing);
+  const session = await getServerSession();
+  const data = await getListingDetail(listing, session?.user.id);
   return { title: data ? `${data.listing.title} - Nyeaka` : "Listing - Nyeaka" };
 }
 
@@ -22,9 +25,10 @@ const ListingDetailPage = async ({
   params: Promise<{ listing: string }>;
 }) => {
   const { listing: id } = await params;
-  const data = await getListingDetail(id);
+  const session = await getServerSession();
+  const data = await getListingDetail(id, session?.user.id);
   if (!data) notFound();
-  const { listing: item, reputation } = data;
+  const { listing: item, reputation, isOwner, state } = data;
 
   const extras = [
     item.spec?.hasCharger && "Charger",
@@ -51,7 +55,11 @@ const ListingDetailPage = async ({
       backHref="/listings"
       backLabel="← Back to browsing"
     >
-      <ContactForm mode="request" who={item.donor.firstName} />
+      {isOwner ? (
+        <OwnerPanel kind="listing" id={item.id} state={state} expiresAt={item.expiresAt} />
+      ) : (
+        <ContactForm mode="request" who={item.donor.firstName} />
+      )}
     </DetailLayout>
   );
 };

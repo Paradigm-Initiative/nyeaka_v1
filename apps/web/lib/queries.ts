@@ -1,6 +1,7 @@
 import { prisma } from "@/neon-db";
 import type { Prisma } from "@/generated/prisma/client";
 import { PAGE_SIZE, type BrowseFilters } from "./browse-params";
+import { postState } from "./lifecycle";
 
 // Only live posts are public: ACTIVE and not past expiresAt.
 const live = () => ({ status: "ACTIVE" as const, expiresAt: { gt: new Date() } });
@@ -123,29 +124,36 @@ export async function getReputation(userId: string) {
   return { rating: ratings._avg.score, ratingCount: ratings._count, handoffs };
 }
 
-export async function getListingDetail(id: string) {
-  const listing = await prisma.listing.findFirst({
-    where: { id, status: { in: ["ACTIVE", "MATCHED"] } },
+/** Public can see live (or matched) posts; the owner can always see their own, in any state. */
+export async function getListingDetail(id: string, viewerId?: string) {
+  const listing = await prisma.listing.findUnique({
+    where: { id },
     include: { spec: true, donor: { select: { id: true, firstName: true } } },
   });
   if (!listing) return null;
-  return { listing, reputation: await getReputation(listing.donorId) };
+  const isOwner = viewerId === listing.donorId;
+  const state = postState(listing.status, listing.expiresAt);
+  if (!isOwner && state !== "ACTIVE" && state !== "MATCHED") return null;
+  return { listing, isOwner, state, reputation: await getReputation(listing.donorId) };
 }
 
-export async function getRequestDetail(id: string) {
-  const request = await prisma.request.findFirst({
-    where: { id, status: { in: ["ACTIVE", "MATCHED"] } },
+export async function getRequestDetail(id: string, viewerId?: string) {
+  const request = await prisma.request.findUnique({
+    where: { id },
     include: { requester: { select: { id: true, firstName: true } } },
   });
   if (!request) return null;
-  return { request, reputation: await getReputation(request.requesterId) };
+  const isOwner = viewerId === request.requesterId;
+  const state = postState(request.status, request.expiresAt);
+  if (!isOwner && state !== "ACTIVE" && state !== "MATCHED") return null;
+  return { request, isOwner, state, reputation: await getReputation(request.requesterId) };
 }
 
 export function getMyListings(userId: string) {
   return prisma.listing.findMany({
     where: { donorId: userId },
     orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, city: true, area: true, condition: true, status: true, createdAt: true, _count: { select: { offers: true } } },
+    select: { id: true, title: true, city: true, area: true, condition: true, status: true, expiresAt: true, createdAt: true, _count: { select: { offers: true } } },
   });
 }
 
@@ -153,7 +161,7 @@ export function getMyRequests(userId: string) {
   return prisma.request.findMany({
     where: { requesterId: userId },
     orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, city: true, area: true, minCondition: true, status: true, createdAt: true, _count: { select: { offers: true } } },
+    select: { id: true, title: true, city: true, area: true, minCondition: true, status: true, expiresAt: true, createdAt: true, _count: { select: { offers: true } } },
   });
 }
 
@@ -178,4 +186,16 @@ export function getUserProfile(userId: string) {
     where: { id: userId },
     select: { countryCode: true, idVerified: true },
   });
+}
+
+/** Full record for the edit form. Caller must still check ownership. */
+export function getListingForEdit(id: string) {
+  return prisma.listing.findUnique({
+    where: { id },
+    include: { spec: { select: { hasCharger: true, hasKeyboard: true } } },
+  });
+}
+
+export function getRequestForEdit(id: string) {
+  return prisma.request.findUnique({ where: { id } });
 }

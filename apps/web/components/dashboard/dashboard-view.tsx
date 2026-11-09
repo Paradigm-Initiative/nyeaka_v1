@@ -5,7 +5,18 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { getIncomingOffers, getMyListings, getMyRequests, getReputation } from "@/lib/queries";
 import { conditionLabel } from "@/lib/device-options";
+import { postState, type PostState } from "@/lib/lifecycle";
+import PostActions from "../post/post-actions";
 import { placeLabel, timeAgo } from "@/lib/format";
+
+const STATE_BADGE: Record<PostState, { label: string; cls: string }> = {
+  ACTIVE: { label: "Live", cls: "badge-green" },
+  EXPIRED: { label: "Expired", cls: "badge-orange" },
+  CLOSED: { label: "Closed", cls: "badge-orange" },
+  MATCHED: { label: "Matched", cls: "badge-green" },
+};
+
+const plural = (n: number) => `${n} offer${n === 1 ? "" : "s"}`;
 
 type Props = {
   firstName: string;
@@ -118,17 +129,24 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
           <div className="flex flex-col gap-3">
             <h2 className="text-heading-3">Your listings</h2>
             <div className="gap-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {listings.map((l) => (
-                <Link key={l.id} href={`/listings/${l.id}`} className="flex flex-col gap-2 p-4 border rounded-lg">
-                  <span className="font-heading font-semibold text-heading-5">{l.title}</span>
-                  <span className="text-muted-foreground text-body-sm">
-                    {placeLabel(l.city, l.area)} · {conditionLabel(l.condition)} · listed {timeAgo(l.createdAt)}
-                  </span>
-                  <span className={cn("self-start badge", l.status === "ACTIVE" ? "badge-green" : "badge-orange")}>
-                    {l.status === "ACTIVE" ? `${l._count.offers} offer${l._count.offers === 1 ? "" : "s"}` : l.status.toLowerCase()}
-                  </span>
-                </Link>
-              ))}
+              {listings.map((l) => {
+                const state = postState(l.status, l.expiresAt);
+                return (
+                  <div key={l.id} className="flex flex-col gap-2 p-4 border rounded-lg">
+                    <Link href={`/listings/${l.id}`} className="font-heading font-semibold text-heading-5 hover:underline">
+                      {l.title}
+                    </Link>
+                    <span className="text-muted-foreground text-body-sm">
+                      {placeLabel(l.city, l.area)} · {conditionLabel(l.condition)} · listed {timeAgo(l.createdAt)}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      <span className={cn("badge", STATE_BADGE[state].cls)}>{STATE_BADGE[state].label}</span>
+                      {state === "ACTIVE" && <span className="badge badge-orange">{plural(l._count.offers)}</span>}
+                    </div>
+                    <PostActions kind="listing" id={l.id} state={state} />
+                  </div>
+                );
+              })}
               <Link
                 href="/listings/new"
                 className="flex flex-col justify-center gap-1.5 p-4 border border-hairline-strong border-dashed rounded-lg min-h-27"
@@ -145,17 +163,24 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
         <div className="flex flex-col gap-3">
           <h2 className="text-heading-3">Your requests</h2>
           <div className="flex flex-col gap-3">
-            {requests.map((r) => (
-              <Link key={r.id} href={`/requests/${r.id}`} className="flex flex-col gap-2 p-4 border rounded-lg">
-                <span className="font-heading font-semibold text-heading-5">{r.title}</span>
-                <span className="text-muted-foreground text-body-sm">
-                  {r.minCondition ? `${conditionLabel(r.minCondition)} or better` : "Any condition"} · {placeLabel(r.city, r.area)} · posted {timeAgo(r.createdAt)}
-                </span>
-                <span className={cn("self-start badge", r.status === "ACTIVE" ? "badge-green" : "badge-orange")}>
-                  {r.status === "ACTIVE" ? `${r._count.offers} offer${r._count.offers === 1 ? "" : "s"}` : r.status.toLowerCase()}
-                </span>
-              </Link>
-            ))}
+            {requests.map((r) => {
+              const state = postState(r.status, r.expiresAt);
+              return (
+                <div key={r.id} className="flex flex-col gap-2 p-4 border rounded-lg">
+                  <Link href={`/requests/${r.id}`} className="font-heading font-semibold text-heading-5 hover:underline">
+                    {r.title}
+                  </Link>
+                  <span className="text-muted-foreground text-body-sm">
+                    {r.minCondition ? `${conditionLabel(r.minCondition)} or better` : "Any condition"} · {placeLabel(r.city, r.area)} · posted {timeAgo(r.createdAt)}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <span className={cn("badge", STATE_BADGE[state].cls)}>{STATE_BADGE[state].label}</span>
+                    {state === "ACTIVE" && <span className="badge badge-orange">{plural(r._count.offers)}</span>}
+                  </div>
+                  <PostActions kind="request" id={r.id} state={state} />
+                </div>
+              );
+            })}
             <Link
               href="/requests/new"
               className="flex flex-col justify-center gap-1.5 p-4 border border-hairline-strong border-dashed rounded-lg min-h-27"

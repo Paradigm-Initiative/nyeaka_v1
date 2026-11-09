@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -10,7 +11,7 @@ import {
   type CreateRequestData,
   type CreateRequestInput,
 } from "@/validations/post-validation";
-import { createRequestAction } from "@/actions/requests";
+import { createRequestAction, updateRequestAction } from "@/actions/requests";
 import { CONDITION_OPTIONS, KIND_OPTIONS } from "@/lib/device-options";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -22,10 +23,14 @@ import FormError from "./form-error";
 const PostRequestForm = ({
   defaultCountry = "",
   countries,
+  editing,
 }: {
   defaultCountry?: string;
   countries: CountryOption[];
+  /** When set, the form edits this request instead of creating one. */
+  editing?: { id: string; values: CreateRequestInput };
 }) => {
+  const router = useRouter();
   const [posted, setPosted] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -37,7 +42,7 @@ const PostRequestForm = ({
     formState: { errors, isSubmitting },
   } = useForm<CreateRequestInput, unknown, CreateRequestData>({
     resolver: zodResolver(createRequestSchema),
-    defaultValues: {
+    defaultValues: editing?.values ?? {
       deviceType: "SMARTPHONE",
       minCondition: "GOOD",
       title: "",
@@ -54,7 +59,15 @@ const PostRequestForm = ({
 
   const onSubmit = async (values: CreateRequestData) => {
     setFormError(null);
-    const res = await createRequestAction(values);
+    const res = editing
+      ? await updateRequestAction(editing.id, values)
+      : await createRequestAction(values);
+    if (res.ok && editing) {
+      toast.success("Request updated");
+      router.push(`/requests/${editing.id}`);
+      router.refresh();
+      return;
+    }
     if (res.ok) {
       setPosted(true);
       toast.success("Your request is live");
@@ -95,7 +108,7 @@ const PostRequestForm = ({
       className="flex flex-col gap-5 mx-auto py-8 max-w-2xl"
     >
       <div className="flex flex-col gap-2">
-        <h1 className="text-heading-2">Ask for a device</h1>
+        <h1 className="text-heading-2">{editing ? "Edit your request" : "Ask for a device"}</h1>
         <p className="text-muted-foreground text-body-md">
           Donors read requests before they choose. Plain and specific works
           better than urgent.
@@ -179,6 +192,7 @@ const PostRequestForm = ({
         </div>
       </div>
 
+      {!editing && (
       <div className="flex flex-col gap-1.5">
         <label className="flex items-start gap-2.5 text-muted-foreground text-body-sm">
           <input
@@ -194,10 +208,12 @@ const PostRequestForm = ({
         <FormError message={errors.pledge?.message} />
       </div>
 
+      )}
+
       <FormError message={formError ?? undefined} />
 
       <Button type="submit" size="lg" className="self-start" disabled={isSubmitting}>
-        {isSubmitting ? "Posting…" : "Post request"}
+        {isSubmitting ? (editing ? "Saving…" : "Posting…") : editing ? "Save changes" : "Post request"}
       </Button>
     </form>
   );

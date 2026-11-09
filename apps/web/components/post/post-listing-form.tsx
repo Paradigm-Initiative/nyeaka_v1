@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -10,7 +11,7 @@ import {
   type CreateListingData,
   type CreateListingInput,
 } from "@/validations/post-validation";
-import { createListingAction } from "@/actions/listings";
+import { createListingAction, updateListingAction } from "@/actions/listings";
 import { CONDITION_OPTIONS, KIND_OPTIONS } from "@/lib/device-options";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -28,10 +29,14 @@ const EXTRAS = [
 const PostListingForm = ({
   defaultCountry = "",
   countries,
+  editing,
 }: {
   defaultCountry?: string;
   countries: CountryOption[];
+  /** When set, the form edits this listing instead of creating one. */
+  editing?: { id: string; values: CreateListingInput };
 }) => {
+  const router = useRouter();
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
@@ -44,7 +49,7 @@ const PostListingForm = ({
     formState: { errors, isSubmitting },
   } = useForm<CreateListingInput, unknown, CreateListingData>({
     resolver: zodResolver(createListingSchema),
-    defaultValues: {
+    defaultValues: editing?.values ?? {
       deviceType: "SMARTPHONE",
       brand: "",
       model: "",
@@ -60,7 +65,15 @@ const PostListingForm = ({
 
   const onSubmit = async (values: CreateListingData) => {
     setFormError(null);
-    const res = await createListingAction(values);
+    const res = editing
+      ? await updateListingAction(editing.id, values)
+      : await createListingAction(values);
+    if (res.ok && editing) {
+      toast.success("Listing updated");
+      router.push(`/listings/${editing.id}`);
+      router.refresh();
+      return;
+    }
     if (res.ok) {
       setCreatedId(res.data.id);
       toast.success("Your listing is live");
@@ -101,7 +114,7 @@ const PostListingForm = ({
       className="flex flex-col gap-5 mx-auto py-8 max-w-2xl"
     >
       <div className="flex flex-col gap-2">
-        <h1 className="text-heading-2">List a device</h1>
+        <h1 className="text-heading-2">{editing ? "Edit your listing" : "List a device"}</h1>
         <p className="text-muted-foreground text-body-md">
           Be honest about the condition — a phone described accurately is
           claimed faster than one oversold.
@@ -232,7 +245,7 @@ const PostListingForm = ({
       <FormError message={formError ?? undefined} />
 
       <Button type="submit" size="lg" className="self-start" disabled={isSubmitting || uploadingPhotos}>
-        {isSubmitting ? "Publishing…" : uploadingPhotos ? "Uploading photos…" : "Publish listing"}
+        {isSubmitting ? (editing ? "Saving…" : "Publishing…") : uploadingPhotos ? "Uploading photos…" : editing ? "Save changes" : "Publish listing"}
       </Button>
     </form>
   );
