@@ -38,6 +38,11 @@ export function LoginForm() {
       });
 
       if (error) {
+        if (error.status === 403) {
+          // Email not verified: Better Auth re-sends the link on sign-in.
+          router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+          return;
+        }
         setError(error.message || "Something went wrong");
       } else {
         toast.success("Logged in successfully");

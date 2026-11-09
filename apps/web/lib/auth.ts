@@ -1,7 +1,8 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/neon-db";
-import { emailOTP } from "better-auth/plugins";
+import { sendEmail } from "@/lib/email";
+import { resetPasswordEmail, verificationEmail } from "@/lib/email-templates";
 
 // const prisma = new PrismaClient();
 export const auth = betterAuth({
@@ -35,6 +36,21 @@ export const auth = betterAuth({
   // secret: process.env.BETTER_AUTH_SECRET,
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    resetPasswordTokenExpiresIn: 60 * 60,
+    sendResetPassword: async ({ user, url }) => {
+      const mail = resetPasswordEmail(user.name.split(" ")[0] || "there", url);
+      await sendEmail({ to: user.email, ...mail });
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      const mail = verificationEmail(user.name.split(" ")[0] || "there", url);
+      await sendEmail({ to: user.email, ...mail });
+    },
   },
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -42,20 +58,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
     "https://nyeaka-v1.vercel.app",
+    "https://nyeaka.paradigmhq.org"
     // "https://your-production-domain.com",
-  ],
-
-  plugins: [
-    emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        if (type === "sign-in") {
-          // Send the OTP for sign in
-        } else if (type === "email-verification") {
-          // Send the OTP for email verification
-        } else {
-          // Send the OTP for password reset
-        }
-      },
-    }),
   ],
 });

@@ -55,8 +55,8 @@ export function SignupForm() {
     if (error) {
       setError(error.message || "Something went wrong");
     } else {
-      toast.success("Account created successfully");
-      router.push("/");
+      toast.success("Account created. Check your email to verify it.");
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     }
   };
 

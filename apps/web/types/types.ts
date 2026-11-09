@@ -48,3 +48,12 @@ export interface ChatMessage {
   text: string;
   time: string;
 }
+
+
+// email function params types
+export interface SendEmailParams {
+  from?: string;
+  to: string;
+  subject: string;
+  html: string;
+}
