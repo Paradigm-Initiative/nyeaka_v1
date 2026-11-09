@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import ChipPicker from "./chip-picker";
+import PhotoUploader from "./photo-uploader";
 import CountrySelect, { type CountryOption } from "./country-select";
 import FormError from "./form-error";
 
@@ -33,6 +34,7 @@ const PostListingForm = ({
 }) => {
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
 
   const {
     register,
@@ -164,22 +166,18 @@ const PostListingForm = ({
         <FormError message={errors.description?.message} />
       </div>
 
-      <div className="flex flex-col gap-2.5">
-        <span className="font-heading font-semibold text-heading-6">Photos</span>
-        <div className="gap-3 grid grid-cols-2 sm:grid-cols-3">
-          {["Add photo", "Screen on", "Any damage"].map((t) => (
-            <div
-              key={t}
-              className="flex justify-center items-center border border-hairline-strong border-dashed rounded-sm h-28 text-muted-foreground text-body-sm"
-            >
-              {t}
-            </div>
-          ))}
-        </div>
-        <span className="text-muted-foreground text-body-sm">
-          Photo upload is coming next. Three photos is plenty, damage included.
-        </span>
-      </div>
+      <Controller
+        control={control}
+        name="photos"
+        render={({ field }) => (
+          <PhotoUploader
+            value={field.value ?? []}
+            onChange={field.onChange}
+            onBusyChange={setUploadingPhotos}
+          />
+        )}
+      />
+      <FormError message={errors.photos?.message ?? (errors.photos as { root?: { message?: string } } | undefined)?.root?.message} />
 
       <div className="flex flex-col gap-2.5">
         <span className="font-heading font-semibold text-heading-6">Comes with</span>
@@ -233,8 +231,8 @@ const PostListingForm = ({
 
       <FormError message={formError ?? undefined} />
 
-      <Button type="submit" size="lg" className="self-start" disabled={isSubmitting}>
-        {isSubmitting ? "Publishing…" : "Publish listing"}
+      <Button type="submit" size="lg" className="self-start" disabled={isSubmitting || uploadingPhotos}>
+        {isSubmitting ? "Publishing…" : uploadingPhotos ? "Uploading photos…" : "Publish listing"}
       </Button>
     </form>
   );

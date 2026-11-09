@@ -1,10 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import DeviceTile from "../device-tile";
 import type { DeviceType } from "@/generated/prisma/enums";
 
 const DetailLayout = ({
   kind,
+  photos = [],
   eyebrow,
   title,
   place,
@@ -19,6 +21,7 @@ const DetailLayout = ({
   children,
 }: {
   kind: DeviceType;
+  photos?: string[];
   eyebrow: string;
   title: string;
   place: string;
@@ -44,12 +47,31 @@ const DetailLayout = ({
 
         <div className="items-start gap-8 grid grid-cols-1 lg:grid-cols-2">
           <div className="flex flex-col gap-3">
-            <DeviceTile kind={kind} className="h-80" iconClassName="size-24" />
-            <div className="gap-3 grid grid-cols-3">
-              <DeviceTile kind={kind} className="h-22" />
-              <DeviceTile kind={kind} className="h-22" />
-              <DeviceTile kind={kind} className="h-22" />
-            </div>
+            {photos.length > 0 ? (
+              <>
+                <div className="relative rounded-lg h-80 overflow-hidden">
+                  <Image src={photos[0]} alt={title} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+                </div>
+                {photos.length > 1 && (
+                  <div className="gap-3 grid grid-cols-3">
+                    {photos.slice(1).map((url) => (
+                      <div key={url} className="relative rounded-lg h-22 overflow-hidden">
+                        <Image src={url} alt="" fill sizes="200px" className="object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <DeviceTile kind={kind} className="h-80" iconClassName="size-24" />
+                <div className="gap-3 grid grid-cols-3">
+                  <DeviceTile kind={kind} className="h-22" />
+                  <DeviceTile kind={kind} className="h-22" />
+                  <DeviceTile kind={kind} className="h-22" />
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex flex-col gap-4">

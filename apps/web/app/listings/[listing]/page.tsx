@@ -34,6 +34,7 @@ const ListingDetailPage = async ({
   return (
     <DetailLayout
       kind={item.deviceType}
+      photos={item.photos}
       eyebrow={`${conditionLabel(item.condition)} · ${kindLabel(item.deviceType)}`}
       title={item.title}
       place={placeLabel(item.city, item.area)}
