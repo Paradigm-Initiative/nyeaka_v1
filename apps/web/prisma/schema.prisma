@@ -147,6 +147,7 @@ model Request {
   preferredBrand String?
   isUrgent       Boolean            @default(false)
   countryCode    String
+  city           String
   status         RequestOfferStatus @default(ACTIVE)
   expiresAt      DateTime
   createdAt      DateTime           @default(now())
@@ -195,6 +196,7 @@ model Listing {
   condition   Condition
   photos      String[]
   countryCode String
+  city        String
   status      RequestOfferStatus @default(ACTIVE)
   expiresAt   DateTime
   createdAt   DateTime           @default(now())
