@@ -11,9 +11,7 @@ import ChipPicker from "./chip-picker";
 
 const PostRequestForm = () => {
   const [kind, setKind] = useState<DeviceKind>("phone");
-  const [condition, setCondition] = useState<DeviceCondition>(
-    DEVICE_CONDITIONS[1],
-  );
+  const [condition, setCondition] = useState<DeviceCondition>("Good");
   const [note, setNote] = useState("");
   const [city, setCity] = useState("");
   const [area, setArea] = useState("");

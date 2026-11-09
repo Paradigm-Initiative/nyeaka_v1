@@ -42,7 +42,7 @@ export const LISTINGS: MockListing[] = [
     kind: "tablet",
     title: "iPad Air 2",
     brand: "Apple",
-    condition: "Needs repair",
+    condition: "Fair",
     city: "Ibadan",
     area: "Bodija",
     extras: ["Charger", "Earphones"],
@@ -170,10 +170,10 @@ export const CITIES = [
 
 export const DEVICE_KINDS: DeviceKind[] = ["phone", "tablet", "laptop"];
 export const DEVICE_CONDITIONS: DeviceCondition[] = [
+  "New",
   "Like new",
   "Good",
   "Fair",
-  "Needs repair",
 ];
 export const LISTING_EXTRAS = ["Charger", "Earphones", "Keyboard"];
 

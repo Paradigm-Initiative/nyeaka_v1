@@ -43,7 +43,49 @@ enum Condition {
   LIKE_NEW
   GOOD
   FAIR
-  POOR
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
+
+enum MatchStatus {
+  ACTIVE
+  HANDED_OVER
+  CANCELLED
+}
+
+enum ReportTargetType {
+  USER
+  LISTING
+  REQUEST
+  MESSAGE
+}
+
+enum ReportReason {
+  SPAM
+  SCAM
+  INAPPROPRIATE
+  HARASSMENT
+  MISREPRESENTED_DEVICE
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWED
+  ACTIONED
+  DISMISSED
+}
+
+enum IdDocumentType {
+  NATIONAL_ID
+  PASSPORT
+  DRIVERS_LICENSE
+  VOTERS_CARD
 }
 
 enum OperatingSystem {
@@ -81,6 +123,17 @@ model User {
   sessions Session[]
   accounts Account[]
 
+  donorMatches     Match[]          @relation("MatchDonor")
+  requesterMatches Match[]          @relation("MatchRequester")
+  sentMessages     Message[]
+  ratingsGiven     Rating[]         @relation("RatingRater")
+  ratingsReceived  Rating[]         @relation("RatingRatee")
+  reportsFiled     Report[]         @relation("ReportReporter")
+  reportsAgainst   Report[]         @relation("ReportTargetUser")
+  blocksMade       Block[]          @relation("BlockBlocker")
+  blocksReceived   Block[]          @relation("BlockBlocked")
+  idVerifications  IdVerification[]
+
   @@map("user")
 }
 
@@ -99,7 +152,13 @@ model Request {
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
-  spec RequestSpec?
+  spec    RequestSpec?
+  offers  Offer[]
+  matches Match[]
+  reports Report[]
+
+  @@index([requesterId])
+  @@index([status])
 }
 
 model RequestSpec {
@@ -141,7 +200,13 @@ model Listing {
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
-  spec DeviceSpec?
+  spec    DeviceSpec?
+  offers  Offer[]
+  matches Match[]
+  reports Report[]
+
+  @@index([donorId])
+  @@index([status])
 }
 
 model DeviceSpec {
@@ -213,4 +278,141 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Offer {
+  id        String      @id @default(uuid(7))
+  listingId String
+  listing   Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  requestId String
+  request   Request     @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  message   String?
+  status    OfferStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  match Match?
+
+  @@unique([listingId, requestId])
+  @@index([requestId])
+  @@index([status])
+}
+
+model Match {
+  id           String      @id @default(uuid(7))
+  offerId      String      @unique
+  offer        Offer       @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  donorId      String
+  donor        User        @relation("MatchDonor", fields: [donorId], references: [id])
+  requesterId  String
+  requester    User        @relation("MatchRequester", fields: [requesterId], references: [id])
+  listingId    String
+  listing      Listing     @relation(fields: [listingId], references: [id])
+  requestId    String
+  request      Request     @relation(fields: [requestId], references: [id])
+  status       MatchStatus @default(ACTIVE)
+  handedOverAt DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  conversation Conversation?
+  ratings      Rating[]
+
+  @@index([donorId])
+  @@index([requesterId])
+  @@index([status])
+}
+
+model Conversation {
+  id        String   @id @default(uuid(7))
+  matchId   String   @unique
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+}
+
+model Message {
+  id             String       @id @default(uuid(7))
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
+  body           String
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  reports Report[]
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+}
+
+model Rating {
+  id        String   @id @default(uuid(7))
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  raterId   String
+  rater     User     @relation("RatingRater", fields: [raterId], references: [id])
+  rateeId   String
+  ratee     User     @relation("RatingRatee", fields: [rateeId], references: [id])
+  score     Int // 1-5, enforced in the app and by a CHECK constraint
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([matchId, raterId])
+  @@index([rateeId])
+}
+
+model Report {
+  id              String           @id @default(uuid(7))
+  reporterId      String
+  reporter        User             @relation("ReportReporter", fields: [reporterId], references: [id])
+  targetType      ReportTargetType
+  targetUserId    String?
+  targetUser      User?            @relation("ReportTargetUser", fields: [targetUserId], references: [id])
+  targetListingId String?
+  targetListing   Listing?         @relation(fields: [targetListingId], references: [id], onDelete: SetNull)
+  targetRequestId String?
+  targetRequest   Request?         @relation(fields: [targetRequestId], references: [id], onDelete: SetNull)
+  targetMessageId String?
+  targetMessage   Message?         @relation(fields: [targetMessageId], references: [id], onDelete: SetNull)
+  reason          ReportReason
+  details         String?
+  status          ReportStatus     @default(OPEN)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([status])
+  @@index([reporterId])
+}
+
+model Block {
+  id        String   @id @default(uuid(7))
+  blockerId String
+  blocker   User     @relation("BlockBlocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId String
+  blocked   User     @relation("BlockBlocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+model IdVerification {
+  id              String             @id @default(uuid(7))
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documentType    IdDocumentType
+  providerRef     String? // reference at the verification provider; no ID images are stored here
+  status          VerificationStatus @default(PENDING)
+  rejectionReason String?
+  submittedAt     DateTime?
+  reviewedAt      DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }

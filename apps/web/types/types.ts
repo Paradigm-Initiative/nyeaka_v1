@@ -11,7 +11,7 @@ export interface HowItWorksStep {
 }
 
 export type DeviceKind = "phone" | "laptop" | "tablet";
-export type DeviceCondition = "Like new" | "Good" | "Fair" | "Needs repair";
+export type DeviceCondition = "New" | "Like new" | "Good" | "Fair";
 
 export interface MockListing {
   id: string;
