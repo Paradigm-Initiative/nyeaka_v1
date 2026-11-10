@@ -135,6 +135,8 @@ model User {
   blocksMade       Block[]          @relation("BlockBlocker")
   blocksReceived   Block[]          @relation("BlockBlocked")
   idVerifications  IdVerification[]
+  offersAsDonor    Offer[]          @relation("OfferDonor")
+  offersInitiated  Offer[]          @relation("OfferInitiator")
 
   @@map("user")
 }
@@ -299,6 +301,14 @@ model Offer {
   listing   Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
   requestId String
   request   Request     @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  // Denormalised from listing.donorId so "one PENDING offer per donor and request"
+  // can be a partial unique index (see the offer_donor_and_match_handoff migration).
+  donorId       String
+  donor         User   @relation("OfferDonor", fields: [donorId], references: [id])
+  // Who sent the offer: the donor (offering a device) or the requester (asking for one).
+  // The other party is the one who can accept or decline.
+  initiatedById String
+  initiatedBy   User   @relation("OfferInitiator", fields: [initiatedById], references: [id])
   message   String?
   status    OfferStatus @default(PENDING)
   createdAt DateTime    @default(now())
@@ -308,6 +318,7 @@ model Offer {
 
   @@unique([listingId, requestId])
   @@index([requestId])
+  @@index([donorId])
   @@index([status])
 }
 
@@ -324,6 +335,12 @@ model Match {
   requestId    String
   request      Request     @relation(fields: [requestId], references: [id])
   status       MatchStatus @default(ACTIVE)
+  // Each side opts in to sharing their phone number with the other.
+  donorSharedPhone       Boolean   @default(false)
+  requesterSharedPhone   Boolean   @default(false)
+  // Handoff is complete (HANDED_OVER) once both sides have confirmed.
+  donorConfirmedAt       DateTime?
+  requesterConfirmedAt   DateTime?
   handedOverAt DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt

@@ -64,12 +64,12 @@ async function main() {
 
   // Offers: accepted (l1->r1), pending (l2->r2), declined (l3->r2)
   const offers = [
-    { n: "o1", l: "l1", r: "r1", status: "ACCEPTED", message: "This Latitude should be great for coding." },
-    { n: "o2", l: "l2", r: "r2", status: "PENDING", message: null },
-    { n: "o3", l: "l3", r: "r2", status: "DECLINED", message: null },
+    { n: "o1", l: "l1", d: "amara", r: "r1", status: "ACCEPTED", message: "This Latitude should be great for coding." },
+    { n: "o2", l: "l2", d: "kwame", r: "r2", status: "PENDING", message: null },
+    { n: "o3", l: "l3", d: "amara", r: "r2", status: "DECLINED", message: null },
   ] as const;
   for (const o of offers) {
-    const data = { listingId: id(o.l), requestId: id(o.r), status: o.status, message: o.message };
+    const data = { listingId: id(o.l), requestId: id(o.r), donorId: id(o.d), initiatedById: id(o.d), status: o.status, message: o.message };
     await prisma.offer.upsert({ where: { id: id(o.n) }, update: data, create: { id: id(o.n), ...data } });
   }
 
