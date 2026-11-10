@@ -6,7 +6,8 @@ import { SendEmailParams } from "../types/types";
 let client: SendByte | undefined;
 const sendByte = () => (client ??= new SendByte(process.env.SENDBYTE_KEY as string));
 
-const DEFAULT_FROM = process.env.EMAIL_FROM ?? "Nyeaka <no-reply@nyeaka.org>";
+const DEFAULT_FROM = process.env.EMAIL_FROM ?? "Nyeaka <no-reply@nyeaka.org>"
+
 
 export async function sendEmail({
   from = DEFAULT_FROM,
