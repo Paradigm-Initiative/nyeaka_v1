@@ -65,16 +65,18 @@ const RatingForm = ({
       </span>
       <div className="flex gap-2" role="group" aria-label="Star rating">
         {[1, 2, 3, 4, 5].map((n) => (
-          <button
+          <Button
             key={n}
             type="button"
+            variant="ghost"
+            size="icon-lg"
             aria-label={`${n} star${n === 1 ? "" : "s"}`}
             aria-pressed={n <= score}
             onClick={() => setScore(n)}
             className={cn("size-11 text-3xl leading-none", n <= score ? "text-pin-orange-600" : "text-pin-gray-300")}
           >
             ★
-          </button>
+          </Button>
         ))}
       </div>
       <Textarea

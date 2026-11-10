@@ -4,6 +4,8 @@ import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import FormError from "../post/form-error";
 import { sharePhoneAction } from "@/actions/lifecycle";
 import type { Thread } from "@/lib/messages";
@@ -87,18 +89,21 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
           }}
           className="flex flex-col gap-2"
         >
-          <label className="flex flex-col gap-1.5 text-body-sm">
-            <span className="font-semibold">Your phone number</span>
-            <input
+          <div className="flex flex-col gap-1.5 text-body-sm">
+            <Label htmlFor="phone-number" className="font-semibold text-body-sm leading-normal">
+              Your phone number
+            </Label>
+            <Input
+              id="phone-number"
               type="tel"
               required
               autoFocus
               value={number}
               onChange={(e) => setNumber(e.target.value)}
               placeholder="+234 806 412 0088"
-              className="bg-input/50 px-4 rounded-sm h-12 text-base"
+              className="rounded-sm h-12"
             />
-          </label>
+          </div>
           <FormError message={error} />
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={pending || !number.trim()}>

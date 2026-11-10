@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import FormError from "../post/form-error";
 import WithdrawButton from "../offers/withdraw-button";
 import { createOfferAction } from "@/actions/offers";
@@ -156,24 +159,25 @@ const ContactForm = ({
           {mode === "request" ? `Tell ${who} why you need it` : `Offer ${who} a device`}
         </span>
 
-        <label className="flex flex-col gap-1.5 text-body-sm">
-          <span className="font-semibold">
+        <div className="flex flex-col gap-1.5 text-body-sm">
+          <Label htmlFor="choice" className="font-semibold text-body-sm leading-normal">
             {mode === "request" ? "Which of your requests is this for?" : "Which device are you offering?"}
-          </span>
-          <select
-            value={choice}
-            onChange={(e) => setChoice(e.target.value)}
-            className="bg-background px-3 border rounded-sm min-h-11"
-          >
-            {context.options.map((o) => (
-              <option key={o.id} value={o.id} disabled={!!o.blocked}>
-                {o.title} · {o.place}
-                {o.blocked ? ` — ${o.blocked}` : ""}
-              </option>
-            ))}
-          </select>
+          </Label>
+          <Select value={choice} onValueChange={setChoice}>
+            <SelectTrigger id="choice" className="rounded-sm min-h-11">
+              <SelectValue placeholder="Choose one" />
+            </SelectTrigger>
+            <SelectContent>
+              {context.options.map((o) => (
+                <SelectItem key={o.id} value={o.id} disabled={!!o.blocked}>
+                  {o.title} · {o.place}
+                  {o.blocked ? ` — ${o.blocked}` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <FormError message={fieldErrors.listingId ?? fieldErrors.requestId} />
-        </label>
+        </div>
 
         <Textarea
           required
@@ -189,19 +193,22 @@ const ContactForm = ({
         <FormError message={fieldErrors.message} />
 
         {mode === "request" ? (
-          <label className="flex items-start gap-2.5 text-muted-foreground text-body-sm">
-            <input
-              type="checkbox"
+          <Label
+            htmlFor="pledge"
+            className="items-start gap-2.5 font-normal text-muted-foreground text-body-sm leading-normal"
+          >
+            <Checkbox
+              id="pledge"
               required
               checked={pledge}
-              onChange={(e) => setPledge(e.target.checked)}
-              className="accent-pin-green-600 mt-0.5 size-4.5"
+              onCheckedChange={(v) => setPledge(v === true)}
+              className="mt-0.5"
             />
             <span>
               I am asking for this device for my own use and I will not resell
               it. {who} can see this pledge on my request.
             </span>
-          </label>
+          </Label>
         ) : (
           <div className="bg-surface-feature p-3 rounded-lg text-body-sm">
             {who} has signed the no-resale pledge. If they accept your offer,

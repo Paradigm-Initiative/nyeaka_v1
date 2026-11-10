@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import OrganicEdge from "@/components/layout/organic-edge";
 import { useSession } from "@/lib/auth-client";
@@ -9,10 +10,15 @@ import type { ListingCardData, RequestCardData } from "@/lib/queries";
 import { browseHref, type BrowseFilters } from "@/lib/browse-params";
 import { KIND_OPTIONS } from "@/lib/device-options";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import ListingCard from "../listing-card";
 import RequestCard from "../request-card";
 
 type BrowseTab = "devices" | "requests";
+
+// Radix Select items cannot have an empty value, so "no city filter" gets a sentinel.
+const ALL_CITIES = "__all__";
 
 const BrowsePage = ({
   tab,
@@ -37,6 +43,16 @@ const BrowsePage = ({
   const items = tab === "devices" ? listings ?? [] : requests ?? [];
   const hasFilters = Boolean(filters.q || filters.type || filters.city);
   const { data: session, isPending } = useSession();
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // The search box and city share one GET form; picking a city applies it straight away.
+  const pickCity = (value: string) => {
+    const q = String(new FormData(formRef.current ?? undefined).get("q") ?? "").trim();
+    router.push(
+      browseHref(basePath, { ...filters, q, city: value === ALL_CITIES ? undefined : value, page: 1 }),
+    );
+  };
 
   const heading =
     tab === "devices" ? "What's available near you" : "People asking nearby";
@@ -83,37 +99,38 @@ const BrowsePage = ({
 
       <div className="flex flex-col gap-4 section-wrapper">
         <form
+          ref={formRef}
           key={`${filters.q}|${filters.city}|${filters.type}`}
           action={basePath}
           className="flex gap-2"
         >
           {filters.type && <input type="hidden" name="type" value={filters.type} />}
-          <input
+          {filters.city && <input type="hidden" name="city" value={filters.city} />}
+          <Input
             type="search"
             name="q"
             defaultValue={filters.q}
             placeholder={tab === "devices" ? "Search brand or model" : "Search requests"}
             aria-label="Search"
-            className="flex-1 bg-transparent px-3.5 border border-input rounded-sm h-11"
+            className="flex-1 rounded-sm h-11"
           />
-          <select
-            name="city"
-            defaultValue={filters.city ?? ""}
-            aria-label="City"
-            onChange={(e) => e.currentTarget.form?.requestSubmit()}
-            className="bg-transparent px-3 border border-input rounded-sm max-w-44 h-11"
-          >
-            <option value="">All cities</option>
-            {filters.city && !cities.includes(filters.city) && (
-              <option value={filters.city}>{filters.city}</option>
-            )}
-            {cities.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <Button type="submit">Search</Button>
+          <Select value={filters.city ?? ALL_CITIES} onValueChange={pickCity}>
+            <SelectTrigger aria-label="City" className="rounded-sm w-44 max-w-44 h-11">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end">
+              <SelectItem value={ALL_CITIES}>All cities</SelectItem>
+              {filters.city && !cities.includes(filters.city) && (
+                <SelectItem value={filters.city}>{filters.city}</SelectItem>
+              )}
+              {cities.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button type="submit" className="h-11">Search</Button>
         </form>
 
         <div className="flex flex-wrap gap-2">

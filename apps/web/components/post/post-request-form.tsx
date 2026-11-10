@@ -15,6 +15,8 @@ import { createRequestAction, updateRequestAction } from "@/actions/requests";
 import { CONDITION_OPTIONS, KIND_OPTIONS } from "@/lib/device-options";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
 import { Textarea } from "../ui/textarea";
 import ChipPicker from "./chip-picker";
 import CountrySelect, { type CountryOption } from "./country-select";
@@ -147,7 +149,7 @@ const PostRequestForm = ({
       />
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="title" className="field-label">Short title</label>
+        <Label htmlFor="title" className="field-label">Short title</Label>
         <Input
           id="title"
           placeholder="e.g. Laptop for my final-year project"
@@ -158,9 +160,9 @@ const PostRequestForm = ({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="description" className="font-heading font-semibold text-heading-6">
+        <Label htmlFor="description" className="font-heading font-semibold text-heading-6">
           Why do you need it?
-        </label>
+        </Label>
         <Textarea
           id="description"
           maxLength={280}
@@ -176,17 +178,29 @@ const PostRequestForm = ({
 
       <div className="gap-3 grid grid-cols-1 sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="countryCode" className="field-label">Country</label>
-          <CountrySelect id="countryCode" countries={countries} {...register("countryCode")} />
+          <Label htmlFor="countryCode" className="field-label">Country</Label>
+          <Controller
+            control={control}
+            name="countryCode"
+            render={({ field }) => (
+              <CountrySelect
+                id="countryCode"
+                countries={countries}
+                value={field.value}
+                onChange={field.onChange}
+                invalid={!!errors.countryCode}
+              />
+            )}
+          />
           <FormError message={errors.countryCode?.message} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="city" className="field-label">City</label>
+          <Label htmlFor="city" className="field-label">City</Label>
           <Input id="city" placeholder="Enugu" className="h-13.5 rounded-sm" {...register("city")} />
           <FormError message={errors.city?.message} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="area" className="field-label">Area (optional)</label>
+          <Label htmlFor="area" className="field-label">Area (optional)</Label>
           <Input id="area" placeholder="Nsukka" className="h-13.5 rounded-sm" {...register("area")} />
           <FormError message={errors.area?.message} />
         </div>
@@ -194,17 +208,29 @@ const PostRequestForm = ({
 
       {!editing && (
       <div className="flex flex-col gap-1.5">
-        <label className="flex items-start gap-2.5 text-muted-foreground text-body-sm">
-          <input
-            type="checkbox"
-            className="accent-pin-green-600 mt-0.5 size-4.5"
-            {...register("pledge")}
-          />
-          <span>
-            I am asking for my own use and will not resell it. This pledge
-            appears on my request, and breaking it removes my account.
-          </span>
-        </label>
+        <Controller
+          control={control}
+          name="pledge"
+          render={({ field }) => (
+            <Label
+              htmlFor="pledge"
+              className="items-start gap-2.5 font-normal text-muted-foreground text-body-sm leading-normal"
+            >
+              <Checkbox
+                id="pledge"
+                checked={!!field.value}
+                onCheckedChange={(v) => field.onChange(v === true)}
+                onBlur={field.onBlur}
+                aria-invalid={!!errors.pledge}
+                className="mt-0.5"
+              />
+              <span>
+                I am asking for my own use and will not resell it. This pledge
+                appears on my request, and breaking it removes my account.
+              </span>
+            </Label>
+          )}
+        />
         <FormError message={errors.pledge?.message} />
       </div>
 

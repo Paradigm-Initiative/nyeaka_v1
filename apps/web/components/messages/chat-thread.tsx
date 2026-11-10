@@ -9,6 +9,7 @@ import type { Thread } from "@/lib/messages";
 import { MESSAGE_MAX } from "@/validations/message-validation";
 import { sendMessageAction } from "@/actions/messages";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import ReportPanel from "../safety/report-panel";
 import BlockButton from "../safety/block-button";
 import UnblockButton from "../safety/unblock-button";
@@ -162,14 +163,14 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
 
       {canSend && (
         <form onSubmit={send} className="flex items-end gap-3">
-          <input
+          <Input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Write a message"
             aria-label="Write a message"
             maxLength={MESSAGE_MAX}
             autoComplete="off"
-            className="flex-1 bg-input/50 px-4 rounded-sm h-12 text-base"
+            className="flex-1 rounded-sm h-12"
           />
           <Button type="submit" disabled={sending || !draft.trim()}>
             {sending ? "Sending…" : "Send"}

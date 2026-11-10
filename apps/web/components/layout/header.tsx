@@ -8,6 +8,7 @@ import { navigationLinks } from "@/data/home-data";
 import NavLink from "../ui/navigation-link";
 import { useSession } from "@/lib/auth-client";
 import { UserDropdown } from "../user-dropdown";
+import { Button } from "../ui/button";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -68,30 +69,31 @@ const Header = () => {
             <UserDropdown />
           ) : (
             <>
-              <Link
-                href="/sign-in"
-                className="hover:bg-white/10 px-4 py-2 rounded-md font-medium text-pin-gray-50 text-sm transition-colors duration-200"
+              <Button
+                asChild
+                variant="ghost"
+                className="hover:bg-white/10 text-pin-gray-50 hover:text-pin-gray-50"
               >
-                Sign in
-              </Link>
-              <Link
-                href="/sign-up"
-                className="bg-primary hover:bg-pin-orange-500 px-4 py-2 rounded-md font-heading font-semibold text-primary-foreground text-sm transition-colors duration-200"
-              >
-                Create account
-              </Link>
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/sign-up">Create account</Link>
+              </Button>
             </>
           )}
         </div>
 
-        <button
-          className="md:hidden text-pin-gray-50"
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="md:hidden hover:bg-white/10 text-pin-gray-50 hover:text-pin-gray-50"
           onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMobileMenuOpen}
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        </Button>
       </div>
 
       {isMobileMenuOpen && (
@@ -117,20 +119,20 @@ const Header = () => {
                 <UserDropdown />
               ) : (
                 <>
-                  <Link
-                    href="/sign-in"
-                    className="px-2 py-2.5 rounded-md font-medium text-pin-gray-50 text-sm"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="justify-start hover:bg-white/10 text-pin-gray-50 hover:text-pin-gray-50"
                   >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    className="bg-primary px-4 py-2.5 rounded-md font-heading font-semibold text-primary-foreground text-sm text-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Create account
-                  </Link>
+                    <Link href="/sign-in" onClick={() => setIsMobileMenuOpen(false)}>
+                      Sign in
+                    </Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/sign-up" onClick={() => setIsMobileMenuOpen(false)}>
+                      Create account
+                    </Link>
+                  </Button>
                 </>
               )}
             </div>

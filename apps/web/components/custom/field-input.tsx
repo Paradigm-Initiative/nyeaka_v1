@@ -6,6 +6,8 @@ import { FieldValues } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { FieldError } from "../ui/field";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 
 interface Props {
   label: string;
@@ -33,9 +35,9 @@ export default function FieldInput({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={name} className="field-label">
+      <Label htmlFor={name} className="field-label">
         {label}
-      </label>
+      </Label>
       <div className="relative">
         <Input
           id={name}
@@ -46,14 +48,16 @@ export default function FieldInput({
           {...field}
         />
         {isPassword && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setVisible((v) => !v)}
             aria-label={visible ? "Hide password" : "Show password"}
-            className="top-0 right-0 absolute flex items-center px-3.5 h-full text-muted-foreground hover:text-foreground"
+            className="top-0 right-0 absolute h-full text-muted-foreground hover:text-foreground"
           >
             {visible ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
-          </button>
+          </Button>
         )}
       </div>
       {errorMessage ? (

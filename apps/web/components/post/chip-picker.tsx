@@ -2,6 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { Toggle } from "../ui/toggle";
 
 const ChipPicker = ({
   label,
@@ -23,20 +24,19 @@ const ChipPicker = ({
       </span>
       <div className="flex flex-wrap gap-2.5">
         {options.map((option) => (
-          <button
+          <Toggle
             key={option}
-            type="button"
-            onClick={() => onChange(option)}
+            variant="outline"
+            size="lg"
+            pressed={option === value}
+            onPressedChange={() => onChange(option)}
             className={cn(
-              "min-h-11 rounded-sm border px-5 py-3 font-heading text-sm font-semibold",
+              "rounded-sm border-hairline-strong data-[state=on]:bg-pin-green-600 data-[state=on]:border-pin-green-600 data-[state=on]:text-white",
               capitalize && "capitalize",
-              option === value
-                ? "bg-pin-green-600 text-white border-pin-green-600"
-                : "border-hairline-strong text-foreground",
             )}
           >
             {option}
-          </button>
+          </Toggle>
         ))}
       </div>
     </div>

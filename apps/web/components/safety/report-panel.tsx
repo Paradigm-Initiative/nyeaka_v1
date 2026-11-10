@@ -4,6 +4,8 @@ import React, { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import FormError from "../post/form-error";
 import { reportAction } from "@/actions/safety";
 import { REPORT_REASONS } from "@/lib/report-options";
@@ -62,24 +64,23 @@ const ReportPanel = ({
   return (
     <form onSubmit={submit} className="flex flex-col gap-3 p-4 border rounded-lg">
       <span className="font-heading font-semibold text-heading-6">Report {who}</span>
-      <label className="flex flex-col gap-1.5 text-body-sm">
-        <span className="font-semibold">What happened?</span>
-        <select
-          required
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          className="bg-background px-3 border rounded-sm min-h-11"
-        >
-          <option value="" disabled>
-            Choose a reason
-          </option>
-          {REPORT_REASONS.map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="flex flex-col gap-1.5 text-body-sm">
+        <Label htmlFor="report-reason" className="font-semibold text-body-sm leading-normal">
+          What happened?
+        </Label>
+        <Select value={reason || undefined} onValueChange={setReason}>
+          <SelectTrigger id="report-reason" className="rounded-sm min-h-11">
+            <SelectValue placeholder="Choose a reason" />
+          </SelectTrigger>
+          <SelectContent>
+            {REPORT_REASONS.map((r) => (
+              <SelectItem key={r.value} value={r.value}>
+                {r.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <Textarea
         value={details}
         onChange={(e) => setDetails(e.target.value)}

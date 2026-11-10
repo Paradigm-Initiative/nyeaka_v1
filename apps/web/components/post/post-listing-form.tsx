@@ -13,9 +13,11 @@ import {
 } from "@/validations/post-validation";
 import { createListingAction, updateListingAction } from "@/actions/listings";
 import { CONDITION_OPTIONS, KIND_OPTIONS } from "@/lib/device-options";
-import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { Toggle } from "../ui/toggle";
 import ChipPicker from "./chip-picker";
 import PhotoUploader from "./photo-uploader";
 import CountrySelect, { type CountryOption } from "./country-select";
@@ -139,12 +141,12 @@ const PostListingForm = ({
 
       <div className="gap-3 grid grid-cols-1 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="brand" className="field-label">Brand</label>
+          <Label htmlFor="brand" className="field-label">Brand</Label>
           <Input id="brand" placeholder="e.g. Tecno" className="h-13.5 rounded-sm" {...register("brand")} />
           <FormError message={errors.brand?.message} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="model" className="field-label">Model</label>
+          <Label htmlFor="model" className="field-label">Model</Label>
           <Input id="model" placeholder="e.g. Spark 8" className="h-13.5 rounded-sm" {...register("model")} />
           <FormError message={errors.model?.message} />
         </div>
@@ -166,14 +168,14 @@ const PostListingForm = ({
       />
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="description" className="field-label">
+        <Label htmlFor="description" className="field-label">
           Anything else? (optional)
-        </label>
-        <textarea
+        </Label>
+        <Textarea
           id="description"
           maxLength={1000}
           placeholder="Age, battery life, any scratches or faults."
-          className="bg-transparent px-3 py-2 border border-input rounded-sm min-h-24"
+          className="min-h-24 rounded-sm"
           {...register("description")}
         />
         <FormError message={errors.description?.message} />
@@ -201,18 +203,16 @@ const PostListingForm = ({
               control={control}
               name={field}
               render={({ field: f }) => (
-                <button
-                  type="button"
-                  aria-pressed={!!f.value}
-                  onClick={() => f.onChange(!f.value)}
-                  className={cn(
-                    "flex min-h-11 items-center gap-2 rounded-sm border px-4.5 py-3 font-heading text-sm font-semibold",
-                    f.value ? "bg-surface-feature border-pin-green-600" : "border-hairline-strong",
-                  )}
+                <Toggle
+                  variant="outline"
+                  size="lg"
+                  pressed={!!f.value}
+                  onPressedChange={f.onChange}
+                  className="rounded-sm data-[state=on]:bg-surface-feature data-[state=on]:border-pin-green-600"
                 >
                   <span className="w-3 text-pin-green-600">{f.value ? "✓" : ""}</span>
                   {label}
-                </button>
+                </Toggle>
               )}
             />
           ))}
@@ -221,17 +221,29 @@ const PostListingForm = ({
 
       <div className="gap-3 grid grid-cols-1 sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="countryCode" className="field-label">Country</label>
-          <CountrySelect id="countryCode" countries={countries} {...register("countryCode")} />
+          <Label htmlFor="countryCode" className="field-label">Country</Label>
+          <Controller
+            control={control}
+            name="countryCode"
+            render={({ field }) => (
+              <CountrySelect
+                id="countryCode"
+                countries={countries}
+                value={field.value}
+                onChange={field.onChange}
+                invalid={!!errors.countryCode}
+              />
+            )}
+          />
           <FormError message={errors.countryCode?.message} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="city" className="field-label">City</label>
+          <Label htmlFor="city" className="field-label">City</Label>
           <Input id="city" placeholder="Lagos" className="h-13.5 rounded-sm" {...register("city")} />
           <FormError message={errors.city?.message} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="area" className="field-label">Area (optional)</label>
+          <Label htmlFor="area" className="field-label">Area (optional)</Label>
           <Input id="area" placeholder="Yaba" className="h-13.5 rounded-sm" {...register("area")} />
           <FormError message={errors.area?.message} />
         </div>

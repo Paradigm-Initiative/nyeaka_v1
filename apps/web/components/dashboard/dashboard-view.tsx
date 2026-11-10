@@ -54,32 +54,34 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
       <div className="flex flex-wrap justify-between items-center gap-3">
         <h1 className="text-heading-2">Hello {firstName}</h1>
         <div className="flex gap-1 p-1 border border-hairline-strong rounded-md">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setRole("donor")}
             className={cn(
-              "min-h-11 rounded-sm px-4.5 py-2.5 font-heading text-sm font-semibold",
+              "px-4.5 rounded-sm min-h-11",
               role === "donor"
-                ? "bg-pin-gray-900 text-white"
+                ? "bg-pin-gray-900 hover:bg-pin-gray-900 text-white hover:text-white"
                 : "text-muted-foreground",
             )}
           >
             Giving
             {waiting.donor > 0 && <span className="ml-2 bg-pin-orange-100 px-1.5 rounded-full text-pin-gray-900 text-xs">{waiting.donor}</span>}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setRole("requester")}
             className={cn(
-              "min-h-11 rounded-sm px-4.5 py-2.5 font-heading text-sm font-semibold",
+              "px-4.5 rounded-sm min-h-11",
               role === "requester"
-                ? "bg-pin-gray-900 text-white"
+                ? "bg-pin-gray-900 hover:bg-pin-gray-900 text-white hover:text-white"
                 : "text-muted-foreground",
             )}
           >
             Asking
             {waiting.requester > 0 && <span className="ml-2 bg-pin-orange-100 px-1.5 rounded-full text-pin-gray-900 text-xs">{waiting.requester}</span>}
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { Button } from "../ui/button";
 import { MAX_PHOTOS } from "@/validations/post-validation";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
@@ -98,14 +99,16 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
         {value.map((url) => (
           <div key={url} className="relative rounded-sm h-28 overflow-hidden">
             <Image src={url} alt="Device photo" fill sizes="200px" className="object-cover" />
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-sm"
               onClick={() => remove(url)}
               aria-label="Remove photo"
-              className="top-1.5 right-1.5 absolute flex justify-center items-center bg-black/60 rounded-full size-7 text-white"
+              className="top-1.5 right-1.5 absolute bg-black/60 hover:bg-black/80 rounded-full size-7 text-white hover:text-white"
             >
               <X size={14} />
-            </button>
+            </Button>
           </div>
         ))}
         {Array.from({ length: uploading }).map((_, i) => (
@@ -117,14 +120,15 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
           </div>
         ))}
         {!full && (
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => inputRef.current?.click()}
-            className="flex flex-col justify-center items-center gap-1 border border-hairline-strong border-dashed rounded-sm h-28 text-muted-foreground text-body-sm"
+            className="flex-col gap-1 border-hairline-strong border-dashed rounded-sm h-28 font-normal text-muted-foreground text-body-sm"
           >
             <span className="text-pin-green-600 text-xl">+</span>
             <span>Add photo</span>
-          </button>
+          </Button>
         )}
       </div>
       <input
