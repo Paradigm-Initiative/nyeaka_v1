@@ -319,6 +319,7 @@ model Offer {
   @@unique([listingId, requestId])
   @@index([requestId])
   @@index([donorId])
+  @@index([initiatedById, createdAt])
   @@index([status])
 }
 
@@ -376,7 +377,7 @@ model Message {
   reports Report[]
 
   @@index([conversationId, createdAt])
-  @@index([senderId])
+  @@index([senderId, createdAt])
 }
 
 model Rating {

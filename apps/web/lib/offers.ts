@@ -6,6 +6,7 @@ import {
 } from "@/validations/offer-validation";
 import { ServiceError } from "./errors";
 import { assertState, postState } from "./lifecycle";
+import { limitOffers } from "./rate-limit";
 
 const ALREADY_OFFERED = "You already have an active offer on this request.";
 
@@ -59,6 +60,8 @@ export async function createOffer(userId: string, input: CreateOfferInput) {
     throw new ServiceError("INVALID", ALREADY_OFFERED);
   if (existing.some((o) => o.listingId === listingId))
     throw new ServiceError("INVALID", "This device was already offered on this request.");
+
+  await limitOffers(userId);
 
   try {
     return await prisma.offer.create({

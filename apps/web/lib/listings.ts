@@ -8,6 +8,7 @@ import {
 import { defaultExpiry } from "./expiry";
 import { ServiceError } from "./errors";
 import { listingPhotoPrefix } from "./storage";
+import { limitListings } from "./rate-limit";
 
 export async function createListing(donorId: string, input: CreateListingInput) {
   const d = createListingSchema.parse(input);
@@ -15,6 +16,8 @@ export async function createListing(donorId: string, input: CreateListingInput) 
   const prefix = listingPhotoPrefix(donorId);
   if (d.photos.some((url) => !url.startsWith(prefix)))
     throw new ServiceError("INVALID", "Photos must be uploaded through Nyeaka");
+
+  await limitListings(donorId);
 
   return prisma.listing.create({
     data: {

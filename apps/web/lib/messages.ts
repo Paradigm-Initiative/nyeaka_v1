@@ -5,6 +5,7 @@ import {
 } from "@/validations/message-validation";
 import { ServiceError } from "./errors";
 import { placeLabel } from "./format";
+import { limitMessages } from "./rate-limit";
 
 /** The thread view loads this many of the most recent messages. */
 export const THREAD_PAGE_SIZE = 200;
@@ -103,6 +104,8 @@ export async function sendMessage(userId: string, conversationId: string, input:
     throw new ServiceError("FORBIDDEN", "You are not part of this conversation");
   if (status === "CANCELLED")
     throw new ServiceError("INVALID", "This match was cancelled, so the chat is closed.");
+
+  await limitMessages(userId);
 
   return prisma.message.create({
     data: { conversationId, senderId: userId, body },

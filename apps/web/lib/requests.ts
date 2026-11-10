@@ -6,6 +6,7 @@ import {
 import { defaultExpiry } from "./expiry";
 import { assertOwner } from "./ownership";
 import { assertState, postState } from "./lifecycle";
+import { limitRequests } from "./rate-limit";
 
 export async function createRequest(
   requesterId: string,
@@ -13,6 +14,8 @@ export async function createRequest(
 ) {
   const { pledge, ...d } = createRequestSchema.parse(input);
   void pledge; // validated only, not stored
+
+  await limitRequests(requesterId);
 
   return prisma.request.create({
     data: { requesterId, ...d, expiresAt: defaultExpiry() },

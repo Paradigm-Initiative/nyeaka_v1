@@ -1,4 +1,4 @@
-export type ServiceErrorCode = "NOT_FOUND" | "FORBIDDEN" | "INVALID";
+export type ServiceErrorCode = "NOT_FOUND" | "FORBIDDEN" | "INVALID" | "RATE_LIMITED";
 
 export class ServiceError extends Error {
   constructor(
