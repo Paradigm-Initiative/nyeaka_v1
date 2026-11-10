@@ -5,11 +5,13 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { DashboardMatch, DashboardOffer, getMyListings, getMyRequests, getReputation } from "@/lib/queries";
 import type { getBlockedUsers } from "@/lib/safety";
+import type { RatingPrompt } from "@/lib/ratings";
 import UnblockButton from "../safety/unblock-button";
 import { conditionLabel } from "@/lib/device-options";
 import { postState, type PostState } from "@/lib/lifecycle";
 import PostActions from "../post/post-actions";
 import { placeLabel, timeAgo } from "@/lib/format";
+import { Button } from "../ui/button";
 import OfferCard from "./offer-card";
 import MatchCard from "./match-card";
 
@@ -32,9 +34,10 @@ type Props = {
   matches: DashboardMatch[];
   blocked: Awaited<ReturnType<typeof getBlockedUsers>>;
   restricted: boolean;
+  toRate: RatingPrompt[];
 };
 
-const DashboardView = ({ firstName, idVerified, reputation, listings, requests, offers, matches, blocked, restricted }: Props) => {
+const DashboardView = ({ firstName, idVerified, reputation, listings, requests, offers, matches, blocked, restricted, toRate }: Props) => {
   const [role, setRole] = useState<"donor" | "requester">("donor");
 
   // Everything below is filtered to the hat the user is wearing in the current tab.
@@ -112,6 +115,8 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
           </span>
         </div>
       </div>
+
+      <RatePrompts toRate={toRate} />
 
       {role === "donor" ? (
         <div className="flex flex-col gap-6">
@@ -199,6 +204,31 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
     </div>
   );
 };
+
+/** Ended matches still waiting for the user's rating. Hidden when there are none. */
+const RatePrompts = ({ toRate }: { toRate: RatingPrompt[] }) =>
+  toRate.length === 0 ? null : (
+    <div className="flex flex-col gap-3">
+      <h2 className="text-heading-3">Rate your handoffs</h2>
+      {toRate.map((p) => (
+        <div key={p.matchId} className="flex flex-wrap justify-between items-center gap-3 p-4 border rounded-lg">
+          <div className="flex flex-col gap-0.5">
+            <span className="font-heading font-semibold text-heading-5">
+              {p.status === "HANDED_OVER" ? `How did it go with ${p.otherFirstName}?` : `Rate ${p.otherFirstName}`}
+            </span>
+            <span className="text-muted-foreground text-body-sm">
+              {p.listingTitle} · {p.status === "HANDED_OVER" ? "handed over" : "match cancelled"} {timeAgo(p.endedAt)}
+            </span>
+          </div>
+          {p.conversationId && (
+            <Button asChild size="sm">
+              <Link href={`/messages/${p.conversationId}`}>Rate</Link>
+            </Button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 
 /** People you have blocked, with a way to undo it. Hidden when there are none. */
 const BlockedList = ({ blocked }: { blocked: Props["blocked"] }) =>

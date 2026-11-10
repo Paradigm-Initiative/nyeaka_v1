@@ -7,6 +7,7 @@ import { ServiceError } from "./errors";
 import { placeLabel } from "./format";
 import { limitMessages } from "./rate-limit";
 import { isBlockedBetween } from "./safety";
+import { ratingVerdict } from "./rating-rules";
 
 /** The thread view loads this many of the most recent messages. */
 export const THREAD_PAGE_SIZE = 200;
@@ -28,6 +29,22 @@ export interface Thread {
   blockedByMe: boolean;
   /** False when the match is cancelled or either of you has blocked the other. */
   canSend: boolean;
+  /** Numbers are shown only when BOTH people have opted in. */
+  phone: {
+    /** False when the match is cancelled or blocked: sharing is switched off. */
+    available: boolean;
+    hasMine: boolean;
+    iShared: boolean;
+    theyShared: boolean;
+    theirNumber: string | null;
+  };
+  handoff: { iConfirmed: boolean; theyConfirmed: boolean };
+  rating: {
+    canRate: boolean;
+    /** Why not, when it is not open yet (or any more). */
+    reason: string | null;
+    mine: { score: number; comment: string | null } | null;
+  };
   listingTitle: string;
   requestTitle: string;
   place: string;
@@ -51,8 +68,16 @@ export async function getThread(userId: string, conversationId: string): Promise
           status: true,
           donorId: true,
           requesterId: true,
-          donor: { select: { id: true, firstName: true, idVerified: true } },
-          requester: { select: { id: true, firstName: true, idVerified: true } },
+          donorSharedPhone: true,
+          requesterSharedPhone: true,
+          donorConfirmedAt: true,
+          requesterConfirmedAt: true,
+          handedOverAt: true,
+          cancelledAt: true,
+          updatedAt: true,
+          ratings: { where: { raterId: userId }, select: { score: true, comment: true } },
+          donor: { select: { id: true, firstName: true, idVerified: true, phone: true } },
+          requester: { select: { id: true, firstName: true, idVerified: true, phone: true } },
           listing: { select: { title: true, city: true, area: true } },
           request: { select: { title: true } },
         },
@@ -72,9 +97,28 @@ export async function getThread(userId: string, conversationId: string): Promise
     throw new ServiceError("FORBIDDEN", "You are not part of this conversation");
 
   const other = isDonor ? m.requester : m.donor;
-  const blocks = await prisma.block.findMany({
-    where: { OR: [{ blockerId: userId, blockedId: other.id }, { blockerId: other.id, blockedId: userId }] },
-    select: { blockerId: true },
+  const me = isDonor ? m.donor : m.requester;
+  const [blocks, senders] = await Promise.all([
+    prisma.block.findMany({
+      where: { OR: [{ blockerId: userId, blockedId: other.id }, { blockerId: other.id, blockedId: userId }] },
+      select: { blockerId: true },
+    }),
+    // Only a cancelled match needs this: ratings there require that both people spoke.
+    m.status === "CANCELLED"
+      ? prisma.message.groupBy({ by: ["senderId"], where: { conversationId } })
+      : Promise.resolve([]),
+  ]);
+  const iShared = isDonor ? m.donorSharedPhone : m.requesterSharedPhone;
+  const theyShared = isDonor ? m.requesterSharedPhone : m.donorSharedPhone;
+  const phoneOpen = m.status !== "CANCELLED" && blocks.length === 0;
+  const talked = new Set(senders.map((s) => s.senderId));
+  const mine = m.ratings[0] ?? null;
+  const verdict = ratingVerdict({
+    status: m.status,
+    endedAt: m.handedOverAt ?? m.cancelledAt ?? m.updatedAt,
+    bothMessaged: talked.has(m.donorId) && talked.has(m.requesterId),
+    blocked: blocks.length > 0,
+    alreadyRated: mine !== null,
   });
 
   return {
@@ -82,9 +126,26 @@ export async function getThread(userId: string, conversationId: string): Promise
     matchId: m.id,
     matchStatus: m.status,
     role: isDonor ? "donor" : "requester",
-    other,
+    other: { id: other.id, firstName: other.firstName, idVerified: other.idVerified },
     blockedByMe: blocks.some((b) => b.blockerId === userId),
     canSend: m.status !== "CANCELLED" && blocks.length === 0,
+    phone: {
+      available: phoneOpen,
+      hasMine: !!me.phone,
+      iShared,
+      theyShared,
+      // Never leaves the server unless both opted in and sharing is still open.
+      theirNumber: phoneOpen && iShared && theyShared ? other.phone : null,
+    },
+    handoff: {
+      iConfirmed: !!(isDonor ? m.donorConfirmedAt : m.requesterConfirmedAt),
+      theyConfirmed: !!(isDonor ? m.requesterConfirmedAt : m.donorConfirmedAt),
+    },
+    rating: {
+      canRate: verdict.ok,
+      reason: verdict.ok || mine ? null : verdict.reason,
+      mine,
+    },
     listingTitle: m.listing.title,
     requestTitle: m.request.title,
     place: placeLabel(m.listing.city, m.listing.area),

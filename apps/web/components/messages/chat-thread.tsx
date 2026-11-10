@@ -12,6 +12,8 @@ import { Button } from "../ui/button";
 import ReportPanel from "../safety/report-panel";
 import BlockButton from "../safety/block-button";
 import UnblockButton from "../safety/unblock-button";
+import PhonePanel from "./phone-panel";
+import HandoffPanel from "./handoff-panel";
 
 /** How often the open thread re-fetches. Chat v1 has no realtime connection. */
 export const POLL_MS = 10_000;
@@ -156,6 +158,8 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
         ))}
       </div>
 
+      <PhonePanel matchId={thread.matchId} who={thread.other.firstName} phone={thread.phone} />
+
       {canSend && (
         <form onSubmit={send} className="flex items-end gap-3">
           <input
@@ -172,6 +176,8 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
           </Button>
         </form>
       )}
+      <HandoffPanel thread={thread} />
+
       {/* After the composer, so scrolling here keeps the latest message and the input in view. */}
       <div ref={bottomRef} />
     </div>

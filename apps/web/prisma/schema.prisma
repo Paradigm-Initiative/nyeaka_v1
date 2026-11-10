@@ -137,6 +137,7 @@ model User {
   reportsFiled     Report[]         @relation("ReportReporter")
   reportsAgainst   Report[]         @relation("ReportTargetUser")
   reportsAbout     Report[]         @relation("ReportedUser")
+  matchesCancelled Match[]          @relation("MatchCancelledBy")
   blocksMade       Block[]          @relation("BlockBlocker")
   blocksReceived   Block[]          @relation("BlockBlocked")
   idVerifications  IdVerification[]
@@ -348,6 +349,10 @@ model Match {
   donorConfirmedAt       DateTime?
   requesterConfirmedAt   DateTime?
   handedOverAt DateTime?
+  // Who called the match off (cancel button, or the blocker when a block cancels it) and when.
+  cancelledById String?
+  cancelledBy   User?     @relation("MatchCancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull)
+  cancelledAt   DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 

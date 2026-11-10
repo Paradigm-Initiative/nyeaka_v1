@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { getServerSession } from "@/lib/get-session";
 import { createOffer, withdrawOffer } from "@/lib/offers";
 import { createOfferSchema } from "@/validations/offer-validation";
 import { failure, toFieldErrors, type ActionResult } from "@/lib/action-result";
+import { emailOfferReceived } from "@/lib/offer-emails";
 
 const SIGN_IN = "Please sign in first.";
 
@@ -23,8 +25,7 @@ export async function createOfferAction(input: unknown): Promise<ActionResult<{ 
   try {
     const { id } = await createOffer(session.user.id, parsed.data);
     revalidate(parsed.data.listingId, parsed.data.requestId);
-    // TODO(step 7): email the person who must answer this offer, after it is saved,
-    // without ever failing the action.
+    after(() => emailOfferReceived(id));
     return { ok: true, data: { id } };
   } catch (e) {
     return failure(e, "createOfferAction");

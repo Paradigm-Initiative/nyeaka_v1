@@ -172,7 +172,7 @@ export async function cancelMatch(userId: string, matchId: string) {
 
     const { count } = await tx.match.updateMany({
       where: { id: matchId, status: "ACTIVE" },
-      data: { status: "CANCELLED" },
+      data: { status: "CANCELLED", cancelledById: userId, cancelledAt: new Date() },
     });
     if (count === 0)
       throw new ServiceError("INVALID", "Only an active match can be cancelled.");
@@ -194,6 +194,7 @@ export type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
  * are left alone.
  */
 export async function cancelActiveMatchesBetween(tx: Tx, a: string, b: string): Promise<number> {
+  // `a` is the one doing the cancelling (the blocker).
   const matches = await tx.match.findMany({
     where: {
       status: "ACTIVE",
@@ -205,7 +206,10 @@ export async function cancelActiveMatchesBetween(tx: Tx, a: string, b: string): 
     select: { id: true, listingId: true, requestId: true },
   });
   for (const m of matches) {
-    await tx.match.updateMany({ where: { id: m.id, status: "ACTIVE" }, data: { status: "CANCELLED" } });
+    await tx.match.updateMany({
+      where: { id: m.id, status: "ACTIVE" },
+      data: { status: "CANCELLED", cancelledById: a, cancelledAt: new Date() },
+    });
     await tx.listing.updateMany({ where: { id: m.listingId, status: "MATCHED" }, data: { status: "ACTIVE" } });
     await tx.request.updateMany({ where: { id: m.requestId, status: "MATCHED" }, data: { status: "ACTIVE" } });
   }

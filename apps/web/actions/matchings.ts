@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { getServerSession } from "@/lib/get-session";
 import { acceptOffer, cancelMatch, declineOffer } from "@/lib/matches";
 import { failure, type ActionResult } from "@/lib/action-result";
+import { emailMatchCancelled, emailOfferAccepted } from "@/lib/offer-emails";
 
 const SIGN_IN = "Please sign in first.";
 
@@ -21,8 +23,8 @@ export async function acceptOfferAction(
   try {
     const result = await acceptOffer(session.user.id, offerId);
     revalidate();
-    // TODO(step 7): send "offer accepted" to result.offerSenderId and
-    // "not selected" emails to result.notSelected, after this commit, never failing the action.
+    // Runs once the response has gone out; a mail problem can't affect the accept.
+    after(() => emailOfferAccepted(session.user.id, result));
     return { ok: true, data: { conversationId: result.conversationId } };
   } catch (e) {
     return failure(e, "acceptOfferAction");
@@ -47,6 +49,7 @@ export async function cancelMatchAction(matchId: string): Promise<ActionResult> 
   try {
     await cancelMatch(session.user.id, matchId);
     revalidate();
+    after(() => emailMatchCancelled(session.user.id, matchId));
     return { ok: true, data: undefined };
   } catch (e) {
     return failure(e, "cancelMatchAction");

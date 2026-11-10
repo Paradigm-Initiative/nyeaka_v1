@@ -108,3 +108,96 @@ export function restrictedUserEmail(firstName: string, contact?: string) {
     ),
   };
 }
+
+// ---- offers and matches ---------------------------------------------------------
+// These never include phone numbers or message text: the email only says that
+// something happened and links back to the app, where access is checked.
+
+/** To whoever must answer a new offer. `kind` says who sent it. */
+export function offerReceivedEmail(d: {
+  firstName: string;
+  from: string;
+  kind: "donor-offer" | "requester-ask";
+  listingTitle: string;
+  requestTitle: string;
+  url: string;
+}) {
+  const asked = d.kind === "requester-ask";
+  return {
+    subject: asked
+      ? `${d.from} asked for your ${d.listingTitle}`
+      : `${d.from} offered you a device on Nyeaka`,
+    html: layout(
+      asked ? `${esc(d.from)} would like your device` : `${esc(d.from)} sent you an offer`,
+      `Hi ${esc(d.firstName)}, ${
+        asked
+          ? `${esc(d.from)} would like your <strong>${esc(d.listingTitle)}</strong> for their request &ldquo;${esc(d.requestTitle)}&rdquo;.`
+          : `${esc(d.from)} is offering <strong>${esc(d.listingTitle)}</strong> for your request &ldquo;${esc(d.requestTitle)}&rdquo;.`
+      } Open your dashboard to read it and accept or decline.`,
+      { label: "Open my dashboard", url: d.url },
+    ),
+  };
+}
+
+/** To the person whose offer was accepted. */
+export function offerAcceptedEmail(d: {
+  firstName: string;
+  accepter: string;
+  listingTitle: string;
+  url: string;
+}) {
+  return {
+    subject: `${d.accepter} accepted: a chat is open`,
+    html: layout(
+      "Your offer was accepted",
+      `Hi ${esc(d.firstName)}, ${esc(d.accepter)} accepted the match for <strong>${esc(d.listingTitle)}</strong>. A chat is open so you can agree a public place and time to meet.`,
+      { label: "Open the chat", url: d.url },
+    ),
+  };
+}
+
+/** To someone whose offer was closed because the device or request went elsewhere. */
+export function offerNotSelectedEmail(d: {
+  firstName: string;
+  role: "donor" | "requester";
+  listingTitle: string;
+  requestTitle: string;
+  url: string;
+}) {
+  const donor = d.role === "donor";
+  return {
+    subject: donor ? "Your offer wasn't selected" : "That device has gone to someone else",
+    html: layout(
+      donor ? "Your offer wasn't selected" : "That device has gone to someone else",
+      donor
+        ? `Hi ${esc(d.firstName)}, the request &ldquo;${esc(d.requestTitle)}&rdquo; was matched with another device, so your offer of <strong>${esc(d.listingTitle)}</strong> is closed. Your device stays listed for other people who need one.`
+        : `Hi ${esc(d.firstName)}, the <strong>${esc(d.listingTitle)}</strong> you asked for has been given to someone else. Your request &ldquo;${esc(d.requestTitle)}&rdquo; is still open, so you're not left waiting: you can keep browsing for another device.`,
+      donor
+        ? { label: "See other requests", url: d.url }
+        : { label: "Browse devices", url: d.url },
+    ),
+  };
+}
+
+/** To the other person when someone cancels a match. */
+export function matchCancelledEmail(d: {
+  firstName: string;
+  canceller: string;
+  role: "donor" | "requester";
+  listingTitle: string;
+  requestTitle: string;
+  url: string;
+}) {
+  return {
+    subject: `${d.canceller} cancelled your match`,
+    html: layout(
+      "Your match was cancelled",
+      `Hi ${esc(d.firstName)}, ${esc(d.canceller)} cancelled the match for <strong>${esc(d.listingTitle)}</strong>. ${
+        d.role === "donor"
+          ? "Your device is open to new offers again."
+          : `Your request &ldquo;${esc(d.requestTitle)}&rdquo; is open to new offers again.`
+      }`,
+      { label: "Open my dashboard", url: d.url },
+    ),
+  };
+}
