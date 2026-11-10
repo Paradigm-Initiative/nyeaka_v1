@@ -6,7 +6,7 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 
 - **Working end to end:** sign-up and sign-in, posting and managing listings and requests (with photo upload), browse and search, sending offers, accepting and declining, chat, sharing phone numbers, confirming handoffs, ratings, cancel, block, report, and automatic restriction. Plus rate limits and the lifecycle emails.
 - **Not built:** ID verification (the page is a placeholder), an admin area, Google/Apple sign-up, profile pages, and any email or in-app signal for a *new chat message*.
-- **Before launch:** apply the pending migrations, set the environment variables, and test email delivery for real. All of these are listed [below](#before-launch-checklist).
+- **Before launch:** make sure every database has the migrations, set the environment variables, and test email delivery for real. All of these are listed [below](#before-launch-checklist).
 
 ## What is done and where
 
@@ -40,7 +40,7 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 
 ## Before launch checklist
 
-1. **Apply the migrations.** Four were written during this work and have only been run against the in-memory test database: `20261110120000_offer_donor_and_match_handoff`, `20261110180000_rate_limit_indexes`, `20261110200000_safety_restriction_and_reports`, `20261111100000_match_cancelled_by`. Run `pnpm exec prisma migrate status` against Neon, then `migrate deploy`. The safety migration makes `Report.reportedUserId` required and fills it for old reports; it will fail loudly (not drop data) if a report's target was already deleted (the check is in the migration's comment).
+1. **Apply the migrations to every database you run the app against.** All 11 are applied to the Neon database `nyeaka_test` (the four newest on 2026-11-11, checked afterwards: backfills correct, new indexes and columns present, row counts unchanged, the app's read queries run against it). If production uses a different database, run `pnpm exec prisma migrate status` against it, then `pnpm exec prisma migrate deploy`. The safety migration makes `Report.reportedUserId` required and fills it for old reports; it fails loudly (it does not drop data) if a report's target was already deleted. The check is in the migration's comment.
 2. **Set `BETTER_AUTH_URL` to the real site address.** Email links use it and fall back to localhost.
 3. **Set `ADMIN_EMAIL`**, or reports and restriction notices won't reach anyone.
 4. **Send a real email of each kind** with a live `SENDBYTE_KEY`. The browser runs used a fake key, so only that the send was attempted is verified, not delivery or how the emails look in a mail client.
