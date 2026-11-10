@@ -23,7 +23,7 @@ export function splitSql(sql: string): string[] {
  * over a local socket so the normal Prisma client can talk to it. Nothing here
  * touches the Neon database.
  */
-export async function startTestDb() {
+export async function startTestDb(opts: { port?: number } = {}) {
   const db = await PGlite.create({ extensions: { pg_trgm } });
 
   const dir = path.resolve(__dirname, "../../prisma/migrations");
@@ -39,7 +39,7 @@ export async function startTestDb() {
     }
   }
 
-  const server = new PGLiteSocketServer({ db, port: 0, host: "127.0.0.1", maxConnections: 10 });
+  const server = new PGLiteSocketServer({ db, port: opts.port ?? 0, host: "127.0.0.1", maxConnections: 10 });
   await server.start();
   const addr = server.getServerConn();
 
