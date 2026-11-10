@@ -58,6 +58,16 @@ export async function acceptOffer(userId: string, offerId: string): Promise<Acce
     if (offer.status !== "PENDING")
       throw new ServiceError("INVALID", "This offer has already been answered.");
 
+    const blocked = await tx.block.count({
+      where: {
+        OR: [
+          { blockerId: offer.donorId, blockedId: requesterId },
+          { blockerId: requesterId, blockedId: offer.donorId },
+        ],
+      },
+    });
+    if (blocked > 0) throw new ServiceError("INVALID", "This offer is no longer available.");
+
     assertState(postState(offer.listing.status, offer.listing.expiresAt), ["ACTIVE"], "This device is no longer available.");
     assertState(postState(offer.request.status, offer.request.expiresAt), ["ACTIVE"], "This request is no longer open.");
 
@@ -173,4 +183,31 @@ export async function cancelMatch(userId: string, matchId: string) {
     // The other person is the one to tell.
     return { otherPartyId: userId === match.donorId ? match.requesterId : match.donorId };
   });
+}
+
+/** The transaction client passed to a `prisma.$transaction(async (tx) => ...)` callback. */
+export type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+/**
+ * Cancel every ACTIVE match between two people and put both posts back to
+ * ACTIVE. Used when one blocks the other. Handed-over matches are history and
+ * are left alone.
+ */
+export async function cancelActiveMatchesBetween(tx: Tx, a: string, b: string): Promise<number> {
+  const matches = await tx.match.findMany({
+    where: {
+      status: "ACTIVE",
+      OR: [
+        { donorId: a, requesterId: b },
+        { donorId: b, requesterId: a },
+      ],
+    },
+    select: { id: true, listingId: true, requestId: true },
+  });
+  for (const m of matches) {
+    await tx.match.updateMany({ where: { id: m.id, status: "ACTIVE" }, data: { status: "CANCELLED" } });
+    await tx.listing.updateMany({ where: { id: m.listingId, status: "MATCHED" }, data: { status: "ACTIVE" } });
+    await tx.request.updateMany({ where: { id: m.requestId, status: "MATCHED" }, data: { status: "ACTIVE" } });
+  }
+  return matches.length;
 }

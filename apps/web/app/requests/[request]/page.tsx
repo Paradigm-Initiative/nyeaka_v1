@@ -6,6 +6,8 @@ import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
 import { getRequestDetail } from "@/lib/queries";
 import { getRequestOfferContext } from "@/lib/offer-queries";
+import { sharesMatch } from "@/lib/safety";
+import ReportPanel from "@/components/safety/report-panel";
 import { conditionLabel, kindLabel } from "@/lib/device-options";
 import { placeLabel, timeAgo } from "@/lib/format";
 
@@ -36,6 +38,7 @@ const RequestDetailPage = async ({
     viewerId && !isOwner && state === "ACTIVE"
       ? await getRequestOfferContext(viewerId, item.id)
       : null;
+  const canReport = !!viewerId && !isOwner && (await sharesMatch(viewerId, item.requester.id));
 
   return (
     <DetailLayout
@@ -67,6 +70,9 @@ const RequestDetailPage = async ({
           context={context}
           closedMessage={state === "ACTIVE" ? undefined : "This request has been matched and is no longer open."}
         />
+      )}
+      {canReport && (
+        <ReportPanel targetType="REQUEST" targetId={item.id} who={`${item.requester.firstName}'s request`} label="Report this request" />
       )}
     </DetailLayout>
   );

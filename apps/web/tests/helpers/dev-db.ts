@@ -47,10 +47,13 @@ async function main() {
 
   await listing("l-alice-1", "alice", "Dell Latitude 5490", "Dell", "Latitude 5490");
   await listing("l-alice-2", "alice", "HP ProBook 450", "HP", "ProBook 450");
+  await listing("l-alice-3", "alice", "Acer Aspire 5", "Acer", "Aspire 5");
+  await listing("l-alice-4", "alice", "Asus VivoBook 14", "Asus", "VivoBook 14");
   await listing("l-dave-1", "dave", "Lenovo ThinkPad T480", "Lenovo", "ThinkPad T480");
   await request("r-bob-1", "bob", "Laptop for coding classes");
   await request("r-bob-2", "bob", "Second laptop for my sister");
   await request("r-carol-1", "carol", "Laptop for job applications");
+  await request("r-dave-1", "dave", "Laptop for my small business");
 
   console.log(`dev db ready on port ${PORT}`);
   // Keep the process (and the in-memory database) alive.

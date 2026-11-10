@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import BrowsePage from "@/components/browse/browse-page";
 import { parseBrowseParams } from "@/lib/browse-params";
 import { getCities, getLiveRequests } from "@/lib/queries";
+import { getServerSession } from "@/lib/get-session";
 
 export const metadata: Metadata = {
   title: "Requests - Nyeaka",
@@ -15,7 +16,8 @@ export default async function RequestsPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const filters = parseBrowseParams(await searchParams);
-  const [result, cities] = await Promise.all([getLiveRequests(filters), getCities("request")]);
+  const session = await getServerSession();
+  const [result, cities] = await Promise.all([getLiveRequests(filters, session?.user.id), getCities("request")]);
   return (
     <BrowsePage
       tab="requests"

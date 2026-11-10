@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { DashboardMatch, DashboardOffer, getMyListings, getMyRequests, getReputation } from "@/lib/queries";
+import type { getBlockedUsers } from "@/lib/safety";
+import UnblockButton from "../safety/unblock-button";
 import { conditionLabel } from "@/lib/device-options";
 import { postState, type PostState } from "@/lib/lifecycle";
 import PostActions from "../post/post-actions";
@@ -28,9 +30,11 @@ type Props = {
   requests: Awaited<ReturnType<typeof getMyRequests>>;
   offers: DashboardOffer[];
   matches: DashboardMatch[];
+  blocked: Awaited<ReturnType<typeof getBlockedUsers>>;
+  restricted: boolean;
 };
 
-const DashboardView = ({ firstName, idVerified, reputation, listings, requests, offers, matches }: Props) => {
+const DashboardView = ({ firstName, idVerified, reputation, listings, requests, offers, matches, blocked, restricted }: Props) => {
   const [role, setRole] = useState<"donor" | "requester">("donor");
 
   // Everything below is filtered to the hat the user is wearing in the current tab.
@@ -75,6 +79,14 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
           </button>
         </div>
       </div>
+
+      {restricted && (
+        <div role="alert" className="bg-pin-orange-100 p-4 rounded-lg text-body-sm">
+          Your account is restricted while we review reports about it. You can
+          still browse, chat and finish matches you already have, but you can&rsquo;t
+          post listings or requests or send offers.
+        </div>
+      )}
 
       <div className="gap-3 grid grid-cols-1 sm:grid-cols-3">
         <div className="flex flex-col gap-1 p-4 border rounded-lg">
@@ -182,9 +194,27 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
           </div>
         </div>
       )}
+
+      <BlockedList blocked={blocked} />
     </div>
   );
 };
+
+/** People you have blocked, with a way to undo it. Hidden when there are none. */
+const BlockedList = ({ blocked }: { blocked: Props["blocked"] }) =>
+  blocked.length === 0 ? null : (
+    <div className="flex flex-col gap-3">
+      <h2 className="text-heading-3">Blocked people</h2>
+      <div className="flex flex-col gap-2">
+        {blocked.map((b) => (
+          <div key={b.blockedId} className="flex flex-wrap justify-between items-center gap-3 p-3 border rounded-lg">
+            <span className="text-body-md">{b.blocked.firstName}</span>
+            <UnblockButton userId={b.blockedId} who={b.blocked.firstName} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
 /** Matches first (they have a live chat), then offers to answer, then offers waiting on others. */
 const OfferSections = ({

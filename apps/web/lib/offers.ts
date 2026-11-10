@@ -7,6 +7,7 @@ import {
 import { ServiceError } from "./errors";
 import { assertState, postState } from "./lifecycle";
 import { limitOffers } from "./rate-limit";
+import { assertNotRestricted, isBlockedBetween } from "./safety";
 
 const ALREADY_OFFERED = "You already have an active offer on this request.";
 
@@ -37,6 +38,11 @@ export async function createOffer(userId: string, input: CreateOfferInput) {
     throw new ServiceError("INVALID", "You can't offer on your own post.");
   if (userId !== listing.donorId && userId !== request.requesterId)
     throw new ServiceError("FORBIDDEN", "You can only offer with your own listing or request.");
+
+  await assertNotRestricted(userId);
+  // Same wording whichever of them blocked the other, so it never reveals who did.
+  if (await isBlockedBetween(listing.donorId, request.requesterId))
+    throw new ServiceError("INVALID", "You can't send an offer to this person.");
 
   assertState(
     postState(request.status, request.expiresAt),

@@ -1,10 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { getRecentListings } from "@/lib/queries";
+import { getServerSession } from "@/lib/get-session";
 import ListingCard from "../listing-card";
 
 const Listings = async () => {
-  const listings = await getRecentListings(3);
+  const session = await getServerSession();
+  const listings = await getRecentListings(3, session?.user.id);
   return (
     <section className="bg-canvas">
       <div className="flex flex-col gap-6 section-wrapper">

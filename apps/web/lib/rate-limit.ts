@@ -33,6 +33,8 @@ export const MESSAGE_RULES: RateRule[] = [
 export const OFFER_RULES: RateRule[] = [{ max: 10, windowSeconds: 86_400, label: "10 offers a day" }];
 export const LISTING_RULES: RateRule[] = [{ max: 5, windowSeconds: 86_400, label: "5 new listings a day" }];
 export const REQUEST_RULES: RateRule[] = [{ max: 5, windowSeconds: 86_400, label: "5 new requests a day" }];
+export const REPORT_RULES: RateRule[] = [{ max: 5, windowSeconds: 86_400, label: "5 reports a day" }];
+export const BLOCK_RULES: RateRule[] = [{ max: 20, windowSeconds: 86_400, label: "20 blocks a day" }];
 
 export function formatWait(seconds: number): string {
   const s = Math.max(1, Math.ceil(seconds));
@@ -119,6 +121,34 @@ export const limitRequests = (userId: string) =>
       (
         await prisma.request.findFirst({
           where: { requesterId: userId, createdAt: { gt: since } },
+          orderBy: { createdAt: "asc" },
+          skip,
+          select: { createdAt: true },
+        })
+      )?.createdAt ?? null,
+  });
+
+export const limitReports = (userId: string) =>
+  enforceRate(REPORT_RULES, {
+    count: (since) => prisma.report.count({ where: { reporterId: userId, createdAt: { gt: since } } }),
+    nthOldest: async (since, skip) =>
+      (
+        await prisma.report.findFirst({
+          where: { reporterId: userId, createdAt: { gt: since } },
+          orderBy: { createdAt: "asc" },
+          skip,
+          select: { createdAt: true },
+        })
+      )?.createdAt ?? null,
+  });
+
+export const limitBlocks = (userId: string) =>
+  enforceRate(BLOCK_RULES, {
+    count: (since) => prisma.block.count({ where: { blockerId: userId, createdAt: { gt: since } } }),
+    nthOldest: async (since, skip) =>
+      (
+        await prisma.block.findFirst({
+          where: { blockerId: userId, createdAt: { gt: since } },
           orderBy: { createdAt: "asc" },
           skip,
           select: { createdAt: true },

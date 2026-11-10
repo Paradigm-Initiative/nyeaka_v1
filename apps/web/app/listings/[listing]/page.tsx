@@ -6,6 +6,8 @@ import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
 import { getListingDetail } from "@/lib/queries";
 import { getListingOfferContext } from "@/lib/offer-queries";
+import { sharesMatch } from "@/lib/safety";
+import ReportPanel from "@/components/safety/report-panel";
 import { conditionLabel, kindLabel } from "@/lib/device-options";
 import { placeLabel, timeAgo } from "@/lib/format";
 
@@ -36,6 +38,8 @@ const ListingDetailPage = async ({
     viewerId && !isOwner && state === "ACTIVE"
       ? await getListingOfferContext(viewerId, item.id, item.donor.id)
       : null;
+
+  const canReport = !!viewerId && !isOwner && (await sharesMatch(viewerId, item.donor.id));
 
   const extras = [
     item.spec?.hasCharger && "Charger",
@@ -73,6 +77,9 @@ const ListingDetailPage = async ({
           context={context}
           closedMessage={state === "ACTIVE" ? undefined : "This device has been matched and is no longer available."}
         />
+      )}
+      {canReport && (
+        <ReportPanel targetType="LISTING" targetId={item.id} who={`${item.donor.firstName}'s listing`} label="Report this listing" />
       )}
     </DetailLayout>
   );

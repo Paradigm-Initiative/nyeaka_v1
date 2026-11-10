@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import DashboardView from "@/components/dashboard/dashboard-view";
+import { getBlockedUsers } from "@/lib/safety";
 import {
   getActiveMatches,
   getDashboardOffers,
@@ -21,11 +22,12 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
   const firstName = session.user.name?.split(" ")[0] || "there";
-  const [listings, requests, offers, matches, reputation, profile] = await Promise.all([
+  const [listings, requests, offers, matches, blocked, reputation, profile] = await Promise.all([
     getMyListings(userId),
     getMyRequests(userId),
     getDashboardOffers(userId),
     getActiveMatches(userId),
+    getBlockedUsers(userId),
     getReputation(userId),
     getUserProfile(userId),
   ]);
@@ -39,6 +41,8 @@ export default async function DashboardPage() {
       requests={requests}
       offers={offers}
       matches={matches}
+      blocked={blocked}
+      restricted={!!profile?.restrictedAt}
     />
   );
 }

@@ -6,6 +6,7 @@ import {
 import { ServiceError } from "./errors";
 import { placeLabel } from "./format";
 import { limitMessages } from "./rate-limit";
+import { isBlockedBetween } from "./safety";
 
 /** The thread view loads this many of the most recent messages. */
 export const THREAD_PAGE_SIZE = 200;
@@ -22,7 +23,11 @@ export interface Thread {
   matchId: string;
   matchStatus: "ACTIVE" | "HANDED_OVER" | "CANCELLED";
   role: "donor" | "requester";
-  other: { firstName: string; idVerified: boolean };
+  other: { id: string; firstName: string; idVerified: boolean };
+  /** You blocked them. They are never told they were blocked, so there is no "they blocked you". */
+  blockedByMe: boolean;
+  /** False when the match is cancelled or either of you has blocked the other. */
+  canSend: boolean;
   listingTitle: string;
   requestTitle: string;
   place: string;
@@ -46,8 +51,8 @@ export async function getThread(userId: string, conversationId: string): Promise
           status: true,
           donorId: true,
           requesterId: true,
-          donor: { select: { firstName: true, idVerified: true } },
-          requester: { select: { firstName: true, idVerified: true } },
+          donor: { select: { id: true, firstName: true, idVerified: true } },
+          requester: { select: { id: true, firstName: true, idVerified: true } },
           listing: { select: { title: true, city: true, area: true } },
           request: { select: { title: true } },
         },
@@ -66,12 +71,20 @@ export async function getThread(userId: string, conversationId: string): Promise
   if (!isDonor && m.requesterId !== userId)
     throw new ServiceError("FORBIDDEN", "You are not part of this conversation");
 
+  const other = isDonor ? m.requester : m.donor;
+  const blocks = await prisma.block.findMany({
+    where: { OR: [{ blockerId: userId, blockedId: other.id }, { blockerId: other.id, blockedId: userId }] },
+    select: { blockerId: true },
+  });
+
   return {
     id: conv.id,
     matchId: m.id,
     matchStatus: m.status,
     role: isDonor ? "donor" : "requester",
-    other: isDonor ? m.requester : m.donor,
+    other,
+    blockedByMe: blocks.some((b) => b.blockerId === userId),
+    canSend: m.status !== "CANCELLED" && blocks.length === 0,
     listingTitle: m.listing.title,
     requestTitle: m.request.title,
     place: placeLabel(m.listing.city, m.listing.area),
@@ -104,6 +117,9 @@ export async function sendMessage(userId: string, conversationId: string, input:
     throw new ServiceError("FORBIDDEN", "You are not part of this conversation");
   if (status === "CANCELLED")
     throw new ServiceError("INVALID", "This match was cancelled, so the chat is closed.");
+
+  if (await isBlockedBetween(donorId, requesterId))
+    throw new ServiceError("INVALID", "You can't send messages in this conversation.");
 
   await limitMessages(userId);
 

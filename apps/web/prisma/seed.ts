@@ -93,7 +93,7 @@ async function main() {
 
   await prisma.block.upsert({ where: { blockerId_blockedId: { blockerId: id("zanele"), blockedId: id("kwame") } }, update: {}, create: { id: id("b1"), blockerId: id("zanele"), blockedId: id("kwame") } });
 
-  const report = { reporterId: id("chidi"), targetType: "LISTING" as const, targetListingId: id("l3"), reason: "MISREPRESENTED_DEVICE" as const, details: "Listed as iPhone 8 but photos show a different model." };
+  const report = { reporterId: id("chidi"), reportedUserId: id("amara"), targetType: "LISTING" as const, targetListingId: id("l3"), reason: "MISREPRESENTED_DEVICE" as const, details: "Listed as iPhone 8 but photos show a different model." };
   await prisma.report.upsert({ where: { id: id("rp1") }, update: report, create: { id: id("rp1"), ...report } });
 
   const idv = { userId: id("amara"), documentType: "NATIONAL_ID" as const, status: "VERIFIED" as const, providerRef: "seed-ref-001", submittedAt: new Date("2026-10-01"), reviewedAt: new Date("2026-10-02") };

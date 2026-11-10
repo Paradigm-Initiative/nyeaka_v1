@@ -115,6 +115,10 @@ model User {
   bio                  String?
   idVerified           Boolean            @default(false)
   idVerificationStatus VerificationStatus @default(NONE)
+  // Set automatically when enough different people report or block this user
+  // (see lib/safety.ts). Restricted users can't post or send offers; an admin lifts it.
+  restrictedAt         DateTime?
+  restrictedReason     String?
   createdAt            DateTime           @default(now())
   lastLogin            DateTime?
   updatedAt            DateTime           @updatedAt
@@ -132,6 +136,7 @@ model User {
   ratingsReceived  Rating[]         @relation("RatingRatee")
   reportsFiled     Report[]         @relation("ReportReporter")
   reportsAgainst   Report[]         @relation("ReportTargetUser")
+  reportsAbout     Report[]         @relation("ReportedUser")
   blocksMade       Block[]          @relation("BlockBlocker")
   blocksReceived   Block[]          @relation("BlockBlocked")
   idVerifications  IdVerification[]
@@ -400,6 +405,10 @@ model Report {
   id              String           @id @default(uuid(7))
   reporterId      String
   reporter        User             @relation("ReportReporter", fields: [reporterId], references: [id])
+  // The person the report is about, whatever it targets (a user, their listing,
+  // their request or one of their messages). Reports are counted per this user.
+  reportedUserId  String
+  reportedUser    User             @relation("ReportedUser", fields: [reportedUserId], references: [id])
   targetType      ReportTargetType
   targetUserId    String?
   targetUser      User?            @relation("ReportTargetUser", fields: [targetUserId], references: [id])
@@ -417,6 +426,7 @@ model Report {
 
   @@index([status])
   @@index([reporterId])
+  @@index([reportedUserId, status])
 }
 
 model Block {

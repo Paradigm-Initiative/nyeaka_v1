@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import ReportPanel from "../safety/report-panel";
 import { cancelMatchAction } from "@/actions/matchings";
 import type { DashboardMatch } from "@/lib/queries";
 import { timeAgo } from "@/lib/format";
@@ -58,6 +59,7 @@ const MatchCard = ({ match: m }: { match: DashboardMatch }) => {
             Cancel match
           </Button>
         )}
+        <ReportPanel targetType="USER" targetId={m.otherId} who={m.otherFirstName} />
       </div>
     </div>
   );

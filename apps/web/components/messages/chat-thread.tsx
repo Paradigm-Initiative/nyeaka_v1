@@ -9,6 +9,9 @@ import type { Thread } from "@/lib/messages";
 import { MESSAGE_MAX } from "@/validations/message-validation";
 import { sendMessageAction } from "@/actions/messages";
 import { Button } from "../ui/button";
+import ReportPanel from "../safety/report-panel";
+import BlockButton from "../safety/block-button";
+import UnblockButton from "../safety/unblock-button";
 
 /** How often the open thread re-fetches. Chat v1 has no realtime connection. */
 export const POLL_MS = 10_000;
@@ -27,11 +30,12 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const closed = thread.matchStatus === "CANCELLED";
+  const canSend = thread.canSend;
 
   // Poll: re-run the server component so new messages arrive. Skips hidden tabs,
   // catches up the moment the tab is visible again, and stops once the chat is closed.
   useEffect(() => {
-    if (closed) return;
+    if (!canSend) return;
     const refresh = () => document.visibilityState === "visible" && router.refresh();
     const timer = setInterval(refresh, POLL_MS);
     document.addEventListener("visibilitychange", refresh);
@@ -39,7 +43,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
       clearInterval(timer);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [closed, router]);
+  }, [canSend, router]);
 
   // Keep the newest message in view when the list grows.
   useEffect(() => {
@@ -86,9 +90,14 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
             </span>
           </div>
         </div>
-        <Button variant="link" className="text-destructive">
-          Report or block
-        </Button>
+        <div className="flex flex-wrap items-start gap-2">
+          <ReportPanel targetType="USER" targetId={thread.other.id} who={thread.other.firstName} />
+          {thread.blockedByMe ? (
+            <UnblockButton userId={thread.other.id} who={thread.other.firstName} />
+          ) : (
+            <BlockButton userId={thread.other.id} who={thread.other.firstName} />
+          )}
+        </div>
       </div>
 
       <div className="bg-surface-feature p-3.5 rounded-lg text-body-sm">
@@ -96,11 +105,23 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
         gate — and bring a friend if you can.
       </div>
 
-      {closed && (
+      {thread.blockedByMe ? (
+        <div role="status" className="bg-pin-orange-100 p-3.5 rounded-lg text-body-sm">
+          {closed
+            ? `You blocked ${thread.other.firstName}, so this match was cancelled and the chat is closed. Unblocking them won't reopen it, but you can match again.`
+            : `You blocked ${thread.other.firstName}. Unblock them to message again.`}
+        </div>
+      ) : closed ? (
         <div role="status" className="bg-pin-orange-100 p-3.5 rounded-lg text-body-sm">
           This match was cancelled, so the chat is closed. The device and the
           request are open to new offers again.
         </div>
+      ) : (
+        !canSend && (
+          <div role="status" className="bg-pin-orange-100 p-3.5 rounded-lg text-body-sm">
+            Messages are closed for this conversation.
+          </div>
+        )
       )}
 
       <div className="flex flex-col gap-3 min-h-55" aria-live="polite">
@@ -135,7 +156,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
         ))}
       </div>
 
-      {!closed && (
+      {canSend && (
         <form onSubmit={send} className="flex items-end gap-3">
           <input
             value={draft}
