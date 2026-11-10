@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
 import { getRequestDetail } from "@/lib/queries";
+import { getRequestOfferContext } from "@/lib/offer-queries";
 import { conditionLabel, kindLabel } from "@/lib/device-options";
 import { placeLabel, timeAgo } from "@/lib/format";
 
@@ -30,6 +31,11 @@ const RequestDetailPage = async ({
   if (!data) notFound();
   const { request: item, reputation, isOwner, state } = data;
   const kind = item.deviceType ?? "OTHER";
+  const viewerId = session?.user.id;
+  const context =
+    viewerId && !isOwner && state === "ACTIVE"
+      ? await getRequestOfferContext(viewerId, item.id)
+      : null;
 
   return (
     <DetailLayout
@@ -53,7 +59,14 @@ const RequestDetailPage = async ({
       {isOwner ? (
         <OwnerPanel kind="request" id={item.id} state={state} expiresAt={item.expiresAt} />
       ) : (
-        <ContactForm mode="offer" who={item.requester.firstName} />
+        <ContactForm
+          mode="offer"
+          who={item.requester.firstName}
+          signedIn={!!viewerId}
+          targetId={item.id}
+          context={context}
+          closedMessage={state === "ACTIVE" ? undefined : "This request has been matched and is no longer open."}
+        />
       )}
     </DetailLayout>
   );

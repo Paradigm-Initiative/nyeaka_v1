@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import DashboardView from "@/components/dashboard/dashboard-view";
 import {
-  getIncomingOffers,
+  getActiveMatches,
+  getDashboardOffers,
   getMyListings,
   getMyRequests,
   getReputation,
@@ -20,10 +21,11 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
   const firstName = session.user.name?.split(" ")[0] || "there";
-  const [listings, requests, incoming, reputation, profile] = await Promise.all([
+  const [listings, requests, offers, matches, reputation, profile] = await Promise.all([
     getMyListings(userId),
     getMyRequests(userId),
-    getIncomingOffers(userId),
+    getDashboardOffers(userId),
+    getActiveMatches(userId),
     getReputation(userId),
     getUserProfile(userId),
   ]);
@@ -35,7 +37,8 @@ export default async function DashboardPage() {
       reputation={reputation}
       listings={listings}
       requests={requests}
-      incoming={incoming}
+      offers={offers}
+      matches={matches}
     />
   );
 }

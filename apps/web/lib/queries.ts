@@ -2,6 +2,7 @@ import { prisma } from "@/neon-db";
 import type { Prisma } from "@/generated/prisma/client";
 import { PAGE_SIZE, type BrowseFilters } from "./browse-params";
 import { postState } from "./lifecycle";
+import { placeLabel } from "./format";
 
 // Only live posts are public: ACTIVE and not past expiresAt.
 const live = () => ({ status: "ACTIVE" as const, expiresAt: { gt: new Date() } });
@@ -149,11 +150,14 @@ export async function getRequestDetail(id: string, viewerId?: string) {
   return { request, isOwner, state, reputation: await getReputation(request.requesterId) };
 }
 
+// Counts only offers still waiting for an answer, so "3 offers" means 3 to deal with.
+const pendingOffers = { select: { offers: { where: { status: "PENDING" as const } } } };
+
 export function getMyListings(userId: string) {
   return prisma.listing.findMany({
     where: { donorId: userId },
     orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, city: true, area: true, condition: true, status: true, expiresAt: true, createdAt: true, _count: { select: { offers: true } } },
+    select: { id: true, title: true, city: true, area: true, condition: true, status: true, expiresAt: true, createdAt: true, _count: pendingOffers },
   });
 }
 
@@ -161,22 +165,118 @@ export function getMyRequests(userId: string) {
   return prisma.request.findMany({
     where: { requesterId: userId },
     orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, city: true, area: true, minCondition: true, status: true, expiresAt: true, createdAt: true, _count: { select: { offers: true } } },
+    select: { id: true, title: true, city: true, area: true, minCondition: true, status: true, expiresAt: true, createdAt: true, _count: pendingOffers },
   });
 }
 
-export function getIncomingOffers(userId: string) {
-  return prisma.offer.findMany({
-    where: { status: "PENDING", listing: { donorId: userId } },
+export interface DashboardOffer {
+  id: string;
+  /** Which hat the viewer wears on this offer. */
+  role: "donor" | "requester";
+  /** received: the viewer must answer it. sent: the viewer made it. */
+  direction: "received" | "sent";
+  status: "PENDING" | "DECLINED";
+  message: string | null;
+  createdAt: Date;
+  listingTitle: string;
+  requestTitle: string;
+  requestDescription: string;
+  place: string;
+  other: { firstName: string; idVerified: boolean };
+}
+
+/**
+ * Every offer the user needs to answer or is waiting on, plus their own offers
+ * that were not chosen. Accepted and withdrawn offers are history, not tasks.
+ */
+export async function getDashboardOffers(userId: string): Promise<DashboardOffer[]> {
+  const rows = await prisma.offer.findMany({
+    where: {
+      status: { in: ["PENDING", "DECLINED"] },
+      OR: [{ donorId: userId }, { request: { requesterId: userId } }],
+    },
     orderBy: { createdAt: "desc" },
-    take: 10,
+    take: 50,
     select: {
       id: true,
+      status: true,
       message: true,
       createdAt: true,
+      donorId: true,
+      initiatedById: true,
+      donor: { select: { firstName: true, idVerified: true } },
       listing: { select: { title: true } },
-      request: { select: { description: true, city: true, area: true, requester: { select: { firstName: true, idVerified: true } } } },
+      request: {
+        select: {
+          title: true,
+          description: true,
+          city: true,
+          area: true,
+          requester: { select: { firstName: true, idVerified: true } },
+        },
+      },
     },
+  });
+
+  return rows.flatMap((o): DashboardOffer[] => {
+    const role = o.donorId === userId ? "donor" : "requester";
+    const direction = o.initiatedById === userId ? "sent" : "received";
+    // A declined offer only matters to the person who made it ("not selected").
+    if (o.status === "DECLINED" && direction !== "sent") return [];
+    return [
+      {
+        id: o.id,
+        role,
+        direction,
+        status: o.status as "PENDING" | "DECLINED",
+        message: o.message,
+        createdAt: o.createdAt,
+        listingTitle: o.listing.title,
+        requestTitle: o.request.title,
+        requestDescription: o.request.description,
+        place: placeLabel(o.request.city, o.request.area),
+        other: role === "donor" ? o.request.requester : o.donor,
+      },
+    ];
+  });
+}
+
+export interface DashboardMatch {
+  id: string;
+  role: "donor" | "requester";
+  conversationId: string | null;
+  listingTitle: string;
+  requestTitle: string;
+  otherFirstName: string;
+  createdAt: Date;
+}
+
+export async function getActiveMatches(userId: string): Promise<DashboardMatch[]> {
+  const rows = await prisma.match.findMany({
+    where: { status: "ACTIVE", OR: [{ donorId: userId }, { requesterId: userId }] },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      donorId: true,
+      createdAt: true,
+      conversation: { select: { id: true } },
+      listing: { select: { title: true } },
+      request: { select: { title: true } },
+      donor: { select: { firstName: true } },
+      requester: { select: { firstName: true } },
+    },
+  });
+  return rows.map((m) => {
+    const role = m.donorId === userId ? "donor" : "requester";
+    return {
+      id: m.id,
+      role,
+      conversationId: m.conversation?.id ?? null,
+      listingTitle: m.listing.title,
+      requestTitle: m.request.title,
+      otherFirstName: role === "donor" ? m.requester.firstName : m.donor.firstName,
+      createdAt: m.createdAt,
+    };
   });
 }
 

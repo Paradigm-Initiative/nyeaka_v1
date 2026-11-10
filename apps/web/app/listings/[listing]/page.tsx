@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
 import { getListingDetail } from "@/lib/queries";
+import { getListingOfferContext } from "@/lib/offer-queries";
 import { conditionLabel, kindLabel } from "@/lib/device-options";
 import { placeLabel, timeAgo } from "@/lib/format";
 
@@ -29,6 +30,12 @@ const ListingDetailPage = async ({
   const data = await getListingDetail(id, session?.user.id);
   if (!data) notFound();
   const { listing: item, reputation, isOwner, state } = data;
+
+  const viewerId = session?.user.id;
+  const context =
+    viewerId && !isOwner && state === "ACTIVE"
+      ? await getListingOfferContext(viewerId, item.id, item.donor.id)
+      : null;
 
   const extras = [
     item.spec?.hasCharger && "Charger",
@@ -58,7 +65,14 @@ const ListingDetailPage = async ({
       {isOwner ? (
         <OwnerPanel kind="listing" id={item.id} state={state} expiresAt={item.expiresAt} />
       ) : (
-        <ContactForm mode="request" who={item.donor.firstName} />
+        <ContactForm
+          mode="request"
+          who={item.donor.firstName}
+          signedIn={!!viewerId}
+          targetId={item.id}
+          context={context}
+          closedMessage={state === "ACTIVE" ? undefined : "This device has been matched and is no longer available."}
+        />
       )}
     </DetailLayout>
   );
