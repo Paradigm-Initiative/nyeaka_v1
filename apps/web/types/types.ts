@@ -10,12 +10,6 @@ export interface HowItWorksStep {
   description: string;
 }
 
-export interface ChatMessage {
-  from: "me" | "them";
-  text: string;
-  time: string;
-}
-
 
 // email function params types
 export interface SendEmailParams {

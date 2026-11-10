@@ -1,29 +1,69 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { MOCK_CHAT_THREAD } from "@/data/chat-mock";
-import { ChatMessage } from "@/types/types";
+import type { Thread } from "@/lib/messages";
+import { MESSAGE_MAX } from "@/validations/message-validation";
+import { sendMessageAction } from "@/actions/messages";
 import { Button } from "../ui/button";
 
-const ChatThread = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>(MOCK_CHAT_THREAD);
-  const [draft, setDraft] = useState("");
-  const [revealed, setRevealed] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
-  const [rating, setRating] = useState(0);
-  const [rated, setRated] = useState(false);
+/** How often the open thread re-fetches. Chat v1 has no realtime connection. */
+export const POLL_MS = 10_000;
 
-  const send = () => {
-    const text = draft.trim();
-    if (!text) return;
-    setMessages((prev) => [...prev, { from: "me", text, time: "now" }]);
-    setDraft("");
+const formatTime = (d: Date) => {
+  const date = new Date(d);
+  const time = date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  return date.toDateString() === new Date().toDateString()
+    ? time
+    : `${date.toLocaleDateString([], { day: "numeric", month: "short" })}, ${time}`;
+};
+
+const ChatThread = ({ thread }: { thread: Thread }) => {
+  const router = useRouter();
+  const [sending, startSend] = useTransition();
+  const [draft, setDraft] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const closed = thread.matchStatus === "CANCELLED";
+
+  // Poll: re-run the server component so new messages arrive. Skips hidden tabs,
+  // catches up the moment the tab is visible again, and stops once the chat is closed.
+  useEffect(() => {
+    if (closed) return;
+    const refresh = () => document.visibilityState === "visible" && router.refresh();
+    const timer = setInterval(refresh, POLL_MS);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [closed, router]);
+
+  // Keep the newest message in view when the list grows.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [thread.messages.length]);
+
+  const send = (e: React.FormEvent) => {
+    e.preventDefault();
+    const body = draft.trim();
+    if (!body || sending) return;
+    startSend(async () => {
+      const res = await sendMessageAction(thread.id, { body });
+      if (!res.ok) {
+        toast.error(res.error);
+        router.refresh(); // e.g. the match was cancelled while this tab was open
+        return;
+      }
+      setDraft("");
+      router.refresh();
+    });
   };
 
   return (
-    <div className="flex flex-col gap-4 mx-auto py-6 max-w-3xl section-wrapper">
+    <div className="flex flex-col gap-4 mx-auto py-6 w-full max-w-3xl section-wrapper">
       <Link
         href="/dashboard"
         className="self-start font-semibold text-body-sm text-link hover:underline"
@@ -34,14 +74,15 @@ const ChatThread = () => {
       <div className="flex flex-wrap justify-between items-center gap-3 pb-4 border-b">
         <div className="flex items-center gap-3">
           <span className="flex justify-center items-center bg-surface-feature rounded-full size-11 font-heading font-bold text-pin-green-600">
-            C
+            {thread.other.firstName[0]?.toUpperCase()}
           </span>
           <div className="flex flex-col gap-0.5">
             <span className="font-heading font-semibold text-heading-5">
-              Chika · about HP ProBook 450
+              {thread.other.firstName} · about {thread.listingTitle}
             </span>
             <span className="text-muted-foreground text-body-sm">
-              ID-verified · 4.9 ★ · Nsukka, Enugu
+              {thread.other.idVerified ? "ID-verified · " : ""}
+              {thread.place} · for &ldquo;{thread.requestTitle}&rdquo;
             </span>
           </div>
         </div>
@@ -52,129 +93,66 @@ const ChatThread = () => {
 
       <div className="bg-surface-feature p-3.5 rounded-lg text-body-sm">
         Meet somewhere public and busy — a bank, a filling station, a campus
-        gate. Popular in Wuse: Banex Plaza entrance, Ceddi Plaza, Berger
-        junction.
+        gate — and bring a friend if you can.
       </div>
 
-      <div className="flex flex-col gap-3 min-h-55">
-        {messages.map((m, i) => (
+      {closed && (
+        <div role="status" className="bg-pin-orange-100 p-3.5 rounded-lg text-body-sm">
+          This match was cancelled, so the chat is closed. The device and the
+          request are open to new offers again.
+        </div>
+      )}
+
+      <div className="flex flex-col gap-3 min-h-55" aria-live="polite">
+        {thread.messages.length === 0 && (
+          <p className="text-muted-foreground text-body-sm">
+            No messages yet. Say hello and suggest a public place and time to meet.
+          </p>
+        )}
+        {thread.messages.map((m) => (
           <div
-            key={i}
-            className={cn(
-              "flex flex-col gap-1",
-              m.from === "me" ? "items-end" : "items-start",
-            )}
+            key={m.id}
+            className={cn("flex flex-col gap-1", m.mine ? "items-end" : "items-start")}
           >
             <div
               className={cn(
-                "max-w-[78%] rounded-lg border px-4 py-3 text-body-md",
-                m.from === "me"
+                "max-w-[78%] whitespace-pre-wrap break-words rounded-lg border px-4 py-3 text-body-md",
+                m.mine
                   ? "bg-surface-feature border-surface-feature"
                   : "bg-canvas border-hairline",
               )}
             >
-              {m.text}
+              {m.body}
             </div>
-            <span className="text-caption-bold text-pin-gray-400">
-              {m.time}
-            </span>
+            <time
+              dateTime={new Date(m.createdAt).toISOString()}
+              suppressHydrationWarning
+              className="text-caption-bold text-pin-gray-400"
+            >
+              {formatTime(m.createdAt)}
+            </time>
           </div>
         ))}
       </div>
 
-      {revealed ? (
-        <div className="flex flex-col gap-1.5 bg-surface-feature p-4 border border-pin-green-600 rounded-lg">
-          <span className="text-pin-green-600 text-micro-uppercase">
-            Numbers shared
-          </span>
-          <span className="text-heading-4">Chika — 0806 412 0088</span>
-          <span className="text-muted-foreground text-body-sm">
-            She can now see yours too. Nyeaka keeps the chat either way, in
-            case you need a record.
-          </span>
-        </div>
-      ) : (
-        <div className="flex flex-wrap justify-between items-center gap-3 p-4 border rounded-lg">
-          <p className="max-w-[46ch] text-muted-foreground text-body-sm">
-            Phone numbers stay hidden until you both agree. Chika has already
-            agreed to share hers.
-          </p>
-          <Button variant="outline" onClick={() => setRevealed(true)}>
-            Share my number too
+      {!closed && (
+        <form onSubmit={send} className="flex items-end gap-3">
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Write a message"
+            aria-label="Write a message"
+            maxLength={MESSAGE_MAX}
+            autoComplete="off"
+            className="flex-1 bg-input/50 px-4 rounded-sm h-12 text-base"
+          />
+          <Button type="submit" disabled={sending || !draft.trim()}>
+            {sending ? "Sending…" : "Send"}
           </Button>
-        </div>
+        </form>
       )}
-
-      <div className="flex items-end gap-3">
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Write a message"
-          className="flex-1 bg-input/50 px-4 rounded-sm h-12 text-base"
-        />
-        <Button onClick={send}>Send</Button>
-      </div>
-
-      <div className="flex flex-col gap-3 pt-4 border-t">
-        {!confirmed ? (
-          <div className="flex flex-wrap justify-between items-center gap-3">
-            <p className="max-w-[46ch] text-muted-foreground text-body-sm">
-              Once the device has changed hands, you both confirm here.
-              Ratings only open after that.
-            </p>
-            <Button onClick={() => setConfirmed(true)}>
-              Confirm handoff
-            </Button>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <span className="text-heading-4">
-              Both of you confirmed the handoff
-            </span>
-            {!rated ? (
-              <div className="flex flex-col gap-3">
-                <span className="text-body-md text-muted-foreground">
-                  How was meeting Chika?
-                </span>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setRating(n)}
-                      className={cn(
-                        "size-11 text-3xl leading-none",
-                        n <= rating
-                          ? "text-pin-orange-600"
-                          : "text-pin-gray-300",
-                      )}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
-                <Button
-                  className="self-start"
-                  onClick={() => setRated(true)}
-                >
-                  Leave rating
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-1.5 bg-surface-feature p-4 rounded-lg">
-                <span className="font-heading font-semibold text-heading-5">
-                  Thank you — that&apos;s one more device online
-                </span>
-                <span className="text-muted-foreground text-body-sm">
-                  Your rating is on Chika&apos;s profile, and hers is on
-                  yours.
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      {/* After the composer, so scrolling here keeps the latest message and the input in view. */}
+      <div ref={bottomRef} />
     </div>
   );
 };
