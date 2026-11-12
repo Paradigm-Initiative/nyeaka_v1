@@ -6,6 +6,7 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 
 - **Working end to end:** sign-up and sign-in, posting and managing listings and requests (with photo upload), browse and search, sending offers, accepting and declining, chat, sharing phone numbers, confirming handoffs, ratings, cancel, block, report, and automatic restriction. Plus rate limits and the lifecycle emails.
 - **Not built:** ID verification (the page is a placeholder), an admin area, Google/Apple sign-up, profile pages, and any email or in-app signal for a *new chat message*.
+- **Direction (decided 2026-11-12):** Africa-wide by design, with only Nigeria enabled at launch, same-country matching, and manual ID review. The built app is still Nigeria-flavoured in places (copy, phone placeholder, country list); the scope and the planned changes are in [CLAUDE.md](CLAUDE.md).
 - **Before launch:** make sure every database has the migrations, set the environment variables, and test email delivery for real. All of these are listed [below](#before-launch-checklist).
 
 ## What is done and where
