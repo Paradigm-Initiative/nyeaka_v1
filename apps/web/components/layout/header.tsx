@@ -23,7 +23,7 @@ const Header = () => {
 
   return (
     <header className="top-0 z-50 sticky bg-canvas-dark w-full">
-      <div className="flex justify-between items-center mx-auto w-full h-16 text-pin-gray-50 container">
+      <div className="flex justify-between items-center mx-auto w-full h-16 px-6 max-w-300 text-pin-gray-50">
         <Link
           href="/"
           className="flex items-center gap-2.5 font-heading leading-none"
@@ -99,14 +99,14 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-canvas-dark border-white/10 border-t">
           <nav
-            className="flex flex-col gap-1 px-4 py-4 container"
+            className="flex flex-col gap-1 px-6 py-4 max-w-300 mx-auto w-full"
             aria-label="Mobile navigation"
           >
             {navigationLinks.map((link) => (
               <NavLink
                 key={link.href}
                 href={link.href}
-                className="px-2 py-2.5 rounded-md font-medium text-sm"
+                className="flex items-center px-2 min-h-11 rounded-md font-medium text-sm"
                 activeClassName="text-pin-gray-50 bg-white/10"
                 inactiveClassName="text-pin-gray-400 hover:text-pin-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}

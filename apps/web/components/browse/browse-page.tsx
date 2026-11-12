@@ -69,11 +69,11 @@ const BrowsePage = ({
           <p className="max-w-[56ch] text-body-md text-pin-gray-400">
             {description}
           </p>
-          <div className="flex gap-1 bg-white/8 mt-2 p-1 rounded-md w-fit">
+          <div className="flex gap-1 bg-white/8 mt-2 p-1 rounded-md w-full sm:w-fit">
             <Link
               href="/listings"
               className={cn(
-                "rounded-sm px-4.5 py-2.5 font-heading text-sm font-semibold",
+                "flex-1 sm:flex-none rounded-sm px-4.5 py-2.5 min-h-11 text-center font-heading text-sm font-semibold",
                 tab === "devices"
                   ? "bg-white text-pin-gray-900"
                   : "text-pin-gray-400 hover:text-pin-gray-50",
@@ -84,7 +84,7 @@ const BrowsePage = ({
             <Link
               href="/requests"
               className={cn(
-                "rounded-sm px-4.5 py-2.5 font-heading text-sm font-semibold",
+                "flex-1 sm:flex-none rounded-sm px-4.5 py-2.5 min-h-11 text-center font-heading text-sm font-semibold",
                 tab === "requests"
                   ? "bg-white text-pin-gray-900"
                   : "text-pin-gray-400 hover:text-pin-gray-50",
@@ -102,7 +102,7 @@ const BrowsePage = ({
           ref={formRef}
           key={`${filters.q}|${filters.city}|${filters.type}`}
           action={basePath}
-          className="flex gap-2"
+          className="flex flex-wrap gap-2"
         >
           {filters.type && <input type="hidden" name="type" value={filters.type} />}
           {filters.city && <input type="hidden" name="city" value={filters.city} />}
@@ -112,10 +112,10 @@ const BrowsePage = ({
             defaultValue={filters.q}
             placeholder={tab === "devices" ? "Search brand or model" : "Search requests"}
             aria-label="Search"
-            className="flex-1 rounded-sm h-11"
+            className="rounded-sm w-full sm:flex-1 sm:basis-0 sm:w-auto h-11"
           />
           <Select value={filters.city ?? ALL_CITIES} onValueChange={pickCity}>
-            <SelectTrigger aria-label="City" className="rounded-sm w-44 max-w-44 h-11">
+            <SelectTrigger aria-label="City" className="flex-1 sm:flex-none rounded-sm sm:w-44 h-11">
               <SelectValue />
             </SelectTrigger>
             <SelectContent align="end">
@@ -130,7 +130,7 @@ const BrowsePage = ({
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" className="h-11">Search</Button>
+          <Button type="submit" className="h-11 px-6">Search</Button>
         </form>
 
         <div className="flex flex-wrap gap-2">

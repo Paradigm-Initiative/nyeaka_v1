@@ -40,22 +40,22 @@ const DetailLayout = ({
       <div className="flex flex-col gap-6">
         <Link
           href={backHref}
-          className="self-start font-semibold text-body-sm text-link hover:underline"
+          className="inline-flex items-center self-start min-h-11 font-semibold text-body-sm text-link hover:underline"
         >
           {backLabel}
         </Link>
 
-        <div className="items-start gap-8 grid grid-cols-1 lg:grid-cols-2">
+        <div className="items-start gap-6 lg:gap-8 grid grid-cols-1 lg:grid-cols-2">
           <div className="flex flex-col gap-3">
             {photos.length > 0 ? (
               <>
-                <div className="relative rounded-lg h-80 overflow-hidden">
+                <div className="relative rounded-lg h-56 sm:h-72 lg:h-80 overflow-hidden">
                   <Image src={photos[0]} alt={title} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
                 </div>
                 {photos.length > 1 && (
                   <div className="gap-3 grid grid-cols-3">
                     {photos.slice(1).map((url) => (
-                      <div key={url} className="relative rounded-lg h-22 overflow-hidden">
+                      <div key={url} className="relative rounded-lg h-16 sm:h-22 overflow-hidden">
                         <Image src={url} alt="" fill sizes="200px" className="object-cover" />
                       </div>
                     ))}
@@ -64,11 +64,11 @@ const DetailLayout = ({
               </>
             ) : (
               <>
-                <DeviceTile kind={kind} className="h-80" iconClassName="size-24" />
+                <DeviceTile kind={kind} className="h-56 sm:h-72 lg:h-80" iconClassName="size-24" />
                 <div className="gap-3 grid grid-cols-3">
-                  <DeviceTile kind={kind} className="h-22" />
-                  <DeviceTile kind={kind} className="h-22" />
-                  <DeviceTile kind={kind} className="h-22" />
+                  <DeviceTile kind={kind} className="h-16 sm:h-22" />
+                  <DeviceTile kind={kind} className="h-16 sm:h-22" />
+                  <DeviceTile kind={kind} className="h-16 sm:h-22" />
                 </div>
               </>
             )}

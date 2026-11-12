@@ -73,18 +73,18 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
     <div className="flex flex-col gap-4 mx-auto py-6 w-full max-w-3xl section-wrapper">
       <Link
         href="/dashboard"
-        className="self-start font-semibold text-body-sm text-link hover:underline"
+        className="inline-flex items-center self-start min-h-11 font-semibold text-body-sm text-link hover:underline"
       >
         ← Dashboard
       </Link>
 
       <div className="flex flex-wrap justify-between items-center gap-3 pb-4 border-b">
-        <div className="flex items-center gap-3">
-          <span className="flex justify-center items-center bg-surface-feature rounded-full size-11 font-heading font-bold text-pin-green-600">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="flex shrink-0 justify-center items-center bg-surface-feature rounded-full size-11 font-heading font-bold text-pin-green-600">
             {thread.other.firstName[0]?.toUpperCase()}
           </span>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-heading font-semibold text-heading-5">
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="font-heading font-semibold text-heading-5 wrap-break-word">
               {thread.other.firstName} · about {thread.listingTitle}
             </span>
             <span className="text-muted-foreground text-body-sm">
@@ -140,7 +140,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
           >
             <div
               className={cn(
-                "max-w-[78%] whitespace-pre-wrap break-words rounded-lg border px-4 py-3 text-body-md",
+                "max-w-[88%] sm:max-w-[78%] whitespace-pre-wrap break-words rounded-lg border px-4 py-3 text-body-md",
                 m.mine
                   ? "bg-surface-feature border-surface-feature"
                   : "bg-canvas border-hairline",
@@ -162,7 +162,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
       <PhonePanel matchId={thread.matchId} who={thread.other.firstName} phone={thread.phone} />
 
       {canSend && (
-        <form onSubmit={send} className="flex items-end gap-3">
+        <form onSubmit={send} className="bottom-0 z-10 sticky flex items-end gap-2 sm:gap-3 bg-background py-2">
           <Input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}

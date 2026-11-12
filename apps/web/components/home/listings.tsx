@@ -14,7 +14,7 @@ const Listings = async () => {
           <h2 className="text-heading-2">Listed in the last seven days</h2>
           <Link
             href="/listings"
-            className="font-semibold text-body-sm text-link hover:underline"
+            className="inline-flex items-center min-h-11 font-semibold text-body-sm text-link hover:underline"
           >
             See all listings
           </Link>
