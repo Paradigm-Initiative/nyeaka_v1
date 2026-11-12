@@ -5,11 +5,11 @@ import { ServiceError } from "./errors";
 import { RATING_COMMENT_MAX, RATING_WINDOW_DAYS, ratingVerdict } from "./rating-rules";
 
 export const rateSchema = z.object({
-  score: z.number({ error: "Choose a star rating" }).int().min(1, "Choose a star rating").max(5),
+  score: z.number({ error: "chooseRating" }).int().min(1, "chooseRating").max(5),
   comment: z
     .string()
     .trim()
-    .max(RATING_COMMENT_MAX, `Keep it under ${RATING_COMMENT_MAX} characters`)
+    .max(RATING_COMMENT_MAX, "commentTooLong")
     .optional()
     .transform((v) => v || undefined),
 });

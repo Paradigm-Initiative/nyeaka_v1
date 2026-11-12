@@ -7,22 +7,20 @@ import type { DashboardMatch, DashboardOffer, getMyListings, getMyRequests, getR
 import type { getBlockedUsers } from "@/lib/safety";
 import type { RatingPrompt } from "@/lib/ratings";
 import UnblockButton from "../safety/unblock-button";
-import { conditionLabel } from "@/lib/device-options";
 import { postState, type PostState } from "@/lib/lifecycle";
 import PostActions from "../post/post-actions";
-import { placeLabel, timeAgo } from "@/lib/format";
+import { placeLabel } from "@/lib/format";
+import { useFormatter, useTranslations } from "next-intl";
 import { Button } from "../ui/button";
 import OfferCard from "./offer-card";
 import MatchCard from "./match-card";
 
-const STATE_BADGE: Record<PostState, { label: string; cls: string }> = {
-  ACTIVE: { label: "Live", cls: "badge-green" },
-  EXPIRED: { label: "Expired", cls: "badge-orange" },
-  CLOSED: { label: "Closed", cls: "badge-orange" },
-  MATCHED: { label: "Matched", cls: "badge-green" },
+const STATE_BADGE: Record<PostState, string> = {
+  ACTIVE: "badge-green",
+  EXPIRED: "badge-orange",
+  CLOSED: "badge-orange",
+  MATCHED: "badge-green",
 };
-
-const plural = (n: number) => `${n} offer${n === 1 ? "" : "s"}`;
 
 type Props = {
   firstName: string;
@@ -38,6 +36,9 @@ type Props = {
 };
 
 const DashboardView = ({ firstName, idVerified, reputation, listings, requests, offers, matches, blocked, restricted, toRate }: Props) => {
+  const t = useTranslations("dashboard");
+  const tDevice = useTranslations("device");
+  const format = useFormatter();
   const [role, setRole] = useState<"donor" | "requester">("donor");
 
   // Everything below is filtered to the hat the user is wearing in the current tab.
@@ -52,7 +53,7 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
   return (
     <div className="flex flex-col gap-6 w-full section-wrapper">
       <div className="flex flex-wrap justify-between items-center gap-3">
-        <h1 className="text-heading-2">Hello {firstName}</h1>
+        <h1 className="text-heading-2">{firstName ? t("hello", { name: firstName }) : t("helloAnon")}</h1>
         <div className="flex gap-1 p-1 border border-hairline-strong rounded-md">
           <Button
             type="button"
@@ -65,7 +66,7 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
                 : "text-muted-foreground",
             )}
           >
-            Giving
+            {t("giving")}
             {waiting.donor > 0 && <span className="ml-2 bg-pin-orange-100 px-1.5 rounded-full text-pin-gray-900 text-xs">{waiting.donor}</span>}
           </Button>
           <Button
@@ -79,7 +80,7 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
                 : "text-muted-foreground",
             )}
           >
-            Asking
+            {t("asking")}
             {waiting.requester > 0 && <span className="ml-2 bg-pin-orange-100 px-1.5 rounded-full text-pin-gray-900 text-xs">{waiting.requester}</span>}
           </Button>
         </div>
@@ -87,9 +88,7 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
 
       {restricted && (
         <div role="alert" className="bg-pin-orange-100 p-4 rounded-lg text-body-sm">
-          Your account is restricted while we review reports about it. You can
-          still browse, chat and finish matches you already have, but you can&rsquo;t
-          post listings or requests or send offers.
+          {t("restricted")}
         </div>
       )}
 
@@ -99,21 +98,21 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
             {reputation.rating !== null ? `${reputation.rating.toFixed(1)} ★` : "—"}
           </span>
           <span className="text-muted-foreground text-body-sm">
-            Your rating, {reputation.ratingCount} review{reputation.ratingCount === 1 ? "" : "s"}
+            {t("rating", { count: reputation.ratingCount })}
           </span>
         </div>
         <div className="flex flex-col gap-1 p-4 border rounded-lg">
           <span className="text-heading-3">{reputation.handoffs}</span>
           <span className="text-muted-foreground text-body-sm">
-            Completed handoffs
+            {t("handoffs")}
           </span>
         </div>
         <div className="flex flex-col gap-1 p-4 border rounded-lg">
           <span className={cn("text-heading-3", idVerified && "text-pin-green-600")}>
-            {idVerified ? "Verified" : "Not verified"}
+            {idVerified ? t("verified") : t("notVerified")}
           </span>
           <span className="text-muted-foreground text-body-sm">
-            {idVerified ? "NIN and ID confirmed" : <Link href="/verify" className="text-link hover:underline">Verify your identity</Link>}
+            {idVerified ? t("idConfirmed") : <Link href="/verify" className="text-link hover:underline">{t("verifyIdentity")}</Link>}
           </span>
         </div>
       </div>
@@ -123,13 +122,13 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
       {role === "donor" ? (
         <div className="flex flex-col gap-6">
           <OfferSections
-            title="Requests for your devices"
-            empty="No one has asked for your devices yet."
+            title={t("requestsForDevices")}
+            empty={t("noRequestsYet")}
             view={view}
           />
 
           <div className="flex flex-col gap-3">
-            <h2 className="text-heading-3">Your listings</h2>
+            <h2 className="text-heading-3">{t("yourListings")}</h2>
             <div className="gap-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {listings.map((l) => {
                 const state = postState(l.status, l.expiresAt);
@@ -139,11 +138,11 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
                       {l.title}
                     </Link>
                     <span className="text-muted-foreground text-body-sm">
-                      {placeLabel(l.city, l.area)} · {conditionLabel(l.condition)} · listed {timeAgo(l.createdAt)}
+                      {t("listedMeta", { place: placeLabel(l.city, l.area), condition: tDevice(`condition.${l.condition}`), time: format.relativeTime(l.createdAt) })}
                     </span>
                     <div className="flex flex-wrap gap-2">
-                      <span className={cn("badge", STATE_BADGE[state].cls)}>{STATE_BADGE[state].label}</span>
-                      {state === "ACTIVE" && <span className="badge badge-orange">{plural(l._count.offers)}</span>}
+                      <span className={cn("badge", STATE_BADGE[state])}>{t(`state.${state}`)}</span>
+                      {state === "ACTIVE" && <span className="badge badge-orange">{t("offers", { count: l._count.offers })}</span>}
                     </div>
                     <PostActions kind="listing" id={l.id} state={state} />
                   </div>
@@ -154,9 +153,9 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
                 className="flex flex-col justify-center gap-1.5 p-4 border border-hairline-strong border-dashed rounded-lg min-h-27"
               >
                 <span className="font-heading font-semibold text-heading-5 text-pin-green-600">
-                  + List {listings.length ? "another" : "a"} device
+                  {listings.length ? t("listAnother") : t("listFirst")}
                 </span>
-                <span className="text-muted-foreground text-body-sm">Two minutes</span>
+                <span className="text-muted-foreground text-body-sm">{t("twoMinutes")}</span>
               </Link>
             </div>
           </div>
@@ -164,12 +163,12 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
       ) : (
         <div className="flex flex-col gap-6">
           <OfferSections
-            title="Offers for your requests"
-            empty="No one has offered a device yet."
+            title={t("offersForRequests")}
+            empty={t("noOffersYet")}
             view={view}
           />
           <div className="flex flex-col gap-3">
-            <h2 className="text-heading-3">Your requests</h2>
+            <h2 className="text-heading-3">{t("yourRequests")}</h2>
             <div className="flex flex-col gap-3">
               {requests.map((r) => {
                 const state = postState(r.status, r.expiresAt);
@@ -179,11 +178,11 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
                       {r.title}
                     </Link>
                     <span className="text-muted-foreground text-body-sm">
-                      {r.minCondition ? `${conditionLabel(r.minCondition)} or better` : "Any condition"} · {placeLabel(r.city, r.area)} · posted {timeAgo(r.createdAt)}
+                      {t("requestMeta", { condition: r.minCondition ? t("orBetter", { condition: tDevice(`condition.${r.minCondition}`) }) : t("anyCondition"), place: placeLabel(r.city, r.area), time: format.relativeTime(r.createdAt) })}
                     </span>
                     <div className="flex flex-wrap gap-2">
-                      <span className={cn("badge", STATE_BADGE[state].cls)}>{STATE_BADGE[state].label}</span>
-                      {state === "ACTIVE" && <span className="badge badge-orange">{plural(r._count.offers)}</span>}
+                      <span className={cn("badge", STATE_BADGE[state])}>{t(`state.${state}`)}</span>
+                      {state === "ACTIVE" && <span className="badge badge-orange">{t("offers", { count: r._count.offers })}</span>}
                     </div>
                     <PostActions kind="request" id={r.id} state={state} />
                   </div>
@@ -194,7 +193,7 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
                 className="flex flex-col justify-center gap-1.5 p-4 border border-hairline-strong border-dashed rounded-lg min-h-27"
               >
                 <span className="font-heading font-semibold text-heading-5 text-pin-green-600">
-                  + Ask for {requests.length ? "another" : "a"} device
+                  {requests.length ? t("askAnother") : t("askFirst")}
                 </span>
               </Link>
             </div>
@@ -208,35 +207,39 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
 };
 
 /** Ended matches still waiting for the user's rating. Hidden when there are none. */
-const RatePrompts = ({ toRate }: { toRate: RatingPrompt[] }) =>
-  toRate.length === 0 ? null : (
+const RatePrompts = ({ toRate }: { toRate: RatingPrompt[] }) => {
+  const t = useTranslations("dashboard");
+  const format = useFormatter();
+  return toRate.length === 0 ? null : (
     <div className="flex flex-col gap-3">
-      <h2 className="text-heading-3">Rate your handoffs</h2>
+      <h2 className="text-heading-3">{t("rateTitle")}</h2>
       {toRate.map((p) => (
         <div key={p.matchId} className="flex flex-wrap justify-between items-center gap-3 p-4 border rounded-lg">
           <div className="flex flex-col gap-0.5">
             <span className="font-heading font-semibold text-heading-5">
-              {p.status === "HANDED_OVER" ? `How did it go with ${p.otherFirstName}?` : `Rate ${p.otherFirstName}`}
+              {p.status === "HANDED_OVER" ? t("howDidItGo", { name: p.otherFirstName }) : t("rateName", { name: p.otherFirstName })}
             </span>
             <span className="text-muted-foreground text-body-sm">
-              {p.listingTitle} · {p.status === "HANDED_OVER" ? "handed over" : "match cancelled"} {timeAgo(p.endedAt)}
+              {t(p.status === "HANDED_OVER" ? "handedOverMeta" : "cancelledMeta", { title: p.listingTitle, time: format.relativeTime(p.endedAt) })}
             </span>
           </div>
           {p.conversationId && (
             <Button asChild size="sm">
-              <Link href={`/messages/${p.conversationId}`}>Rate</Link>
+              <Link href={`/messages/${p.conversationId}`}>{t("rate")}</Link>
             </Button>
           )}
         </div>
       ))}
     </div>
   );
+};
 
 /** People you have blocked, with a way to undo it. Hidden when there are none. */
-const BlockedList = ({ blocked }: { blocked: Props["blocked"] }) =>
-  blocked.length === 0 ? null : (
+const BlockedList = ({ blocked }: { blocked: Props["blocked"] }) => {
+  const t = useTranslations("dashboard");
+  return blocked.length === 0 ? null : (
     <div className="flex flex-col gap-3">
-      <h2 className="text-heading-3">Blocked people</h2>
+      <h2 className="text-heading-3">{t("blockedTitle")}</h2>
       <div className="flex flex-col gap-2">
         {blocked.map((b) => (
           <div key={b.blockedId} className="flex flex-wrap justify-between items-center gap-3 p-3 border rounded-lg">
@@ -247,6 +250,7 @@ const BlockedList = ({ blocked }: { blocked: Props["blocked"] }) =>
       </div>
     </div>
   );
+};
 
 /** Matches first (they have a live chat), then offers to answer, then offers waiting on others. */
 const OfferSections = ({
@@ -257,11 +261,13 @@ const OfferSections = ({
   title: string;
   empty: string;
   view: { received: DashboardOffer[]; sent: DashboardOffer[]; matches: DashboardMatch[] };
-}) => (
+}) => {
+  const t = useTranslations("dashboard");
+  return (
   <div className="flex flex-col gap-6">
     {view.matches.length > 0 && (
       <div className="flex flex-col gap-3">
-        <h2 className="text-heading-3">Active matches</h2>
+        <h2 className="text-heading-3">{t("activeMatches")}</h2>
         {view.matches.map((m) => (
           <MatchCard key={m.id} match={m} />
         ))}
@@ -277,13 +283,14 @@ const OfferSections = ({
     </div>
     {view.sent.length > 0 && (
       <div className="flex flex-col gap-3">
-        <h2 className="text-heading-3">Sent by you</h2>
+        <h2 className="text-heading-3">{t("sentByYou")}</h2>
         {view.sent.map((o) => (
           <OfferCard key={o.id} offer={o} />
         ))}
       </div>
     )}
   </div>
-);
+  );
+};
 
 export default DashboardView;

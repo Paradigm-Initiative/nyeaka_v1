@@ -8,6 +8,8 @@ import { Button } from "../ui/button";
 import { closeListingAction, renewListingAction } from "@/actions/listings";
 import { closeRequestAction, renewRequestAction } from "@/actions/requests";
 import type { PostState } from "@/lib/lifecycle";
+import { useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 
 const ACTIONS = {
   listing: { close: closeListingAction, renew: renewListingAction, base: "/listings" },
@@ -24,6 +26,8 @@ const PostActions = ({
   id: string;
   state: PostState;
 }) => {
+  const t = useTranslations("postActions");
+  const errText = useErrorText();
   const router = useRouter();
   const [pending, start] = useTransition();
   const [confirming, setConfirming] = useState(false);
@@ -33,7 +37,7 @@ const PostActions = ({
     start(async () => {
       const res = await fn(id);
       if (!res.ok) {
-        toast.error(res.error ?? "Something went wrong");
+        toast.error(errText(res.error ?? "generic"));
         return;
       }
       toast.success(done);
@@ -45,8 +49,8 @@ const PostActions = ({
 
   if (state === "EXPIRED" || state === "CLOSED") {
     return (
-      <Button size="sm" disabled={pending} onClick={() => run(a.renew, "Renewed for 60 days")}>
-        {pending ? "Renewing…" : state === "CLOSED" ? "Reopen for 60 days" : "Renew for 60 days"}
+      <Button size="sm" disabled={pending} onClick={() => run(a.renew, t("renewed"))}>
+        {pending ? t("renewing") : state === "CLOSED" ? t("reopen") : t("renew")}
       </Button>
     );
   }
@@ -54,21 +58,21 @@ const PostActions = ({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button asChild size="sm" variant="outline">
-        <Link href={`${a.base}/${id}/edit`}>Edit</Link>
+        <Link href={`${a.base}/${id}/edit`}>{t("edit")}</Link>
       </Button>
       {confirming ? (
         <>
-          <span className="text-body-sm">Close this {kind}?</span>
-          <Button size="sm" variant="destructive" disabled={pending} onClick={() => run(a.close, `${kind[0].toUpperCase()}${kind.slice(1)} closed`)}>
-            {pending ? "Closing…" : "Yes, close it"}
+          <span className="text-body-sm">{t(`confirm.${kind}`)}</span>
+          <Button size="sm" variant="destructive" disabled={pending} onClick={() => run(a.close, t(`closed.${kind}`))}>
+            {pending ? t("closing") : t("yesClose")}
           </Button>
           <Button size="sm" variant="ghost" disabled={pending} onClick={() => setConfirming(false)}>
-            Keep it
+            {t("keep")}
           </Button>
         </>
       ) : (
         <Button size="sm" variant="outline" onClick={() => setConfirming(true)}>
-          Close
+          {t("close")}
         </Button>
       )}
     </div>

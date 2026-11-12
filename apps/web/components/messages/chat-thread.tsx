@@ -15,20 +15,24 @@ import BlockButton from "../safety/block-button";
 import UnblockButton from "../safety/unblock-button";
 import PhonePanel from "./phone-panel";
 import HandoffPanel from "./handoff-panel";
+import { useFormatter, useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 
 /** How often the open thread re-fetches. Chat v1 has no realtime connection. */
 export const POLL_MS = 10_000;
 
-const formatTime = (d: Date) => {
-  const date = new Date(d);
-  const time = date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  return date.toDateString() === new Date().toDateString()
-    ? time
-    : `${date.toLocaleDateString([], { day: "numeric", month: "short" })}, ${time}`;
-};
-
 const ChatThread = ({ thread }: { thread: Thread }) => {
+  const t = useTranslations("chat");
+  const errText = useErrorText();
+  const format = useFormatter();
   const router = useRouter();
+  const formatTime = (d: Date) => {
+    const date = new Date(d);
+    const time = format.dateTime(date, { hour: "numeric", minute: "2-digit" });
+    return date.toDateString() === new Date().toDateString()
+      ? time
+      : `${format.dateTime(date, { day: "numeric", month: "short" })}, ${time}`;
+  };
   const [sending, startSend] = useTransition();
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -60,7 +64,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
     startSend(async () => {
       const res = await sendMessageAction(thread.id, { body });
       if (!res.ok) {
-        toast.error(res.error);
+        toast.error(errText(res.error));
         router.refresh(); // e.g. the match was cancelled while this tab was open
         return;
       }
@@ -75,7 +79,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
         href="/dashboard"
         className="inline-flex items-center self-start min-h-11 font-semibold text-body-sm text-link hover:underline"
       >
-        ← Dashboard
+        {t("back")}
       </Link>
 
       <div className="flex flex-wrap justify-between items-center gap-3 pb-4 border-b">
@@ -85,11 +89,11 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
           </span>
           <div className="flex flex-col gap-0.5 min-w-0">
             <span className="font-heading font-semibold text-heading-5 wrap-break-word">
-              {thread.other.firstName} · about {thread.listingTitle}
+              {t("title", { name: thread.other.firstName, title: thread.listingTitle })}
             </span>
             <span className="text-muted-foreground text-body-sm">
-              {thread.other.idVerified ? "ID-verified · " : ""}
-              {thread.place} · for &ldquo;{thread.requestTitle}&rdquo;
+              {thread.other.idVerified ? `${t("verified")} · ` : ""}
+              {t("meta", { place: thread.place, request: thread.requestTitle })}
             </span>
           </div>
         </div>
@@ -104,25 +108,23 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
       </div>
 
       <div className="bg-surface-feature p-3.5 rounded-lg text-body-sm">
-        Meet somewhere public and busy — a bank, a filling station, a campus
-        gate — and bring a friend if you can.
+        {t("safetyTip")}
       </div>
 
       {thread.blockedByMe ? (
         <div role="status" className="bg-pin-orange-100 p-3.5 rounded-lg text-body-sm">
           {closed
-            ? `You blocked ${thread.other.firstName}, so this match was cancelled and the chat is closed. Unblocking them won't reopen it, but you can match again.`
-            : `You blocked ${thread.other.firstName}. Unblock them to message again.`}
+            ? t("blockedClosed", { name: thread.other.firstName })
+            : t("blocked", { name: thread.other.firstName })}
         </div>
       ) : closed ? (
         <div role="status" className="bg-pin-orange-100 p-3.5 rounded-lg text-body-sm">
-          This match was cancelled, so the chat is closed. The device and the
-          request are open to new offers again.
+          {t("cancelled")}
         </div>
       ) : (
         !canSend && (
           <div role="status" className="bg-pin-orange-100 p-3.5 rounded-lg text-body-sm">
-            Messages are closed for this conversation.
+            {t("closed")}
           </div>
         )
       )}
@@ -130,7 +132,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
       <div className="flex flex-col gap-3 min-h-55" aria-live="polite">
         {thread.messages.length === 0 && (
           <p className="text-muted-foreground text-body-sm">
-            No messages yet. Say hello and suggest a public place and time to meet.
+            {t("empty")}
           </p>
         )}
         {thread.messages.map((m) => (
@@ -166,14 +168,14 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
           <Input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Write a message"
-            aria-label="Write a message"
+            placeholder={t("write")}
+            aria-label={t("write")}
             maxLength={MESSAGE_MAX}
             autoComplete="off"
             className="flex-1 rounded-sm h-12"
           />
           <Button type="submit" disabled={sending || !draft.trim()}>
-            {sending ? "Sending…" : "Send"}
+            {sending ? t("sending") : t("send")}
           </Button>
         </form>
       )}

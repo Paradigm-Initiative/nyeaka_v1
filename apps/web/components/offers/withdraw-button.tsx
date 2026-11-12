@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { withdrawOfferAction } from "@/actions/offers";
+import { useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 
-const WithdrawButton = ({ offerId, label = "Withdraw offer" }: { offerId: string; label?: string }) => {
+const WithdrawButton = ({ offerId, label }: { offerId: string; label?: string }) => {
+  const t = useTranslations("withdraw");
+  const errText = useErrorText();
   const router = useRouter();
   const [pending, start] = useTransition();
 
@@ -19,15 +23,15 @@ const WithdrawButton = ({ offerId, label = "Withdraw offer" }: { offerId: string
         start(async () => {
           const res = await withdrawOfferAction(offerId);
           if (!res.ok) {
-            toast.error(res.error);
+            toast.error(errText(res.error));
             return;
           }
-          toast.success("Offer withdrawn");
+          toast.success(t("done"));
           router.refresh();
         })
       }
     >
-      {pending ? "Withdrawing…" : label}
+      {pending ? t("pending") : (label ?? t("label"))}
     </Button>
   );
 };

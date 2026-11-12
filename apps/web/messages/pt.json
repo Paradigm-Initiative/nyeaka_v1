@@ -1,0 +1,725 @@
+{
+  "meta": {
+    "title": "Nyeaka - Plataforma de partilha de dispositivos",
+    "description": "A Nyeaka é uma plataforma de partilha de dispositivos que permite aos utilizadores partilhar os seus dispositivos com outras pessoas. Oferece uma forma segura e prática de partilhar dispositivos, facilitando o acesso à tecnologia de que as pessoas precisam. Criada pela Paradigm Initiative, a Nyeaka pretende promover um ambiente colaborativo e eficiente em recursos, onde os utilizadores partilham e acedem facilmente a dispositivos, promovendo a sustentabilidade e reduzindo o lixo eletrónico."
+  },
+  "language": {
+    "label": "Mudar de idioma"
+  },
+  "header": {
+    "homeLabel": "Página inicial da Nyeaka, um projeto da Paradigm Initiative",
+    "byParadigm": "da Paradigm Initiative",
+    "mainNav": "Navegação principal",
+    "mobileNav": "Navegação móvel",
+    "signIn": "Entrar",
+    "createAccount": "Criar conta",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu"
+  },
+  "nav": {
+    "browse": "Ver dispositivos",
+    "requests": "Pedidos",
+    "howItWorks": "Como funciona"
+  },
+  "userMenu": {
+    "dashboard": "Painel",
+    "profile": "Perfil",
+    "admin": "Administração",
+    "signOut": "Terminar sessão"
+  },
+  "footer": {
+    "tagline": "Um mercado gratuito de doação de dispositivos para África. Sem taxas, sem intermediários, sem revenda.",
+    "projectLabel": "Um projeto da Paradigm Initiative",
+    "projectOf": "Um projeto da",
+    "rights": "© {year} <org>Paradigm Initiative</org>. Todos os direitos reservados."
+  },
+  "home": {
+    "hero": {
+      "badge": "{count, number} dispositivos reencaminhados desde o lançamento",
+      "title": "O portátil que deixou de usar ainda funciona.",
+      "subtitle": "Cada um desses dispositivos estava parado em casa de alguém até ser anunciado. A Nyeaka é gratuita, não tem intermediários nem cobra comissão — os membros têm a identidade verificada, encontram-se e fazem a entrega pessoalmente.",
+      "give": "Tenho um dispositivo para dar",
+      "need": "Preciso de um dispositivo",
+      "disclaimer": "A Nyeaka nunca lida com o dispositivo, com o encontro nem com dinheiro — não há dinheiro.",
+      "statsTitle": "Desde o lançamento",
+      "statDevices": "dispositivos entregues",
+      "statMembers": "membros com identidade verificada",
+      "statCities": "cidades em toda a África",
+      "statsNote": "Cerca de dois em cada três anúncios são reclamados numa semana. Os telemóveis saem mais depressa; os portáteis viajam mais longe."
+    },
+    "how": {
+      "title": "Como funciona",
+      "steps": {
+        "1": {
+          "eyebrow": "Passo um",
+          "title": "Anuncie ou peça um",
+          "description": "Tipo de dispositivo, marca, estado, uma foto, a sua zona. Quem pede publica o que precisa e porquê."
+        },
+        "2": {
+          "eyebrow": "Passo dois",
+          "title": "Encontre uma correspondência",
+          "description": "Os pedidos trazem uma nota curta a explicar a necessidade. O doador lê-os e escolhe uma pessoa."
+        },
+        "3": {
+          "eyebrow": "Passo três",
+          "title": "Combine a entrega",
+          "description": "Converse na Nyeaka, combine um local público, troque números só se ambos quiserem. Ambos confirmam quando estiver concluída."
+        }
+      }
+    },
+    "listings": {
+      "title": "Anunciados nos últimos sete dias",
+      "seeAll": "Ver todos os anúncios",
+      "empty": "Ainda não há dispositivos anunciados. Seja o primeiro."
+    },
+    "trust": {
+      "1": {
+        "title": "Nada passa por nós",
+        "description": "Sem envios, sem comissão, sem plataforma a guardar o seu dispositivo. Combina um local público e entrega-o pessoalmente."
+      },
+      "2": {
+        "title": "Sabe com quem se vai encontrar",
+        "description": "Todos verificam a identidade antes de poderem anunciar ou pedir. As avaliações e as entregas concluídas ficam no perfil."
+      },
+      "3": {
+        "title": "Gratuito e não para revenda",
+        "description": "Quem pede assina um compromisso de não revenda que pode ler antes de escolher. O dinheiro nunca entra na conversa."
+      }
+    },
+    "cta": {
+      "eyebrow": "Inclusão digital",
+      "title": "Alguém perto de si está à espera de um dispositivo que já tem.",
+      "body": "Anunciar demora cerca de dois minutos. Você escolhe quem o recebe.",
+      "button": "Anunciar um dispositivo"
+    }
+  },
+  "common": {
+    "showPassword": "Mostrar palavra-passe",
+    "hidePassword": "Ocultar palavra-passe"
+  },
+  "titles": {
+    "verifyEmail": "Verifique o seu e-mail",
+    "forgotPassword": "Esqueceu a palavra-passe",
+    "resetPassword": "Repor palavra-passe",
+    "emailVerified": "E-mail verificado",
+    "verify": "Verifique a sua identidade",
+    "browse": "Ver dispositivos",
+    "requests": "Pedidos",
+    "dashboard": "Painel",
+    "editListing": "Editar anúncio",
+    "editRequest": "Editar pedido",
+    "newListing": "Anunciar um dispositivo",
+    "newRequest": "Pedir um dispositivo",
+    "messages": "Mensagens",
+    "listing": "Anúncio",
+    "request": "Pedido"
+  },
+  "signInRequired": {
+    "editListing": {
+      "title": "Inicie sessão para editar o seu anúncio",
+      "description": "Só quem anunciou um dispositivo o pode alterar."
+    },
+    "editRequest": {
+      "title": "Inicie sessão para editar o seu pedido",
+      "description": "Só quem publicou um pedido o pode alterar."
+    },
+    "newListing": {
+      "title": "Inicie sessão para anunciar um dispositivo",
+      "description": "Os doadores verificam a identidade para que quem vem buscar o dispositivo saiba com quem se vai encontrar."
+    },
+    "newRequest": {
+      "title": "Inicie sessão para pedir um dispositivo",
+      "description": "Os doadores escolhem quem recebe o seu dispositivo. Saber que cada pedido vem de uma pessoa real e verificada torna essa escolha segura."
+    }
+  },
+  "auth": {
+    "required": {
+      "signIn": "Entrar",
+      "createAccount": "Criar uma conta"
+    },
+    "signIn": {
+      "title": "Bem-vindo de volta",
+      "email": "Endereço de e-mail",
+      "emailPlaceholder": "voce@exemplo.com",
+      "password": "Palavra-passe",
+      "forgot": "Esqueceu a palavra-passe?",
+      "submit": "Entrar",
+      "createInstead": "Criar uma conta",
+      "success": "Sessão iniciada com sucesso"
+    },
+    "signUp": {
+      "title": "Crie a sua conta",
+      "subtitle": "Uma conta serve para os dois lados — pode dar um dispositivo hoje e pedir outro para o ano.",
+      "firstName": "Nome próprio",
+      "lastName": "Apelido",
+      "namePlaceholder": "Como consta no seu documento de identificação",
+      "email": "Endereço de e-mail",
+      "emailPlaceholder": "voce@exemplo.com",
+      "password": "Palavra-passe",
+      "passwordHint": "Deve ter pelo menos 10 caracteres.",
+      "confirmPassword": "Confirme a sua palavra-passe",
+      "submit": "Criar conta",
+      "haveAccount": "Já tem uma conta?",
+      "signIn": "Entrar",
+      "success": "Conta criada. Verifique o seu e-mail para a confirmar.",
+      "google": "Registar com o Google",
+      "apple": "Registar com a Apple",
+      "googleSoon": "O início de sessão com o Google ainda não está disponível",
+      "appleSoon": "O início de sessão com a Apple ainda não está disponível"
+    },
+    "verifyEmail": {
+      "title": "Verifique o seu e-mail",
+      "withEmail": "Enviámos uma ligação de verificação para <strong>{email}</strong>. Clique nela para ativar a sua conta. Expira em 1 hora.",
+      "withoutEmail": "Enviámos-lhe uma ligação de verificação. Clique nela para ativar a sua conta.",
+      "resend": "Reenviar e-mail",
+      "resendIn": "Reenviar e-mail dentro de {seconds}s",
+      "sent": "E-mail de verificação enviado",
+      "back": "Voltar a iniciar sessão"
+    },
+    "forgot": {
+      "title": "Esqueceu a palavra-passe?",
+      "subtitle": "Indique o seu e-mail e enviaremos uma ligação para escolher uma nova.",
+      "email": "Endereço de e-mail",
+      "emailPlaceholder": "voce@exemplo.com",
+      "submit": "Enviar ligação",
+      "back": "Voltar a iniciar sessão",
+      "sentTitle": "Verifique o seu e-mail",
+      "sentBody": "Se existir uma conta para <strong>{email}</strong>, enviámos uma ligação para repor a palavra-passe. Expira em 1 hora."
+    },
+    "reset": {
+      "title": "Escolha uma nova palavra-passe",
+      "password": "Nova palavra-passe",
+      "passwordHint": "Deve ter pelo menos 10 caracteres.",
+      "confirm": "Confirme a nova palavra-passe",
+      "submit": "Atualizar palavra-passe",
+      "success": "Palavra-passe atualizada. Inicie sessão.",
+      "invalidTitle": "Esta ligação não é válida",
+      "invalidBody": "A ligação de reposição é inválida ou expirou. Peça uma nova para continuar.",
+      "newLink": "Pedir uma nova ligação"
+    },
+    "emailVerified": {
+      "invalidTitle": "Esta ligação não é válida",
+      "invalidBody": "A ligação de verificação é inválida ou expirou. Inicie sessão e enviaremos uma nova.",
+      "signIn": "Entrar",
+      "verified": "E-mail verificado",
+      "verifiedNamed": "Está verificado, {name}",
+      "body": "O seu e-mail foi confirmado. Já pode explorar, anunciar um dispositivo ou pedir um.",
+      "dashboard": "Ir para o meu painel"
+    }
+  },
+  "authErrors": {
+    "INVALID_EMAIL_OR_PASSWORD": "E-mail ou palavra-passe incorretos.",
+    "INVALID_PASSWORD": "Palavra-passe incorreta.",
+    "INVALID_EMAIL": "Introduza um endereço de e-mail válido.",
+    "USER_ALREADY_EXISTS": "Já existe uma conta com este e-mail.",
+    "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "Já existe uma conta com este e-mail.",
+    "USER_NOT_FOUND": "Não encontrámos nenhuma conta com esse e-mail.",
+    "EMAIL_NOT_VERIFIED": "Verifique primeiro o seu e-mail.",
+    "PASSWORD_TOO_SHORT": "Essa palavra-passe é demasiado curta.",
+    "PASSWORD_TOO_LONG": "Essa palavra-passe é demasiado longa.",
+    "INVALID_TOKEN": "Esta ligação é inválida ou expirou.",
+    "TOO_MANY_REQUESTS": "Demasiadas tentativas. Aguarde um momento e tente novamente."
+  },
+  "validation": {
+    "emailInvalid": "Introduza um endereço de e-mail válido.",
+    "passwordMin": "A palavra-passe deve ter pelo menos 10 caracteres.",
+    "passwordUpper": "A palavra-passe deve conter pelo menos uma letra maiúscula.",
+    "passwordLower": "A palavra-passe deve conter pelo menos uma letra minúscula.",
+    "passwordNumber": "A palavra-passe deve conter pelo menos um número.",
+    "passwordSpecial": "A palavra-passe deve conter pelo menos um carácter especial.",
+    "passwordRequired": "A palavra-passe é obrigatória.",
+    "passwordsMismatch": "As palavras-passe não coincidem.",
+    "firstNameMin": "O nome próprio deve ter pelo menos 2 caracteres.",
+    "firstNameMax": "O nome próprio deve ter menos de 100 caracteres.",
+    "lastNameMin": "O apelido deve ter pelo menos 2 caracteres.",
+    "lastNameMax": "O apelido deve ter menos de 100 caracteres.",
+    "messageEmpty": "Escreva primeiro uma mensagem.",
+    "messageTooLong": "Mantenha as mensagens abaixo de 2000 caracteres.",
+    "chooseDevice": "Escolha um dispositivo.",
+    "chooseRequest": "Escolha um pedido.",
+    "noteTooLong": "Mantenha a sua nota abaixo de 1000 caracteres.",
+    "enterCity": "Introduza uma cidade.",
+    "countryCode": "Escolha um país.",
+    "chooseDeviceType": "Escolha um tipo de dispositivo.",
+    "enterBrand": "Introduza a marca.",
+    "enterModel": "Introduza o modelo.",
+    "chooseCondition": "Escolha um estado.",
+    "tooLong1000": "Mantenha abaixo de 1000 caracteres.",
+    "tooLong280": "Mantenha abaixo de 280 caracteres.",
+    "photoInvalid": "Foto inválida.",
+    "addTitle": "Adicione um título curto.",
+    "tellMore": "Explique um pouco melhor aos doadores porque precisa dele.",
+    "acceptPledge": "Tem de aceitar o compromisso.",
+    "chooseReason": "Escolha um motivo.",
+    "chooseRating": "Escolha uma classificação em estrelas.",
+    "commentTooLong": "Mantenha abaixo de 500 caracteres."
+  },
+  "errors": {
+    "generic": "Algo correu mal. Tente novamente.",
+    "signIn": "Inicie sessão primeiro.",
+    "checkFields": "Verifique os campos destacados.",
+    "checkPhone": "Verifique o número de telefone.",
+    "rateLimited": "Está a fazer isso com demasiada frequência. Aguarde um pouco e tente novamente.",
+    "notFound": "Não encontrámos isso.",
+    "forbidden": "Não pode fazer isso.",
+    "invalid": "Isso não é permitido neste momento.",
+    "restricted": "A sua conta está restringida enquanto analisamos denúncias, por isso não pode publicar nem enviar ofertas de momento.",
+    "blockSelf": "Não se pode bloquear a si próprio.",
+    "blockNotMatched": "Só pode bloquear alguém com quem tenha sido emparelhado.",
+    "listingNotFound": "Anúncio não encontrado.",
+    "requestNotFound": "Pedido não encontrado.",
+    "reportSelf": "Não se pode denunciar a si próprio.",
+    "reportNotMatched": "Só pode denunciar alguém com quem tenha sido emparelhado.",
+    "alreadyReported": "Já denunciou esta pessoa. Estamos a analisar.",
+    "conversationNotFound": "Conversa não encontrada.",
+    "notInConversation": "Não faz parte desta conversa.",
+    "chatClosed": "Este emparelhamento foi cancelado, por isso a conversa está fechada.",
+    "cannotSend": "Não pode enviar mensagens nesta conversa.",
+    "matchNotFound": "Emparelhamento não encontrado.",
+    "notInMatch": "Não faz parte deste emparelhamento.",
+    "alreadyRated": "Já avaliou este emparelhamento.",
+    "ratingUnavailable": "As avaliações não estão disponíveis para este emparelhamento.",
+    "rateAfterHandoff": "Pode avaliar quando a entrega for confirmada ou o emparelhamento terminar.",
+    "ratingNeedsMessages": "Após um emparelhamento cancelado, só pode avaliar se ambos tiverem trocado mensagens.",
+    "ratingWindowClosed": "O prazo de avaliação deste emparelhamento terminou.",
+    "offerOwnPost": "Não pode fazer uma oferta na sua própria publicação.",
+    "offerOwnOnly": "Só pode fazer uma oferta com o seu próprio anúncio ou pedido.",
+    "offerBlocked": "Não pode enviar uma oferta a esta pessoa.",
+    "alreadyOffered": "Já tem uma oferta ativa neste pedido.",
+    "deviceAlreadyOffered": "Este dispositivo já foi oferecido neste pedido.",
+    "offerNotFound": "Oferta não encontrada.",
+    "withdrawOwnOnly": "Só pode retirar ofertas que enviou.",
+    "offerAnswered": "Esta oferta já foi respondida.",
+    "handoffForbidden": "Não pode fazer isso nesta conversa.",
+    "numbersCancelled": "Este emparelhamento foi cancelado, por isso os números não podem ser partilhados.",
+    "addPhone": "Adicione o seu número de telefone para o partilhar.",
+    "nothingToConfirm": "Este emparelhamento foi cancelado, por isso não há nada a confirmar.",
+    "photosViaNyeaka": "As fotos têm de ser carregadas através da Nyeaka.",
+    "onlyRecipientAnswers": "Só quem recebeu esta oferta lhe pode responder.",
+    "offerUnavailable": "Esta oferta já não está disponível.",
+    "deviceUnavailable": "Este dispositivo já não está disponível.",
+    "requestClosed": "Este pedido já não está aberto.",
+    "onlyMatchCancel": "Só as duas pessoas deste emparelhamento o podem cancelar.",
+    "onlyActiveCancel": "Só um emparelhamento ativo pode ser cancelado.",
+    "invalidPhone": "Introduza um número de telefone válido, com o indicativo do país, por exemplo +234 806 412 0088.",
+    "editLiveListing": "Só os anúncios ativos podem ser editados. Renove-o primeiro.",
+    "listingNotLive": "Este anúncio não está ativo.",
+    "renewListing": "Só os anúncios fechados ou expirados podem ser renovados.",
+    "editLiveRequest": "Só os pedidos ativos podem ser editados. Renove-o primeiro.",
+    "requestNotLive": "Este pedido não está ativo.",
+    "renewRequest": "Só os pedidos fechados ou expirados podem ser renovados.",
+    "offerAlreadySent": "Oferta já enviada",
+    "alreadyMatched": "Já emparelhado",
+    "alreadyDeclined": "Já oferecido e recusado",
+    "alreadyWithdrawn": "Já oferecido e retirado",
+    "donorBusy": "Este doador já tem uma oferta neste pedido",
+    "uploadType": "Use fotos JPG, PNG ou WebP.",
+    "uploadTooBig": "As fotos devem ter no máximo 5 MB.",
+    "uploadSignIn": "Inicie sessão para carregar fotos.",
+    "uploadInvalid": "Pedido de carregamento inválido.",
+    "uploadFailed": "O carregamento falhou. Tente novamente."
+  },
+  "device": {
+    "kind": {
+      "SMARTPHONE": "Telemóvel",
+      "TABLET": "Tablet",
+      "LAPTOP": "Portátil",
+      "DESKTOP": "Computador de secretária",
+      "OTHER": "Outro"
+    },
+    "condition": {
+      "NEW": "Novo",
+      "LIKE_NEW": "Como novo",
+      "GOOD": "Bom",
+      "FAIR": "Razoável"
+    }
+  },
+  "card": {
+    "verifiedDonor": "Doador verificado",
+    "verifiedRequester": "Requerente verificado",
+    "orBetter": "{condition} ou melhor"
+  },
+  "browse": {
+    "tabDevices": "Dispositivos disponíveis",
+    "tabRequests": "Pessoas a pedir",
+    "search": "Pesquisar",
+    "city": "Cidade",
+    "allCities": "Todas as cidades",
+    "allDevices": "Todos os dispositivos",
+    "clear": "Limpar filtros",
+    "previous": "← Anterior",
+    "next": "Seguinte →",
+    "page": "Página {page} de {total}",
+    "pagination": "Paginação",
+    "summariesOnly": "Está a ver apenas resumos. Crie uma conta para abrir um anúncio, ler a nota e enviar um pedido.",
+    "createAccount": "Criar uma conta",
+    "devices": {
+      "heading": "O que está disponível perto de si",
+      "description": "Explore à vontade. Nomes, fotos e contactos abrem-se depois de verificar a sua identidade.",
+      "searchPlaceholder": "Pesquisar marca ou modelo",
+      "count": "{count, plural, one {# dispositivo disponível} other {# dispositivos disponíveis}}",
+      "empty": "Ainda não há nada anunciado. Publique um pedido para que as pessoas próximas o vejam.",
+      "emptyFiltered": "Nada corresponde a esses filtros. Experimente com menos filtros ou publique um pedido para que as pessoas próximas o vejam."
+    },
+    "requests": {
+      "heading": "Pessoas a pedir perto de si",
+      "description": "Veja do que as pessoas perto de si precisam. Oferecer um dispositivo abre uma conversa assim que aceitarem.",
+      "searchPlaceholder": "Pesquisar pedidos",
+      "count": "{count, plural, one {# pedido aberto} other {# pedidos abertos}}",
+      "empty": "Ainda não há nada anunciado. Publique um anúncio para que as pessoas próximas o vejam.",
+      "emptyFiltered": "Nada corresponde a esses filtros. Experimente com menos filtros ou publique um anúncio para que as pessoas próximas o vejam."
+    }
+  },
+  "detail": {
+    "charger": "Carregador",
+    "keyboard": "Teclado",
+    "brand": "Marca",
+    "condition": "Estado",
+    "comesWith": "Inclui",
+    "nothingExtra": "Nada extra",
+    "backToBrowsing": "← Voltar à pesquisa",
+    "listingClosed": "Este dispositivo foi atribuído e já não está disponível.",
+    "whoseListing": "o anúncio de {name}",
+    "reportListing": "Denunciar este anúncio",
+    "anyCondition": "Qualquer estado",
+    "deviceNeeded": "Dispositivo pretendido",
+    "lowestCondition": "Estado mínimo",
+    "any": "Qualquer",
+    "pledge": "Compromisso",
+    "pledgeValue": "Sem revenda, assinado",
+    "backToRequests": "← Voltar aos pedidos",
+    "requestClosed": "Este pedido foi satisfeito e já não está aberto.",
+    "whoseRequest": "o pedido de {name}",
+    "reportRequest": "Denunciar este pedido",
+    "placePosted": "{place} · publicado {posted}",
+    "noRatings": "Ainda sem avaliações",
+    "handoffs": "{count, plural, one {# entrega concluída} other {# entregas concluídas}}",
+    "privacyNote": "Apenas o nome próprio e a zona geral, até ambos concordarem em partilhar mais. A morada exata nunca é publicada."
+  },
+  "owner": {
+    "state": {
+      "ACTIVE": "Esta é a sua publicação. As pessoas podem vê-la até expirar.",
+      "EXPIRED": "Esta publicação expirou e está oculta da pesquisa.",
+      "CLOSED": "Fechou esta publicação. Está oculta da pesquisa.",
+      "MATCHED": "Esta publicação foi emparelhada."
+    },
+    "expires": "Expira em {date}."
+  },
+  "contact": {
+    "signedOutRequest": "Crie uma conta gratuita para enviar um pedido a {who}.",
+    "signedOutOffer": "Crie uma conta gratuita para oferecer um dispositivo a {who}.",
+    "createAccount": "Criar uma conta",
+    "requestSent": "Pedido enviado",
+    "offerSent": "Oferta enviada",
+    "sentBodyRequest": "{who} verá isto no seu painel. Se escolher o seu pedido, abre-se uma conversa.",
+    "sentBodyOffer": "Se for o que {who} precisa, a pessoa aceita e abre-se uma conversa para combinarem um local público.",
+    "dashboard": "Ir para o meu painel",
+    "keepBrowsing": "Continuar a explorar",
+    "waitingFor": "À espera de {who}",
+    "youSentOffer": "Enviou uma oferta com “{post}”. Encontrará a resposta no seu painel.",
+    "sentYouOffer": "{who} enviou-lhe uma oferta",
+    "answerFromDashboard": "Aceite-a ou recuse-a a partir do seu painel.",
+    "openDashboard": "Abrir painel",
+    "needRequest": "Para pedir este dispositivo a {who}, precisa de ter um pedido ativo.",
+    "needListing": "Para oferecer um dispositivo a {who}, precisa de ter um anúncio ativo.",
+    "postRequest": "Publicar um pedido",
+    "listDevice": "Anunciar um dispositivo",
+    "headingRequest": "Diga a {who} porque precisa dele",
+    "headingOffer": "Oferecer um dispositivo a {who}",
+    "whichRequest": "Para qual dos seus pedidos?",
+    "whichDevice": "Que dispositivo está a oferecer?",
+    "chooseOne": "Escolha um",
+    "notePlaceholderRequest": "Uma nota curta — para que serve e quando o poderia ir buscar. Os doadores leem-nas antes de escolher.",
+    "notePlaceholderOffer": "Diga o que tem e em que estado — modelo, idade, qualquer defeito. Seja honesto; poupa uma viagem a ambos.",
+    "pledge": "Peço este dispositivo para uso próprio e não o irei revender. {who} pode ver este compromisso no meu pedido.",
+    "pledgeSigned": "{who} assinou o compromisso de não revenda. Se a pessoa aceitar a sua oferta, abre-se uma conversa e combinam um local público.",
+    "sending": "A enviar…",
+    "sendRequest": "Enviar pedido",
+    "offerDevice": "Oferecer um dispositivo"
+  },
+  "form": {
+    "selectCountry": "Selecionar país",
+    "country": "País",
+    "city": "Cidade",
+    "cityPlaceholder": "ex.: Luanda",
+    "area": "Zona (opcional)",
+    "areaPlaceholder": "ex.: Maianga",
+    "privacy": "Só a sua zona é pública — nunca a sua rua ou o número da porta. Escolhe o local de encontro mais tarde, na conversa."
+  },
+  "listingForm": {
+    "updated": "Anúncio atualizado",
+    "live": "O seu anúncio está ativo",
+    "published": "Publicado",
+    "liveTitle": "O seu anúncio está ativo",
+    "liveBody": "Os pedidos chegarão com uma nota curta a explicar a necessidade. Leia-os, escolha o que quiser e a conversa abre-se. Nunca é obrigado a dá-lo a ninguém.",
+    "view": "Ver o meu anúncio",
+    "dashboard": "Ver o meu painel",
+    "editTitle": "Editar o seu anúncio",
+    "title": "Anunciar um dispositivo",
+    "subtitle": "Seja honesto quanto ao estado — um telemóvel descrito com exatidão é reclamado mais depressa do que um exagerado.",
+    "whatIsIt": "O que é?",
+    "brand": "Marca",
+    "brandPlaceholder": "ex.: Tecno",
+    "model": "Modelo",
+    "modelPlaceholder": "ex.: Spark 8",
+    "condition": "Estado",
+    "anythingElse": "Mais alguma coisa? (opcional)",
+    "descriptionPlaceholder": "Idade, duração da bateria, riscos ou avarias.",
+    "comesWith": "Inclui",
+    "extras": {
+      "hasCharger": "Carregador",
+      "hasKeyboard": "Teclado"
+    },
+    "saving": "A guardar…",
+    "publishing": "A publicar…",
+    "uploading": "A carregar fotos…",
+    "save": "Guardar alterações",
+    "publish": "Publicar anúncio"
+  },
+  "requestForm": {
+    "updated": "Pedido atualizado",
+    "live": "O seu pedido está ativo",
+    "published": "Publicado",
+    "liveTitle": "O seu pedido está ativo",
+    "liveBody": "Os doadores da sua zona já o podem ver e avisaremos se algum lhe oferecer um dispositivo. Entretanto, continue a explorar os anúncios — pedir diretamente costuma ser mais rápido.",
+    "browse": "Ver dispositivos",
+    "dashboard": "O meu painel",
+    "editTitle": "Editar o seu pedido",
+    "title": "Pedir um dispositivo",
+    "subtitle": "Os doadores leem os pedidos antes de escolher. Simples e específico funciona melhor do que urgente.",
+    "whatDoYouNeed": "De que precisa?",
+    "lowestCondition": "Estado mínimo que aceita",
+    "shortTitle": "Título curto",
+    "titlePlaceholder": "ex.: Portátil para o meu projeto final de curso",
+    "why": "Porque precisa dele?",
+    "whyPlaceholder": "Para que serve — escola, trabalho, o seu negócio — e como se está a arranjar sem ele.",
+    "pledge": "Peço este dispositivo para uso próprio e não o irei revender. Este compromisso aparece no meu pedido e quebrá-lo implica a remoção da minha conta.",
+    "saving": "A guardar…",
+    "posting": "A publicar…",
+    "save": "Guardar alterações",
+    "post": "Publicar pedido"
+  },
+  "photos": {
+    "title": "Fotos",
+    "alt": "Foto do dispositivo",
+    "remove": "Remover foto",
+    "add": "Adicionar foto",
+    "max": "Pode adicionar até {count} fotos.",
+    "type": "Use fotos JPG, PNG ou WebP.",
+    "size": "Cada foto deve ter no máximo 5 MB.",
+    "failed": "O carregamento falhou.",
+    "hint": "Até {count} fotos, JPG, PNG ou WebP, 5 MB cada. Fotografe também eventuais danos — poupa uma viagem inútil a ambos."
+  },
+  "postActions": {
+    "renewed": "Renovado por 60 dias",
+    "renewing": "A renovar…",
+    "reopen": "Reabrir por 60 dias",
+    "renew": "Renovar por 60 dias",
+    "edit": "Editar",
+    "confirm": {
+      "listing": "Fechar este anúncio?",
+      "request": "Fechar este pedido?"
+    },
+    "closed": {
+      "listing": "Anúncio fechado",
+      "request": "Pedido fechado"
+    },
+    "closing": "A fechar…",
+    "yesClose": "Sim, fechar",
+    "keep": "Manter",
+    "close": "Fechar"
+  },
+  "renewPrompt": {
+    "title": {
+      "listing": "Este anúncio não está ativo",
+      "request": "Este pedido não está ativo"
+    },
+    "body": {
+      "closed": "“{title}” está fechado, por isso não pode ser editado. Reabra-o por mais 60 dias para o editar e voltar a torná-lo visível.",
+      "expired": "“{title}” expirou, por isso não pode ser editado. Renove-o por mais 60 dias para o editar e voltar a torná-lo visível."
+    },
+    "back": "Voltar ao painel"
+  },
+  "withdraw": {
+    "label": "Retirar oferta",
+    "pending": "A retirar…",
+    "done": "Oferta retirada"
+  },
+  "dashboard": {
+    "hello": "Olá, {name}",
+    "helloAnon": "Olá",
+    "giving": "A dar",
+    "asking": "A pedir",
+    "restricted": "A sua conta está restringida enquanto analisamos denúncias. Ainda pode explorar, conversar e concluir os emparelhamentos que já tem, mas não pode publicar anúncios ou pedidos nem enviar ofertas.",
+    "rating": "{count, plural, one {A sua classificação, # avaliação} other {A sua classificação, # avaliações}}",
+    "handoffs": "Entregas concluídas",
+    "verified": "Verificado",
+    "notVerified": "Não verificado",
+    "idConfirmed": "NIN e documento confirmados",
+    "verifyIdentity": "Verificar a sua identidade",
+    "requestsForDevices": "Pedidos para os seus dispositivos",
+    "noRequestsYet": "Ainda ninguém pediu os seus dispositivos.",
+    "yourListings": "Os seus anúncios",
+    "listedMeta": "{place} · {condition} · anunciado {time}",
+    "state": {
+      "ACTIVE": "Ativo",
+      "EXPIRED": "Expirado",
+      "CLOSED": "Fechado",
+      "MATCHED": "Emparelhado"
+    },
+    "offers": "{count, plural, one {# oferta} other {# ofertas}}",
+    "listAnother": "+ Anunciar outro dispositivo",
+    "listFirst": "+ Anunciar um dispositivo",
+    "twoMinutes": "Dois minutos",
+    "offersForRequests": "Ofertas para os seus pedidos",
+    "noOffersYet": "Ainda ninguém ofereceu um dispositivo.",
+    "yourRequests": "Os seus pedidos",
+    "requestMeta": "{condition} · {place} · publicado {time}",
+    "orBetter": "{condition} ou melhor",
+    "anyCondition": "Qualquer estado",
+    "askAnother": "+ Pedir outro dispositivo",
+    "askFirst": "+ Pedir um dispositivo",
+    "rateTitle": "Avalie as suas entregas",
+    "howDidItGo": "Como correu com {name}?",
+    "rateName": "Avaliar {name}",
+    "handedOverMeta": "{title} · entregue {time}",
+    "cancelledMeta": "{title} · emparelhamento cancelado {time}",
+    "rate": "Avaliar",
+    "blockedTitle": "Pessoas bloqueadas",
+    "activeMatches": "Emparelhamentos ativos",
+    "sentByYou": "Enviadas por si"
+  },
+  "matchCard": {
+    "cancelled": "Emparelhamento cancelado. A sua publicação está novamente ativa.",
+    "title": "{title} · com {name}",
+    "meta": "Para “{request}” · emparelhado {time}",
+    "openChat": "Abrir conversa",
+    "confirm": "Cancelar este emparelhamento?",
+    "cancelling": "A cancelar…",
+    "yesCancel": "Sim, cancelar",
+    "keep": "Manter",
+    "cancel": "Cancelar emparelhamento"
+  },
+  "offerCard": {
+    "accepted": "Aceite. Está agora aberta uma conversa.",
+    "declined": "Recusada",
+    "headlineWantsYours": "{name} quer o seu {title}",
+    "headlineOffers": "{name} oferece {title}",
+    "headlineYouOffered": "Ofereceu {title} a {name}",
+    "headlineYouAsked": "Pediu {title} a {name}",
+    "meta": "Para “{request}” · {place} · {time}",
+    "verified": "Verificado",
+    "notSelected": "Não selecionado",
+    "waiting": "Em espera",
+    "declinedDonor": "Este pedido foi para outra pessoa ou recusou a sua oferta. O seu dispositivo continua ativo.",
+    "declinedRequester": "Este dispositivo foi para outra pessoa ou o doador recusou o seu pedido. O seu pedido continua ativo.",
+    "working": "A processar…",
+    "accept": "Aceitar",
+    "decline": "Recusar"
+  },
+  "safety": {
+    "block": "Bloquear",
+    "blockConfirm": "Bloquear {who}? Deixarão de poder trocar mensagens ou fazer ofertas um ao outro, deixarão de ver as publicações um do outro e qualquer emparelhamento em aberto entre vocês será cancelado. A pessoa não é avisada.",
+    "blocked": "{who} bloqueado(a)",
+    "blocking": "A bloquear…",
+    "yesBlock": "Sim, bloquear",
+    "cancel": "Cancelar",
+    "unblocked": "{who} desbloqueado(a)",
+    "unblocking": "A desbloquear…",
+    "unblock": "Desbloquear"
+  },
+  "report": {
+    "thanks": "Obrigado. Enviámos a sua denúncia à equipa da Nyeaka para análise.",
+    "button": "Denunciar",
+    "sent": "Denúncia enviada",
+    "heading": "Denunciar {who}",
+    "whatHappened": "O que aconteceu?",
+    "chooseReason": "Escolha um motivo",
+    "reasons": {
+      "SCAM": "Burla ou fraude",
+      "MISREPRESENTED_DEVICE": "Dispositivo diferente do descrito",
+      "HARASSMENT": "Assédio",
+      "INAPPROPRIATE": "Conteúdo inadequado",
+      "SPAM": "Spam",
+      "OTHER": "Outra coisa"
+    },
+    "detailsPlaceholder": "Há algo que devamos saber? (opcional)",
+    "sending": "A enviar…",
+    "send": "Enviar denúncia",
+    "cancel": "Cancelar"
+  },
+  "chat": {
+    "back": "← Painel",
+    "title": "{name} · sobre {title}",
+    "verified": "Verificado",
+    "meta": "{place} · para “{request}”",
+    "safetyTip": "Encontrem-se num local público e movimentado — um banco, uma bomba de gasolina, a entrada de um campus — e leve um amigo, se puder.",
+    "blockedClosed": "Bloqueou {name}, por isso este emparelhamento foi cancelado e a conversa está fechada. Desbloquear não a reabre, mas podem voltar a ser emparelhados.",
+    "blocked": "Bloqueou {name}. Desbloqueie para voltar a enviar mensagens.",
+    "cancelled": "Este emparelhamento foi cancelado, por isso a conversa está fechada. O dispositivo e o pedido estão novamente abertos a novas ofertas.",
+    "closed": "As mensagens estão fechadas nesta conversa.",
+    "empty": "Ainda sem mensagens. Diga olá e sugira um local público e uma hora para o encontro.",
+    "write": "Escrever uma mensagem",
+    "sending": "A enviar…",
+    "send": "Enviar"
+  },
+  "handoff": {
+    "complete": "Entrega concluída",
+    "confirmed": "Entrega confirmada",
+    "waiting": "Já confirmou. À espera que {who} também confirme.",
+    "theyConfirmed": "{who} confirmou a entrega. Quando o dispositivo mudar de mãos, confirme aqui.",
+    "prompt": "Quando o dispositivo mudar de mãos, ambos confirmam aqui. As avaliações abrem depois disso.",
+    "confirming": "A confirmar…",
+    "confirm": "Confirmar entrega",
+    "both": "Ambos confirmaram a entrega"
+  },
+  "phone": {
+    "shared": "Número partilhado",
+    "stopped": "Deixou de partilhar o seu número",
+    "stop": "Deixar de partilhar o meu número",
+    "numbersShared": "Números partilhados",
+    "whoNumber": "{who} — {number}",
+    "theyCanSee": "{who} também vê o seu. A Nyeaka mantém a conversa em qualquer caso, caso precise de um registo.",
+    "youAgreed": "Concordou em partilhar o seu número. O de {who} aparece aqui assim que a pessoa também concordar.",
+    "theyAgreed": "{who} concordou em partilhar o seu número. Partilhe o seu para o ver.",
+    "hidden": "Os números de telefone ficam ocultos até ambos concordarem.",
+    "sharing": "A partilhar…",
+    "share": "Partilhar o meu número",
+    "yourNumber": "O seu número de telefone",
+    "placeholder": "+234 806 412 0088",
+    "shareShort": "Partilhar",
+    "cancel": "Cancelar",
+    "saved": "Guardado na sua conta. Só é mostrado a {who}, e só depois de a pessoa partilhar o dela."
+  },
+  "rating": {
+    "thanks": "Obrigado. Deu {score} ★ a {who}",
+    "onProfile": "A sua avaliação está no perfil de {who}.",
+    "saved": "Avaliação guardada",
+    "howWasTalking": "Este emparelhamento foi cancelado. Como foi falar com {who}?",
+    "howWasMeeting": "Como foi o encontro com {who}?",
+    "stars": "Classificação em estrelas",
+    "star": "{count, plural, one {# estrela} other {# estrelas}}",
+    "comment": "Adicionar um comentário (opcional)",
+    "saving": "A guardar…",
+    "leave": "Deixar avaliação"
+  },
+  "verify": {
+    "headingList": "Antes de anunciar, confirmamos que é mesmo você",
+    "headingRequest": "Antes de pedir, confirmamos que é mesmo você",
+    "reasonList": "Quem vem buscar este dispositivo vai encontrar-se consigo pessoalmente. Merece saber que o seu nome é real — e você merece o mesmo da outra pessoa.",
+    "reasonRequest": "Os doadores escolhem quem recebe o seu dispositivo. Saber que cada requerente é uma pessoa real, única e verificada torna essa escolha segura.",
+    "submitted": "Verificação submetida",
+    "phoneConfirmed": "Telefone confirmado",
+    "phoneDone": "Feito no registo. É tudo o que precisa para explorar.",
+    "ninTitle": "Número de Identificação Nacional",
+    "ninBody": "Verificamos se o NIN corresponde ao seu nome. Nada é guardado além de um sim ou um não, e nunca aparece no seu perfil.",
+    "ninPlaceholder": "NIN de 11 dígitos",
+    "photoTitle": "Foto do documento e uma selfie",
+    "photoBody": "Apenas para quem anuncia dispositivos — um revisor confirma que as duas correspondem. Normalmente menos de uma hora; pode terminar o anúncio enquanto aguarda.",
+    "idPhoto": "Foto do seu documento",
+    "selfie": "Selfie a segurá-lo",
+    "note": "A Nyeaka é gratuita e sempre será. Pedimos isto uma vez, não por entrega — e ninguém vê os seus documentos além do revisor.",
+    "submit": "Verificar e continuar",
+    "keepBrowsing": "Continuar a explorar por agora"
+  }
+}

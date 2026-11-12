@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import OrganicEdge from "./organic-edge";
+import { getTranslations } from "next-intl/server";
 
-const Footer = () => {
+const Footer = async () => {
+  const t = await getTranslations("footer");
   return (
     <footer className="w-full">
       <OrganicEdge position="top" />
@@ -14,8 +16,7 @@ const Footer = () => {
               Nyeaka
             </span>
             <span className="max-w-[52ch] text-body-sm text-pin-gray-400">
-              A free device-donation marketplace for Nigeria. No fees, no
-              middlemen, no resale.
+              {t("tagline")}
             </span>
           </div>
           <Link
@@ -23,10 +24,10 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg"
-            aria-label="A Paradigm Initiative project"
+            aria-label={t("projectLabel")}
           >
             <span className="font-heading font-semibold text-pin-gray-600 text-xs uppercase tracking-wide">
-              A project of
+              {t("projectOf")}
             </span>
             <Image
               src="/brand/paradigm-initiative-logo.png"
@@ -40,16 +41,19 @@ const Footer = () => {
         <div className="border-pin-gray-800 border-t w-full">
           <div className="flex flex-wrap justify-center items-center gap-4 py-2! section-wrapper">
             <span className="font-semibold text-body-sm text-pin-gray-400">
-              &copy; {new Date().getFullYear()}{" "}
-              <Link
-                href="https://www.paradigm-initiative.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-pin-gray-50 underline"
-              >
-                Paradigm Initiative
-              </Link>
-              . All rights reserved.
+              {t.rich("rights", {
+                year: new Date().getFullYear(),
+                org: (chunks) => (
+                  <Link
+                    href="https://www.paradigm-initiative.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-pin-gray-50 underline"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              })}
             </span>
           </div>
         </div>

@@ -10,12 +10,17 @@ import { Button } from "@/components/ui/button";
 import { FieldError, FieldGroup } from "@/components/ui/field";
 import FieldInput from "@/components/custom/field-input";
 import { resetPassword } from "@/lib/auth-client";
+import { useTranslations } from "next-intl";
+import { useAuthErrorText, useErrorText } from "@/lib/use-error-text";
 import {
   ResetPasswordSchema,
   resetPasswordSchema,
 } from "@/validations/auth-validation";
 
 export function ResetPasswordForm() {
+  const t = useTranslations("auth.reset");
+  const authError = useAuthErrorText();
+  const errText = useErrorText();
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -34,13 +39,12 @@ export function ResetPasswordForm() {
   if (linkInvalid) {
     return (
       <div className="flex flex-col items-start gap-4">
-        <h1 className="text-heading-2">This link isn&apos;t valid</h1>
+        <h1 className="text-heading-2">{t("invalidTitle")}</h1>
         <p className="text-muted-foreground text-body-md">
-          The reset link is invalid or has expired. Request a new one to
-          continue.
+          {t("invalidBody")}
         </p>
         <Button asChild>
-          <Link href="/forgot-password">Request a new link</Link>
+          <Link href="/forgot-password">{t("newLink")}</Link>
         </Button>
       </div>
     );
@@ -50,16 +54,16 @@ export function ResetPasswordForm() {
     setError(null);
     const { error } = await resetPassword({ newPassword: password, token });
     if (error) {
-      setError(error.message || "Something went wrong");
+      setError(authError(error.code));
       return;
     }
-    toast.success("Password updated. Please sign in.");
+    toast.success(t("success"));
     router.push("/sign-in");
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-heading-2">Choose a new password</h1>
+      <h1 className="text-heading-2">{t("title")}</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup className="gap-4">
           <Controller
@@ -67,13 +71,13 @@ export function ResetPasswordForm() {
             name="password"
             render={({ field }) => (
               <FieldInput
-                label="New password"
+                label={t("password")}
                 name="password"
                 type="password"
                 isPassword
                 field={field}
-                errorMessage={errors.password?.message}
-                description="Must be at least 10 characters long."
+                errorMessage={errText(errors.password?.message)}
+                description={t("passwordHint")}
               />
             )}
           />
@@ -82,12 +86,12 @@ export function ResetPasswordForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FieldInput
-                label="Confirm new password"
+                label={t("confirm")}
                 name="confirmPassword"
                 type="password"
                 isPassword
                 field={field}
-                errorMessage={errors.confirmPassword?.message}
+                errorMessage={errText(errors.confirmPassword?.message)}
               />
             )}
           />
@@ -95,7 +99,7 @@ export function ResetPasswordForm() {
             <FieldError className="font-semibold text-xs">{error}</FieldError>
           )}
           <Button type="submit" disabled={isSubmitting} className="self-start">
-            Update password
+            {t("submit")}
           </Button>
         </FieldGroup>
       </form>

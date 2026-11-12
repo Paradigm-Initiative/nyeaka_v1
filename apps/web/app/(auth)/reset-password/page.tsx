@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ResetPasswordForm } from "./reset-password-form";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Reset password - Nyeaka",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("resetPassword")} - Nyeaka` };
+}
 
 export default function Page() {
   return (

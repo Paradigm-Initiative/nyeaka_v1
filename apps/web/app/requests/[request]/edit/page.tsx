@@ -2,13 +2,17 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import { getRequestForEdit } from "@/lib/queries";
-import { COUNTRIES } from "@/lib/countries";
+import { getCountries } from "@/lib/countries";
 import { postState } from "@/lib/lifecycle";
 import PostRequestForm from "@/components/post/post-request-form";
 import SignInRequired from "@/components/auth/sign-in-required";
 import RenewPrompt from "@/components/post/renew-prompt";
+import { getLocale, getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = { title: "Edit request - Nyeaka" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("editRequest")} - Nyeaka` };
+}
 
 export default async function EditRequestPage({
   params,
@@ -16,12 +20,13 @@ export default async function EditRequestPage({
   params: Promise<{ request: string }>;
 }) {
   const { request: id } = await params;
+  const t = await getTranslations("signInRequired");
   const session = await getServerSession();
   if (!session) {
     return (
       <SignInRequired
-        title="Sign in to edit your request"
-        description="Only the person who posted a request can change it."
+        title={t("editRequest.title")}
+        description={t("editRequest.description")}
         callbackUrl={`/requests/${id}/edit`}
       />
     );
@@ -38,7 +43,7 @@ export default async function EditRequestPage({
   return (
     <div className="section-wrapper">
       <PostRequestForm
-        countries={COUNTRIES}
+        countries={getCountries(await getLocale())}
         editing={{
           id,
           values: {

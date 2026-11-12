@@ -12,7 +12,9 @@ import {
   type CreateRequestInput,
 } from "@/validations/post-validation";
 import { createRequestAction, updateRequestAction } from "@/actions/requests";
-import { CONDITION_OPTIONS, KIND_OPTIONS } from "@/lib/device-options";
+import { CONDITION_VALUES, KIND_VALUES } from "@/lib/device-options";
+import { useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -32,6 +34,10 @@ const PostRequestForm = ({
   /** When set, the form edits this request instead of creating one. */
   editing?: { id: string; values: CreateRequestInput };
 }) => {
+  const t = useTranslations("requestForm");
+  const tDevice = useTranslations("device");
+  const tForm = useTranslations("form");
+  const errText = useErrorText();
   const router = useRouter();
   const [posted, setPosted] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -65,38 +71,36 @@ const PostRequestForm = ({
       ? await updateRequestAction(editing.id, values)
       : await createRequestAction(values);
     if (res.ok && editing) {
-      toast.success("Request updated");
+      toast.success(t("updated"));
       router.push(`/requests/${editing.id}`);
       router.refresh();
       return;
     }
     if (res.ok) {
       setPosted(true);
-      toast.success("Your request is live");
+      toast.success(t("live"));
       return;
     }
-    setFormError(res.error);
+    setFormError(errText(res.error) ?? null);
     for (const [name, message] of Object.entries(res.fieldErrors ?? {})) {
-      setError(name as keyof CreateRequestInput, { message });
+      setError(name as keyof CreateRequestInput, { message: errText(message) });
     }
   };
 
   if (posted) {
     return (
       <div className="flex flex-col items-start gap-4 mx-auto py-12 max-w-lg">
-        <span className="badge badge-green">Published</span>
-        <h1 className="text-heading-2">Your request is live</h1>
+        <span className="badge badge-green">{t("published")}</span>
+        <h1 className="text-heading-2">{t("liveTitle")}</h1>
         <p className="text-body-lg text-muted-foreground text-pretty">
-          Donors in your area can see it now, and you&apos;ll hear from us if
-          one offers you a device. Keep browsing listings in the meantime —
-          asking directly often works faster.
+          {t("liveBody")}
         </p>
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href="/listings">Browse devices</Link>
+            <Link href="/listings">{t("browse")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard">My dashboard</Link>
+            <Link href="/dashboard">{t("dashboard")}</Link>
           </Button>
         </div>
       </div>
@@ -110,10 +114,9 @@ const PostRequestForm = ({
       className="flex flex-col gap-5 mx-auto py-8 max-w-2xl"
     >
       <div className="flex flex-col gap-2">
-        <h1 className="text-heading-2">{editing ? "Edit your request" : "Ask for a device"}</h1>
+        <h1 className="text-heading-2">{editing ? t("editTitle") : t("title")}</h1>
         <p className="text-muted-foreground text-body-md">
-          Donors read requests before they choose. Plain and specific works
-          better than urgent.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -122,13 +125,10 @@ const PostRequestForm = ({
         name="deviceType"
         render={({ field }) => (
           <ChipPicker
-            label="What do you need?"
-            options={KIND_OPTIONS.map((o) => o.label)}
-            value={KIND_OPTIONS.find((o) => o.value === field.value)?.label ?? ""}
-            onChange={(label) =>
-              field.onChange(KIND_OPTIONS.find((o) => o.label === label)?.value)
-            }
-            capitalize
+            label={t("whatDoYouNeed")}
+            options={KIND_VALUES.map((v) => ({ value: v, label: tDevice(`kind.${v}`) }))}
+            value={field.value ?? ""}
+            onChange={field.onChange}
           />
         )}
       />
@@ -138,47 +138,45 @@ const PostRequestForm = ({
         name="minCondition"
         render={({ field }) => (
           <ChipPicker
-            label="Lowest condition you can work with"
-            options={CONDITION_OPTIONS.map((o) => o.label)}
-            value={CONDITION_OPTIONS.find((o) => o.value === field.value)?.label ?? ""}
-            onChange={(label) =>
-              field.onChange(CONDITION_OPTIONS.find((o) => o.label === label)?.value)
-            }
+            label={t("lowestCondition")}
+            options={CONDITION_VALUES.map((v) => ({ value: v, label: tDevice(`condition.${v}`) }))}
+            value={field.value ?? ""}
+            onChange={field.onChange}
           />
         )}
       />
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="title" className="field-label">Short title</Label>
+        <Label htmlFor="title" className="field-label">{t("shortTitle")}</Label>
         <Input
           id="title"
-          placeholder="e.g. Laptop for my final-year project"
+          placeholder={t("titlePlaceholder")}
           className="h-13.5 rounded-sm"
           {...register("title")}
         />
-        <FormError message={errors.title?.message} />
+        <FormError message={errText(errors.title?.message)} />
       </div>
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="description" className="font-heading font-semibold text-heading-6">
-          Why do you need it?
+          {t("why")}
         </Label>
         <Textarea
           id="description"
           maxLength={280}
-          placeholder="What it's for — school, work, your business — and what you're managing without it now."
+          placeholder={t("whyPlaceholder")}
           className="min-h-30 rounded-sm"
           {...register("description")}
         />
         <div className="flex justify-between">
-          <FormError message={errors.description?.message} />
+          <FormError message={errText(errors.description?.message)} />
           <span className="ml-auto text-caption-bold text-pin-gray-400">{noteLength}/280</span>
         </div>
       </div>
 
       <div className="gap-3 grid grid-cols-1 sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="countryCode" className="field-label">Country</Label>
+          <Label htmlFor="countryCode" className="field-label">{tForm("country")}</Label>
           <Controller
             control={control}
             name="countryCode"
@@ -192,17 +190,17 @@ const PostRequestForm = ({
               />
             )}
           />
-          <FormError message={errors.countryCode?.message} />
+          <FormError message={errText(errors.countryCode?.message)} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="city" className="field-label">City</Label>
-          <Input id="city" placeholder="Enugu" className="h-13.5 rounded-sm" {...register("city")} />
-          <FormError message={errors.city?.message} />
+          <Label htmlFor="city" className="field-label">{tForm("city")}</Label>
+          <Input id="city" placeholder={tForm("cityPlaceholder")} className="h-13.5 rounded-sm" {...register("city")} />
+          <FormError message={errText(errors.city?.message)} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="area" className="field-label">Area (optional)</Label>
-          <Input id="area" placeholder="Nsukka" className="h-13.5 rounded-sm" {...register("area")} />
-          <FormError message={errors.area?.message} />
+          <Label htmlFor="area" className="field-label">{tForm("area")}</Label>
+          <Input id="area" placeholder={tForm("areaPlaceholder")} className="h-13.5 rounded-sm" {...register("area")} />
+          <FormError message={errText(errors.area?.message)} />
         </div>
       </div>
 
@@ -225,13 +223,12 @@ const PostRequestForm = ({
                 className="mt-0.5"
               />
               <span>
-                I am asking for my own use and will not resell it. This pledge
-                appears on my request, and breaking it removes my account.
+                {t("pledge")}
               </span>
             </Label>
           )}
         />
-        <FormError message={errors.pledge?.message} />
+        <FormError message={errText(errors.pledge?.message)} />
       </div>
 
       )}
@@ -239,7 +236,7 @@ const PostRequestForm = ({
       <FormError message={formError ?? undefined} />
 
       <Button type="submit" size="lg" className="self-start" disabled={isSubmitting}>
-        {isSubmitting ? (editing ? "Saving…" : "Posting…") : editing ? "Save changes" : "Post request"}
+        {isSubmitting ? (editing ? t("saving") : t("posting")) : editing ? t("save") : t("post")}
       </Button>
     </form>
   );

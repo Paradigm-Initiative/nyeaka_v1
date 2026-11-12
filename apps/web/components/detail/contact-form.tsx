@@ -13,6 +13,8 @@ import FormError from "../post/form-error";
 import WithdrawButton from "../offers/withdraw-button";
 import { createOfferAction } from "@/actions/offers";
 import type { OfferContext } from "@/lib/offer-queries";
+import { useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 
 /**
  * mode "request": viewer is on a listing and asks for the device with one of their requests.
@@ -35,6 +37,8 @@ const ContactForm = ({
   /** Shown instead of the form when the post is no longer open. */
   closedMessage?: string;
 }) => {
+  const t = useTranslations("contact");
+  const errText = useErrorText();
   const router = useRouter();
   const [saving, start] = useTransition();
   const firstFree = context?.options.find((o) => !o.blocked)?.id ?? "";
@@ -52,11 +56,10 @@ const ContactForm = ({
     return (
       <div className="flex flex-wrap justify-between items-center gap-3 bg-pin-orange-100 p-4 rounded-lg">
         <p className="max-w-[46ch] text-body-sm">
-          Create a free account to{" "}
-          {mode === "request" ? "send a request" : "offer a device"} to {who}.
+          {t(mode === "request" ? "signedOutRequest" : "signedOutOffer", { who })}
         </p>
         <Button asChild>
-          <Link href="/sign-up">Create an account</Link>
+          <Link href="/sign-up">{t("createAccount")}</Link>
         </Button>
       </div>
     );
@@ -69,19 +72,17 @@ const ContactForm = ({
     return (
       <div className="flex flex-col items-start gap-3 bg-surface-feature p-4 rounded-lg">
         <span className="badge badge-green">
-          {mode === "request" ? "Request sent" : "Offer sent"}
+          {t(mode === "request" ? "requestSent" : "offerSent")}
         </span>
         <p className="text-body-md">
-          {mode === "request"
-            ? `${who} will see this on their dashboard. If they choose you, a chat opens.`
-            : `If it's what ${who} needs, they accept and a chat opens so you can agree a public place to meet.`}
+          {t(mode === "request" ? "sentBodyRequest" : "sentBodyOffer", { who })}
         </p>
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href="/dashboard">Go to my dashboard</Link>
+            <Link href="/dashboard">{t("dashboard")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href={mode === "request" ? "/listings" : "/requests"}>Keep browsing</Link>
+            <Link href={mode === "request" ? "/listings" : "/requests"}>{t("keepBrowsing")}</Link>
           </Button>
         </div>
       </div>
@@ -92,20 +93,20 @@ const ContactForm = ({
     <div className="flex flex-col items-start gap-2 bg-surface-feature p-4 rounded-lg">
       {context.pending.initiatedByMe ? (
         <>
-          <span className="badge badge-orange">Waiting for {who}</span>
+          <span className="badge badge-orange">{t("waitingFor", { who })}</span>
           <p className="text-body-sm">
-            You sent an offer using &ldquo;{context.pending.yourPost}&rdquo;. You&rsquo;ll find the answer on your dashboard.
+            {t("youSentOffer", { post: context.pending.yourPost })}
           </p>
           <WithdrawButton offerId={context.pending.id} />
         </>
       ) : (
         <>
-          <span className="badge badge-green">{who} sent you an offer</span>
+          <span className="badge badge-green">{t("sentYouOffer", { who })}</span>
           <p className="text-body-sm">
-            Accept or decline it from your dashboard.
+            {t("answerFromDashboard")}
           </p>
           <Button asChild size="sm">
-            <Link href="/dashboard">Open dashboard</Link>
+            <Link href="/dashboard">{t("openDashboard")}</Link>
           </Button>
         </>
       )}
@@ -119,12 +120,10 @@ const ContactForm = ({
       <div className="flex flex-col items-start gap-3 bg-pin-orange-100 p-4 rounded-lg">
         {pendingBanner}
         <p className="text-body-sm">
-          {mode === "request"
-            ? `To ask ${who} for this device you need a live request of your own.`
-            : `To offer ${who} a device you need a live listing of your own.`}
+          {t(mode === "request" ? "needRequest" : "needListing", { who })}
         </p>
         <Button asChild>
-          <Link href={newPostHref}>{mode === "request" ? "Post a request" : "List a device"}</Link>
+          <Link href={newPostHref}>{t(mode === "request" ? "postRequest" : "listDevice")}</Link>
         </Button>
       </div>
     );
@@ -141,11 +140,11 @@ const ContactForm = ({
         message: note,
       });
       if (!res.ok) {
-        setError(res.error);
-        setFieldErrors(res.fieldErrors ?? {});
+        setError(errText(res.error));
+        setFieldErrors(errText.fields(res.fieldErrors));
         return;
       }
-      toast.success(mode === "request" ? "Request sent" : "Offer sent");
+      toast.success(t(mode === "request" ? "requestSent" : "offerSent"));
       setSent(true);
       router.refresh();
     });
@@ -156,22 +155,22 @@ const ContactForm = ({
       {pendingBanner}
       <form onSubmit={submit} className="flex flex-col gap-3">
         <span className="font-heading font-semibold text-heading-6">
-          {mode === "request" ? `Tell ${who} why you need it` : `Offer ${who} a device`}
+          {t(mode === "request" ? "headingRequest" : "headingOffer", { who })}
         </span>
 
         <div className="flex flex-col gap-1.5 text-body-sm">
           <Label htmlFor="choice" className="font-semibold text-body-sm leading-normal">
-            {mode === "request" ? "Which of your requests is this for?" : "Which device are you offering?"}
+            {t(mode === "request" ? "whichRequest" : "whichDevice")}
           </Label>
           <Select value={choice} onValueChange={setChoice}>
             <SelectTrigger id="choice" className="rounded-sm min-h-11">
-              <SelectValue placeholder="Choose one" />
+              <SelectValue placeholder={t("chooseOne")} />
             </SelectTrigger>
             <SelectContent>
               {context.options.map((o) => (
                 <SelectItem key={o.id} value={o.id} disabled={!!o.blocked}>
                   {o.title} · {o.place}
-                  {o.blocked ? ` — ${o.blocked}` : ""}
+                  {o.blocked ? ` — ${errText(o.blocked)}` : ""}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -184,9 +183,7 @@ const ContactForm = ({
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder={
-            mode === "request"
-              ? "A short note — what it's for, and when you could collect it. Donors read these before choosing."
-              : "Say what you have and its condition — model, age, anything wrong with it. Be honest; it saves you both a trip."
+            t(mode === "request" ? "notePlaceholderRequest" : "notePlaceholderOffer")
           }
           className="min-h-26 rounded-sm"
         />
@@ -205,20 +202,18 @@ const ContactForm = ({
               className="mt-0.5"
             />
             <span>
-              I am asking for this device for my own use and I will not resell
-              it. {who} can see this pledge on my request.
+              {t("pledge", { who })}
             </span>
           </Label>
         ) : (
           <div className="bg-surface-feature p-3 rounded-lg text-body-sm">
-            {who} has signed the no-resale pledge. If they accept your offer,
-            a chat opens and you agree a public place to meet.
+            {t("pledgeSigned", { who })}
           </div>
         )}
 
         <FormError message={error} />
         <Button type="submit" className="self-start" disabled={saving || !choice}>
-          {saving ? "Sending…" : mode === "request" ? "Send request" : "Offer a device"}
+          {saving ? t("sending") : t(mode === "request" ? "sendRequest" : "offerDevice")}
         </Button>
       </form>
     </div>

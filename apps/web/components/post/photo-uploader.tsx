@@ -5,6 +5,8 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { MAX_PHOTOS } from "@/validations/post-validation";
+import { useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -16,6 +18,8 @@ type Props = {
 };
 
 const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
+  const t = useTranslations("photos");
+  const errText = useErrorText();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -43,13 +47,13 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
       body: JSON.stringify({ contentType: file.type, size: file.size }),
     });
     const body = await presign.json();
-    if (!presign.ok) throw new Error(body.error ?? "Upload failed");
+    if (!presign.ok) throw new Error(body.error ?? "uploadFailed");
     const put = await fetch(body.uploadUrl, {
       method: "PUT",
       headers: { "Content-Type": file.type },
       body: file,
     });
-    if (!put.ok) throw new Error("Upload failed. Please try again.");
+    if (!put.ok) throw new Error("uploadFailed");
     return body.publicUrl as string;
   }
 
@@ -58,15 +62,15 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
     setError(null);
     const room = MAX_PHOTOS - urlsRef.current.length - pending.current;
     const picked = Array.from(files).slice(0, Math.max(room, 0));
-    if (files.length > picked.length) setError(`You can add up to ${MAX_PHOTOS} photos.`);
+    if (files.length > picked.length) setError(t("max", { count: MAX_PHOTOS }));
 
     const valid = picked.filter((f) => {
       if (!ACCEPT.split(",").includes(f.type)) {
-        setError("Use JPG, PNG or WebP photos.");
+        setError(t("type"));
         return false;
       }
       if (f.size > MAX_BYTES) {
-        setError("Each photo must be 5 MB or smaller.");
+        setError(t("size"));
         return false;
       }
       return true;
@@ -80,7 +84,7 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
           const url = await uploadOne(file);
           commit([...urlsRef.current, url]);
         } catch (e) {
-          setError(e instanceof Error ? e.message : "Upload failed");
+          setError(errText(e instanceof Error ? e.message : "uploadFailed") ?? t("failed"));
         } finally {
           bump(-1);
         }
@@ -94,17 +98,17 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <span className="font-heading font-semibold text-heading-6">Photos</span>
+      <span className="font-heading font-semibold text-heading-6">{t("title")}</span>
       <div className="gap-3 grid grid-cols-2 sm:grid-cols-3">
         {value.map((url) => (
           <div key={url} className="relative rounded-sm h-28 overflow-hidden">
-            <Image src={url} alt="Device photo" fill sizes="200px" className="object-cover" />
+            <Image src={url} alt={t("alt")} fill sizes="200px" className="object-cover" />
             <Button
               type="button"
               variant="ghost"
               size="icon-sm"
               onClick={() => remove(url)}
-              aria-label="Remove photo"
+              aria-label={t("remove")}
               className="top-1.5 right-1.5 absolute bg-black/60 hover:bg-black/80 rounded-full size-7 text-white hover:text-white"
             >
               <X size={14} />
@@ -127,7 +131,7 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
             className="flex-col gap-1 border-hairline-strong border-dashed rounded-sm h-28 font-normal text-muted-foreground text-body-sm"
           >
             <span className="text-pin-green-600 text-xl">+</span>
-            <span>Add photo</span>
+            <span>{t("add")}</span>
           </Button>
         )}
       </div>
@@ -146,7 +150,7 @@ const PhotoUploader = ({ value, onChange, onBusyChange }: Props) => {
         </span>
       )}
       <span className="text-muted-foreground text-body-sm">
-        Up to {MAX_PHOTOS} photos, JPG, PNG or WebP, 5 MB each. Photograph any damage too — it saves a wasted trip for both of you.
+        {t("hint", { count: MAX_PHOTOS })}
       </span>
     </div>
   );

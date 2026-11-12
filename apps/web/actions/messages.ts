@@ -10,7 +10,7 @@ export async function sendMessageAction(
   input: unknown,
 ): Promise<ActionResult> {
   const session = await getServerSession();
-  if (!session) return { ok: false, error: "Please sign in first." };
+  if (!session) return { ok: false, error: "signIn" };
   const parsed = sendMessageSchema.safeParse(input);
   if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0].message, fieldErrors: toFieldErrors(parsed.error) };

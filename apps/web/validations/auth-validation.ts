@@ -1,33 +1,35 @@
 import z from "zod";
 
+// Messages are validation error codes. The UI translates them (namespace `validation`).
+
 const passwordRules = z
   .string()
-  .min(10, "Password must be at least 10 characters long")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number")
+  .min(10, "passwordMin")
+  .regex(/[A-Z]/, "passwordUpper")
+  .regex(/[a-z]/, "passwordLower")
+  .regex(/[0-9]/, "passwordNumber")
   .regex(
     /[!@#$%^&*(),.?":{}|<>]/,
-    "Password must contain at least one special character",
+    "passwordSpecial",
   );
 
 // Sign up schema
 export const signUpSchema = z
   .object({
-    email: z.string().email("Invalid email address"),
+    email: z.string().email("emailInvalid"),
     firstName: z
       .string()
-      .min(2, "First name must be at least 2 characters long")
-      .max(100, "First name must be less than 100 characters long"),
+      .min(2, "firstNameMin")
+      .max(100, "firstNameMax"),
     lastName: z
       .string()
-      .min(2, "Last name must be at least 2 characters long")
-      .max(100, "Last name must be less than 100 characters long"),
+      .min(2, "lastNameMin")
+      .max(100, "lastNameMax"),
     password: passwordRules,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "passwordsMismatch",
     path: ["confirmPassword"],
   });
 
@@ -35,15 +37,15 @@ export type SignUpSchema = z.infer<typeof signUpSchema>;
 
 // Sign in schema
 export const signInSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email("emailInvalid"),
+  password: z.string().min(1, "passwordRequired"),
 });
 
 export type SignInSchema = z.infer<typeof signInSchema>;
 
 // Forgot password schema
 export const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().email("emailInvalid"),
 });
 
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
@@ -55,7 +57,7 @@ export const resetPasswordSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "passwordsMismatch",
     path: ["confirmPassword"],
   });
 

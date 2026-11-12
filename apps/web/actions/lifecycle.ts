@@ -7,7 +7,7 @@ import { rateMatch, rateSchema } from "@/lib/ratings";
 import { sharePhoneSchema } from "@/validations/lifecycle-validation";
 import { failure, toFieldErrors, type ActionResult } from "@/lib/action-result";
 
-const SIGN_IN = "Please sign in first.";
+const SIGN_IN = "signIn";
 
 /** Opt in or out of sharing your number. The thread re-fetches itself afterwards. */
 export async function sharePhoneAction(matchId: string, input: unknown): Promise<ActionResult> {
@@ -15,14 +15,12 @@ export async function sharePhoneAction(matchId: string, input: unknown): Promise
   if (!session) return { ok: false, error: SIGN_IN };
   const parsed = sharePhoneSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, error: "Check the phone number.", fieldErrors: toFieldErrors(parsed.error) };
+    return { ok: false, error: "checkPhone", fieldErrors: toFieldErrors(parsed.error) };
   try {
     await setPhoneShare(session.user.id, matchId, parsed.data.share, parsed.data.phone);
     return { ok: true, data: undefined };
   } catch (e) {
-    const res = failure(e, "sharePhoneAction");
-    // Show a bad-number message next to the field.
-    return !res.ok && /phone number/i.test(res.error) ? { ...res, fieldErrors: { phone: res.error } } : res;
+    return failure(e, "sharePhoneAction");
   }
 }
 

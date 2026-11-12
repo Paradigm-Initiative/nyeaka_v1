@@ -14,6 +14,8 @@ import { signUp } from "@/lib/auth-client";
 import FieldInput from "@/components/custom/field-input";
 import { AppleIcon, GoogleIcon } from "@/components/custom/brand-icons";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useAuthErrorText, useErrorText } from "@/lib/use-error-text";
 import {
   Card,
   CardContent,
@@ -22,6 +24,9 @@ import {
 } from "@/components/ui/card";
 
 export function SignupForm() {
+  const t = useTranslations("auth.signUp");
+  const authError = useAuthErrorText();
+  const errText = useErrorText();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -53,9 +58,9 @@ export function SignupForm() {
     });
 
     if (error) {
-      setError(error.message || "Something went wrong");
+      setError(authError(error.code));
     } else {
-      toast.success("Account created. Check your email to verify it.");
+      toast.success(t("success"));
       router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     }
   };
@@ -63,10 +68,9 @@ export function SignupForm() {
   return (
     <Card className="flex flex-col flex-1 justify-center gap-4">
       <CardHeader className="flex flex-col gap-2">
-        <h2 className="text-heading-2">Create your account</h2>
+        <h2 className="text-heading-2">{t("title")}</h2>
         <p className="text-body-md text-muted-foreground">
-          One account covers both sides — you can give a device today and ask
-          for one next year.
+          {t("subtitle")}
         </p>
       </CardHeader>
       <form onSubmit={handleSubmit(submitHandler)}>
@@ -78,12 +82,12 @@ export function SignupForm() {
                 control={control}
                 render={({ field }) => (
                   <FieldInput
-                    label="First name"
+                    label={t("firstName")}
                     type="text"
                     name="firstName"
-                    placeholder="As it appears on your ID"
+                    placeholder={t("namePlaceholder")}
                     field={field}
-                    errorMessage={errors.firstName?.message}
+                    errorMessage={errText(errors.firstName?.message)}
                   />
                 )}
               />
@@ -92,12 +96,12 @@ export function SignupForm() {
                 name="lastName"
                 render={({ field }) => (
                   <FieldInput
-                    label="Last name"
+                    label={t("lastName")}
                     type="text"
                     name="lastName"
-                    placeholder="As it appears on your ID"
+                    placeholder={t("namePlaceholder")}
                     field={field}
-                    errorMessage={errors.lastName?.message}
+                    errorMessage={errText(errors.lastName?.message)}
                   />
                 )}
               />
@@ -108,12 +112,12 @@ export function SignupForm() {
               name="email"
               render={({ field }) => (
                 <FieldInput
-                  label="Email address"
+                  label={t("email")}
                   name="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t("emailPlaceholder")}
                   field={field}
-                  errorMessage={errors.email?.message}
+                  errorMessage={errText(errors.email?.message)}
                 />
               )}
             />
@@ -123,13 +127,13 @@ export function SignupForm() {
               name="password"
               render={({ field }) => (
                 <FieldInput
-                  label="Password"
+                  label={t("password")}
                   name="password"
                   type="password"
                   isPassword
                   field={field}
-                  errorMessage={errors.password?.message}
-                  description="Must be at least 10 characters long."
+                  errorMessage={errText(errors.password?.message)}
+                  description={t("passwordHint")}
                 />
               )}
             />
@@ -139,12 +143,12 @@ export function SignupForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FieldInput
-                  label="Please confirm your password"
+                  label={t("confirmPassword")}
                   name="confirmPassword"
                   type="password"
                   isPassword
                   field={field}
-                  errorMessage={errors.confirmPassword?.message}
+                  errorMessage={errText(errors.confirmPassword?.message)}
                 />
               )}
             />
@@ -159,17 +163,17 @@ export function SignupForm() {
                 disabled={isSubmitting}
                 className="w-full"
               >
-                Create account
+                {t("submit")}
               </Button>
               <p>
-                Already have an account?
+                {t("haveAccount")}
                 <Button
                   variant="link"
                   type="button"
                   asChild
                   className="ml-0.5 p-0"
                 >
-                  <Link href="/sign-in">Sign in</Link>
+                  <Link href="/sign-in">{t("signIn")}</Link>
                 </Button>
               </p>
             </div>
@@ -184,22 +188,22 @@ export function SignupForm() {
             type="button"
             className="w-full"
             onClick={() => {
-              toast.error("Sign in with Google is not implemented yet");
+              toast.error(t("googleSoon"));
             }}
           >
             <GoogleIcon className="text-[#4285F4]" />
-            Sign up with Google
+            {t("google")}
           </Button>
           <Button
             variant="outline"
             type="button"
             className="w-full"
             onClick={() => {
-              toast.error("Sign in with Apple is not implemented yet");
+              toast.error(t("appleSoon"));
             }}
           >
             <AppleIcon />
-            Sign up with Apple
+            {t("apple")}
           </Button>
         </div>
       </CardFooter>

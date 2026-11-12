@@ -1,0 +1,725 @@
+{
+  "meta": {
+    "title": "Nyeaka - Device Sharing Platform",
+    "description": "Nyeaka is a device sharing platform that allows users to share their devices with others. It provides a secure and convenient way to share devices, making it easier for people to access the technology they need. Set up by Paradigm Initiatives, Nyeaka aims to foster a collaborative and resource-efficient environment where users can easily share and access devices, promoting sustainability and reducing electronic waste."
+  },
+  "language": {
+    "label": "Change language"
+  },
+  "header": {
+    "homeLabel": "Nyeaka home, a Paradigm Initiative project",
+    "byParadigm": "by Paradigm Initiative",
+    "mainNav": "Main navigation",
+    "mobileNav": "Mobile navigation",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "nav": {
+    "browse": "Browse devices",
+    "requests": "Requests",
+    "howItWorks": "How it works"
+  },
+  "userMenu": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "admin": "Admin",
+    "signOut": "Sign out"
+  },
+  "footer": {
+    "tagline": "A free device-donation marketplace for Africa. No fees, no middlemen, no resale.",
+    "projectLabel": "A Paradigm Initiative project",
+    "projectOf": "A project of",
+    "rights": "© {year} <org>Paradigm Initiative</org>. All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "badge": "{count, number} devices rehomed since launch",
+      "title": "The laptop you stopped using still works.",
+      "subtitle": "Every one of those devices was sitting unused in someone's home until somebody listed it. Nyeaka is free, has no middlemen and takes no cut — members are ID-verified, then they meet and hand over themselves.",
+      "give": "I have a device to give",
+      "need": "I need a device",
+      "disclaimer": "Nyeaka never handles the device, the meetup, or money — there is none.",
+      "statsTitle": "Since launch",
+      "statDevices": "devices handed over",
+      "statMembers": "ID-verified members",
+      "statCities": "cities across Africa",
+      "statsNote": "Roughly two in three listings are claimed within a week. Phones move fastest; laptops travel furthest."
+    },
+    "how": {
+      "title": "How it works",
+      "steps": {
+        "1": {
+          "eyebrow": "Step one",
+          "title": "List it, or ask for one",
+          "description": "Device type, brand, condition, a photo, your area. Requesters post what they need and why."
+        },
+        "2": {
+          "eyebrow": "Step two",
+          "title": "Get matched",
+          "description": "Requests come with a short note explaining the need. The donor reads them and chooses one person."
+        },
+        "3": {
+          "eyebrow": "Step three",
+          "title": "Coordinate the handoff",
+          "description": "Chat in Nyeaka, agree a public spot, swap numbers only if you both want to. Both confirm when it's done."
+        }
+      }
+    },
+    "listings": {
+      "title": "Listed in the last seven days",
+      "seeAll": "See all listings",
+      "empty": "No devices listed yet. Be the first to list one."
+    },
+    "trust": {
+      "1": {
+        "title": "Nothing goes through us",
+        "description": "No shipping, no commission, no platform holding your device. You agree a public spot and hand it over yourself."
+      },
+      "2": {
+        "title": "You see who you're meeting",
+        "description": "Everyone verifies their identity before they can list or request. Ratings and completed handoffs stay on the profile."
+      },
+      "3": {
+        "title": "Free, and not for resale",
+        "description": "Requesters sign a no-resale pledge you can read before choosing. Money never enters the conversation."
+      }
+    },
+    "cta": {
+      "eyebrow": "Digital Inclusion",
+      "title": "Somebody near you is waiting on a device you already own.",
+      "body": "Listing takes about two minutes. You choose who receives it.",
+      "button": "List a device"
+    }
+  },
+  "common": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "titles": {
+    "verifyEmail": "Check your email",
+    "forgotPassword": "Forgot password",
+    "resetPassword": "Reset password",
+    "emailVerified": "Email verified",
+    "verify": "Verify your identity",
+    "browse": "Browse devices",
+    "requests": "Requests",
+    "dashboard": "Dashboard",
+    "editListing": "Edit listing",
+    "editRequest": "Edit request",
+    "newListing": "List a device",
+    "newRequest": "Ask for a device",
+    "messages": "Messages",
+    "listing": "Listing",
+    "request": "Request"
+  },
+  "signInRequired": {
+    "editListing": {
+      "title": "Sign in to edit your listing",
+      "description": "Only the person who listed a device can change it."
+    },
+    "editRequest": {
+      "title": "Sign in to edit your request",
+      "description": "Only the person who posted a request can change it."
+    },
+    "newListing": {
+      "title": "Sign in to list a device",
+      "description": "Donors verify their identity so the person collecting the device knows who they're meeting."
+    },
+    "newRequest": {
+      "title": "Sign in to ask for a device",
+      "description": "Donors choose who receives their device. Knowing every requester is a real, verified person is what makes that choice safe."
+    }
+  },
+  "auth": {
+    "required": {
+      "signIn": "Sign in",
+      "createAccount": "Create an account"
+    },
+    "signIn": {
+      "title": "Welcome back",
+      "email": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "forgot": "Forgot your password?",
+      "submit": "Sign in",
+      "createInstead": "Create an account instead",
+      "success": "Logged in successfully"
+    },
+    "signUp": {
+      "title": "Create your account",
+      "subtitle": "One account covers both sides — you can give a device today and ask for one next year.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "namePlaceholder": "As it appears on your ID",
+      "email": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordHint": "Must be at least 10 characters long.",
+      "confirmPassword": "Please confirm your password",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "success": "Account created. Check your email to verify it.",
+      "google": "Sign up with Google",
+      "apple": "Sign up with Apple",
+      "googleSoon": "Sign in with Google is not implemented yet",
+      "appleSoon": "Sign in with Apple is not implemented yet"
+    },
+    "verifyEmail": {
+      "title": "Check your email",
+      "withEmail": "We sent a verification link to <strong>{email}</strong>. Click it to activate your account. It expires in 1 hour.",
+      "withoutEmail": "We sent you a verification link. Click it to activate your account.",
+      "resend": "Resend email",
+      "resendIn": "Resend email in {seconds}s",
+      "sent": "Verification email sent",
+      "back": "Back to sign in"
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email and we'll send you a link to choose a new one.",
+      "email": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send reset link",
+      "back": "Back to sign in",
+      "sentTitle": "Check your email",
+      "sentBody": "If an account exists for <strong>{email}</strong>, we've sent a link to reset your password. It expires in 1 hour."
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "password": "New password",
+      "passwordHint": "Must be at least 10 characters long.",
+      "confirm": "Confirm new password",
+      "submit": "Update password",
+      "success": "Password updated. Please sign in.",
+      "invalidTitle": "This link isn't valid",
+      "invalidBody": "The reset link is invalid or has expired. Request a new one to continue.",
+      "newLink": "Request a new link"
+    },
+    "emailVerified": {
+      "invalidTitle": "This link isn't valid",
+      "invalidBody": "The verification link is invalid or has expired. Sign in and we'll send you a fresh one.",
+      "signIn": "Sign in",
+      "verified": "Email verified",
+      "verifiedNamed": "You're verified, {name}",
+      "body": "Your email has been confirmed. You can now browse, list a device, or ask for one.",
+      "dashboard": "Go to my dashboard"
+    }
+  },
+  "authErrors": {
+    "INVALID_EMAIL_OR_PASSWORD": "Incorrect email or password.",
+    "INVALID_PASSWORD": "Incorrect password.",
+    "INVALID_EMAIL": "Enter a valid email address.",
+    "USER_ALREADY_EXISTS": "An account with this email already exists.",
+    "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "An account with this email already exists.",
+    "USER_NOT_FOUND": "We couldn't find an account with that email.",
+    "EMAIL_NOT_VERIFIED": "Please verify your email first.",
+    "PASSWORD_TOO_SHORT": "That password is too short.",
+    "PASSWORD_TOO_LONG": "That password is too long.",
+    "INVALID_TOKEN": "This link is invalid or has expired.",
+    "TOO_MANY_REQUESTS": "Too many attempts. Please wait a moment and try again."
+  },
+  "validation": {
+    "emailInvalid": "Enter a valid email address.",
+    "passwordMin": "Password must be at least 10 characters long.",
+    "passwordUpper": "Password must contain at least one uppercase letter.",
+    "passwordLower": "Password must contain at least one lowercase letter.",
+    "passwordNumber": "Password must contain at least one number.",
+    "passwordSpecial": "Password must contain at least one special character.",
+    "passwordRequired": "Password is required.",
+    "passwordsMismatch": "Passwords do not match.",
+    "firstNameMin": "First name must be at least 2 characters long.",
+    "firstNameMax": "First name must be less than 100 characters long.",
+    "lastNameMin": "Last name must be at least 2 characters long.",
+    "lastNameMax": "Last name must be less than 100 characters long.",
+    "messageEmpty": "Write a message first.",
+    "messageTooLong": "Keep messages under 2000 characters.",
+    "chooseDevice": "Choose a device.",
+    "chooseRequest": "Choose a request.",
+    "noteTooLong": "Keep your note under 1000 characters.",
+    "enterCity": "Enter a city.",
+    "countryCode": "Choose a country.",
+    "chooseDeviceType": "Choose a device type.",
+    "enterBrand": "Enter the brand.",
+    "enterModel": "Enter the model.",
+    "chooseCondition": "Choose a condition.",
+    "tooLong1000": "Keep it under 1000 characters.",
+    "tooLong280": "Keep it under 280 characters.",
+    "photoInvalid": "Invalid photo.",
+    "addTitle": "Add a short title.",
+    "tellMore": "Tell donors a bit more about why you need it.",
+    "acceptPledge": "You must accept the pledge.",
+    "chooseReason": "Choose a reason.",
+    "chooseRating": "Choose a star rating.",
+    "commentTooLong": "Keep it under 500 characters."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "signIn": "Please sign in first.",
+    "checkFields": "Check the highlighted fields.",
+    "checkPhone": "Check the phone number.",
+    "rateLimited": "You're doing that too often. Please wait a little and try again.",
+    "notFound": "We couldn't find that.",
+    "forbidden": "You can't do that.",
+    "invalid": "That isn't allowed right now.",
+    "restricted": "Your account is restricted while we review reports about it, so you can't post or send offers right now.",
+    "blockSelf": "You can't block yourself.",
+    "blockNotMatched": "You can only block someone you have been matched with.",
+    "listingNotFound": "Listing not found.",
+    "requestNotFound": "Request not found.",
+    "reportSelf": "You can't report yourself.",
+    "reportNotMatched": "You can only report someone you have been matched with.",
+    "alreadyReported": "You've already reported this person. We're reviewing it.",
+    "conversationNotFound": "Conversation not found.",
+    "notInConversation": "You are not part of this conversation.",
+    "chatClosed": "This match was cancelled, so the chat is closed.",
+    "cannotSend": "You can't send messages in this conversation.",
+    "matchNotFound": "Match not found.",
+    "notInMatch": "You are not part of this match.",
+    "alreadyRated": "You've already rated this match.",
+    "ratingUnavailable": "Ratings aren't available for this match.",
+    "rateAfterHandoff": "You can rate once the handoff is confirmed or the match ends.",
+    "ratingNeedsMessages": "Ratings open after a cancelled match only if you both exchanged messages.",
+    "ratingWindowClosed": "The rating window for this match has closed.",
+    "offerOwnPost": "You can't offer on your own post.",
+    "offerOwnOnly": "You can only offer with your own listing or request.",
+    "offerBlocked": "You can't send an offer to this person.",
+    "alreadyOffered": "You already have an active offer on this request.",
+    "deviceAlreadyOffered": "This device was already offered on this request.",
+    "offerNotFound": "Offer not found.",
+    "withdrawOwnOnly": "You can only withdraw offers you sent.",
+    "offerAnswered": "This offer has already been answered.",
+    "handoffForbidden": "You can't do that in this conversation.",
+    "numbersCancelled": "This match was cancelled, so numbers can't be shared.",
+    "addPhone": "Add your phone number to share it.",
+    "nothingToConfirm": "This match was cancelled, so there is nothing to confirm.",
+    "photosViaNyeaka": "Photos must be uploaded through Nyeaka.",
+    "onlyRecipientAnswers": "Only the person who received this offer can answer it.",
+    "offerUnavailable": "This offer is no longer available.",
+    "deviceUnavailable": "This device is no longer available.",
+    "requestClosed": "This request is no longer open.",
+    "onlyMatchCancel": "Only the two people in this match can cancel it.",
+    "onlyActiveCancel": "Only an active match can be cancelled.",
+    "invalidPhone": "Enter a valid phone number, including the country code, for example +234 806 412 0088.",
+    "editLiveListing": "Only live listings can be edited. Renew it first.",
+    "listingNotLive": "This listing is not live.",
+    "renewListing": "Only closed or expired listings can be renewed.",
+    "editLiveRequest": "Only live requests can be edited. Renew it first.",
+    "requestNotLive": "This request is not live.",
+    "renewRequest": "Only closed or expired requests can be renewed.",
+    "offerAlreadySent": "Offer already sent",
+    "alreadyMatched": "Already matched",
+    "alreadyDeclined": "Already offered and declined",
+    "alreadyWithdrawn": "Already offered and withdrawn",
+    "donorBusy": "This donor already has an offer on it",
+    "uploadType": "Use JPG, PNG or WebP photos.",
+    "uploadTooBig": "Photos must be 5 MB or smaller.",
+    "uploadSignIn": "Sign in to upload photos.",
+    "uploadInvalid": "Invalid upload request.",
+    "uploadFailed": "Upload failed. Please try again."
+  },
+  "device": {
+    "kind": {
+      "SMARTPHONE": "Phone",
+      "TABLET": "Tablet",
+      "LAPTOP": "Laptop",
+      "DESKTOP": "Desktop",
+      "OTHER": "Other"
+    },
+    "condition": {
+      "NEW": "New",
+      "LIKE_NEW": "Like new",
+      "GOOD": "Good",
+      "FAIR": "Fair"
+    }
+  },
+  "card": {
+    "verifiedDonor": "ID-verified donor",
+    "verifiedRequester": "ID-verified requester",
+    "orBetter": "{condition} or better"
+  },
+  "browse": {
+    "tabDevices": "Devices available",
+    "tabRequests": "People asking",
+    "search": "Search",
+    "city": "City",
+    "allCities": "All cities",
+    "allDevices": "All devices",
+    "clear": "Clear filters",
+    "previous": "← Previous",
+    "next": "Next →",
+    "page": "Page {page} of {total}",
+    "pagination": "Pagination",
+    "summariesOnly": "You're seeing summaries only. Create an account to open a listing, read the note and send a request.",
+    "createAccount": "Create an account",
+    "devices": {
+      "heading": "What's available near you",
+      "description": "Browse freely. Names, photos and contact details open up once you verify your identity.",
+      "searchPlaceholder": "Search brand or model",
+      "count": "{count, plural, one {# device available} other {# devices available}}",
+      "empty": "Nothing listed yet. Post a request so people nearby can see you.",
+      "emptyFiltered": "Nothing matches those filters. Try fewer filters, or post a request so people nearby can see you."
+    },
+    "requests": {
+      "heading": "People asking nearby",
+      "description": "See what people near you need. Offering a device opens a chat once they accept.",
+      "searchPlaceholder": "Search requests",
+      "count": "{count, plural, one {# open request} other {# open requests}}",
+      "empty": "Nothing listed yet. Post a listing so people nearby can see you.",
+      "emptyFiltered": "Nothing matches those filters. Try fewer filters, or post a listing so people nearby can see you."
+    }
+  },
+  "detail": {
+    "charger": "Charger",
+    "keyboard": "Keyboard",
+    "brand": "Brand",
+    "condition": "Condition",
+    "comesWith": "Comes with",
+    "nothingExtra": "Nothing extra",
+    "backToBrowsing": "← Back to browsing",
+    "listingClosed": "This device has been matched and is no longer available.",
+    "whoseListing": "{name}'s listing",
+    "reportListing": "Report this listing",
+    "anyCondition": "Any condition",
+    "deviceNeeded": "Device needed",
+    "lowestCondition": "Lowest condition",
+    "any": "Any",
+    "pledge": "Pledge",
+    "pledgeValue": "No resale, signed",
+    "backToRequests": "← Back to requests",
+    "requestClosed": "This request has been matched and is no longer open.",
+    "whoseRequest": "{name}'s request",
+    "reportRequest": "Report this request",
+    "placePosted": "{place} · posted {posted}",
+    "noRatings": "No ratings yet",
+    "handoffs": "{count, plural, one {# completed handoff} other {# completed handoffs}}",
+    "privacyNote": "First name and general area only until you both agree to share more. Exact address is never published."
+  },
+  "owner": {
+    "state": {
+      "ACTIVE": "This is your post. People can see it until it expires.",
+      "EXPIRED": "This post has expired and is hidden from browsing.",
+      "CLOSED": "You closed this post. It is hidden from browsing.",
+      "MATCHED": "This post has been matched."
+    },
+    "expires": "Expires {date}."
+  },
+  "contact": {
+    "signedOutRequest": "Create a free account to send a request to {who}.",
+    "signedOutOffer": "Create a free account to offer a device to {who}.",
+    "createAccount": "Create an account",
+    "requestSent": "Request sent",
+    "offerSent": "Offer sent",
+    "sentBodyRequest": "{who} will see this on their dashboard. If they choose you, a chat opens.",
+    "sentBodyOffer": "If it's what {who} needs, they accept and a chat opens so you can agree a public place to meet.",
+    "dashboard": "Go to my dashboard",
+    "keepBrowsing": "Keep browsing",
+    "waitingFor": "Waiting for {who}",
+    "youSentOffer": "You sent an offer using “{post}”. You'll find the answer on your dashboard.",
+    "sentYouOffer": "{who} sent you an offer",
+    "answerFromDashboard": "Accept or decline it from your dashboard.",
+    "openDashboard": "Open dashboard",
+    "needRequest": "To ask {who} for this device you need a live request of your own.",
+    "needListing": "To offer {who} a device you need a live listing of your own.",
+    "postRequest": "Post a request",
+    "listDevice": "List a device",
+    "headingRequest": "Tell {who} why you need it",
+    "headingOffer": "Offer {who} a device",
+    "whichRequest": "Which of your requests is this for?",
+    "whichDevice": "Which device are you offering?",
+    "chooseOne": "Choose one",
+    "notePlaceholderRequest": "A short note — what it's for, and when you could collect it. Donors read these before choosing.",
+    "notePlaceholderOffer": "Say what you have and its condition — model, age, anything wrong with it. Be honest; it saves you both a trip.",
+    "pledge": "I am asking for this device for my own use and I will not resell it. {who} can see this pledge on my request.",
+    "pledgeSigned": "{who} has signed the no-resale pledge. If they accept your offer, a chat opens and you agree a public place to meet.",
+    "sending": "Sending…",
+    "sendRequest": "Send request",
+    "offerDevice": "Offer a device"
+  },
+  "form": {
+    "selectCountry": "Select country",
+    "country": "Country",
+    "city": "City",
+    "cityPlaceholder": "e.g. Lagos",
+    "area": "Area (optional)",
+    "areaPlaceholder": "e.g. Yaba",
+    "privacy": "Only your area shows publicly — never your street or house number. You choose the meeting place later, in the chat."
+  },
+  "listingForm": {
+    "updated": "Listing updated",
+    "live": "Your listing is live",
+    "published": "Published",
+    "liveTitle": "Your listing is live",
+    "liveBody": "Requests will arrive with a short note explaining the need. Read them, pick the one you want, and the chat opens. You are never obliged to give it to anyone.",
+    "view": "View my listing",
+    "dashboard": "See my dashboard",
+    "editTitle": "Edit your listing",
+    "title": "List a device",
+    "subtitle": "Be honest about the condition — a phone described accurately is claimed faster than one oversold.",
+    "whatIsIt": "What is it?",
+    "brand": "Brand",
+    "brandPlaceholder": "e.g. Tecno",
+    "model": "Model",
+    "modelPlaceholder": "e.g. Spark 8",
+    "condition": "Condition",
+    "anythingElse": "Anything else? (optional)",
+    "descriptionPlaceholder": "Age, battery life, any scratches or faults.",
+    "comesWith": "Comes with",
+    "extras": {
+      "hasCharger": "Charger",
+      "hasKeyboard": "Keyboard"
+    },
+    "saving": "Saving…",
+    "publishing": "Publishing…",
+    "uploading": "Uploading photos…",
+    "save": "Save changes",
+    "publish": "Publish listing"
+  },
+  "requestForm": {
+    "updated": "Request updated",
+    "live": "Your request is live",
+    "published": "Published",
+    "liveTitle": "Your request is live",
+    "liveBody": "Donors in your area can see it now, and you'll hear from us if one offers you a device. Keep browsing listings in the meantime — asking directly often works faster.",
+    "browse": "Browse devices",
+    "dashboard": "My dashboard",
+    "editTitle": "Edit your request",
+    "title": "Ask for a device",
+    "subtitle": "Donors read requests before they choose. Plain and specific works better than urgent.",
+    "whatDoYouNeed": "What do you need?",
+    "lowestCondition": "Lowest condition you can work with",
+    "shortTitle": "Short title",
+    "titlePlaceholder": "e.g. Laptop for my final-year project",
+    "why": "Why do you need it?",
+    "whyPlaceholder": "What it's for — school, work, your business — and what you're managing without it now.",
+    "pledge": "I am asking for my own use and will not resell it. This pledge appears on my request, and breaking it removes my account.",
+    "saving": "Saving…",
+    "posting": "Posting…",
+    "save": "Save changes",
+    "post": "Post request"
+  },
+  "photos": {
+    "title": "Photos",
+    "alt": "Device photo",
+    "remove": "Remove photo",
+    "add": "Add photo",
+    "max": "You can add up to {count} photos.",
+    "type": "Use JPG, PNG or WebP photos.",
+    "size": "Each photo must be 5 MB or smaller.",
+    "failed": "Upload failed.",
+    "hint": "Up to {count} photos, JPG, PNG or WebP, 5 MB each. Photograph any damage too — it saves a wasted trip for both of you."
+  },
+  "postActions": {
+    "renewed": "Renewed for 60 days",
+    "renewing": "Renewing…",
+    "reopen": "Reopen for 60 days",
+    "renew": "Renew for 60 days",
+    "edit": "Edit",
+    "confirm": {
+      "listing": "Close this listing?",
+      "request": "Close this request?"
+    },
+    "closed": {
+      "listing": "Listing closed",
+      "request": "Request closed"
+    },
+    "closing": "Closing…",
+    "yesClose": "Yes, close it",
+    "keep": "Keep it",
+    "close": "Close"
+  },
+  "renewPrompt": {
+    "title": {
+      "listing": "This listing isn't live",
+      "request": "This request isn't live"
+    },
+    "body": {
+      "closed": "“{title}” is closed, so it can't be edited. Reopen it for another 60 days to edit it and make it visible again.",
+      "expired": "“{title}” is expired, so it can't be edited. Renew it for another 60 days to edit it and make it visible again."
+    },
+    "back": "Back to dashboard"
+  },
+  "withdraw": {
+    "label": "Withdraw offer",
+    "pending": "Withdrawing…",
+    "done": "Offer withdrawn"
+  },
+  "dashboard": {
+    "hello": "Hello {name}",
+    "helloAnon": "Hello",
+    "giving": "Giving",
+    "asking": "Asking",
+    "restricted": "Your account is restricted while we review reports about it. You can still browse, chat and finish matches you already have, but you can't post listings or requests or send offers.",
+    "rating": "{count, plural, one {Your rating, # review} other {Your rating, # reviews}}",
+    "handoffs": "Completed handoffs",
+    "verified": "Verified",
+    "notVerified": "Not verified",
+    "idConfirmed": "NIN and ID confirmed",
+    "verifyIdentity": "Verify your identity",
+    "requestsForDevices": "Requests for your devices",
+    "noRequestsYet": "No one has asked for your devices yet.",
+    "yourListings": "Your listings",
+    "listedMeta": "{place} · {condition} · listed {time}",
+    "state": {
+      "ACTIVE": "Live",
+      "EXPIRED": "Expired",
+      "CLOSED": "Closed",
+      "MATCHED": "Matched"
+    },
+    "offers": "{count, plural, one {# offer} other {# offers}}",
+    "listAnother": "+ List another device",
+    "listFirst": "+ List a device",
+    "twoMinutes": "Two minutes",
+    "offersForRequests": "Offers for your requests",
+    "noOffersYet": "No one has offered a device yet.",
+    "yourRequests": "Your requests",
+    "requestMeta": "{condition} · {place} · posted {time}",
+    "orBetter": "{condition} or better",
+    "anyCondition": "Any condition",
+    "askAnother": "+ Ask for another device",
+    "askFirst": "+ Ask for a device",
+    "rateTitle": "Rate your handoffs",
+    "howDidItGo": "How did it go with {name}?",
+    "rateName": "Rate {name}",
+    "handedOverMeta": "{title} · handed over {time}",
+    "cancelledMeta": "{title} · match cancelled {time}",
+    "rate": "Rate",
+    "blockedTitle": "Blocked people",
+    "activeMatches": "Active matches",
+    "sentByYou": "Sent by you"
+  },
+  "matchCard": {
+    "cancelled": "Match cancelled. Your post is live again.",
+    "title": "{title} · with {name}",
+    "meta": "For “{request}” · matched {time}",
+    "openChat": "Open chat",
+    "confirm": "Cancel this match?",
+    "cancelling": "Cancelling…",
+    "yesCancel": "Yes, cancel",
+    "keep": "Keep it",
+    "cancel": "Cancel match"
+  },
+  "offerCard": {
+    "accepted": "Accepted. A chat is now open.",
+    "declined": "Declined",
+    "headlineWantsYours": "{name} wants your {title}",
+    "headlineOffers": "{name} offers {title}",
+    "headlineYouOffered": "You offered {title} to {name}",
+    "headlineYouAsked": "You asked {name} for {title}",
+    "meta": "For “{request}” · {place} · {time}",
+    "verified": "ID-verified",
+    "notSelected": "Not selected",
+    "waiting": "Waiting",
+    "declinedDonor": "This request went to someone else or turned your offer down. Your device stays live.",
+    "declinedRequester": "This device went to someone else or the donor turned your request down. Your request stays live.",
+    "working": "Working…",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "safety": {
+    "block": "Block",
+    "blockConfirm": "Block {who}? You won't be able to message or offer to each other, you'll stop seeing each other's posts, and any open match between you is cancelled. They are not told.",
+    "blocked": "{who} blocked",
+    "blocking": "Blocking…",
+    "yesBlock": "Yes, block",
+    "cancel": "Cancel",
+    "unblocked": "{who} unblocked",
+    "unblocking": "Unblocking…",
+    "unblock": "Unblock"
+  },
+  "report": {
+    "thanks": "Thanks. We've sent your report to the Nyeaka team to review.",
+    "button": "Report",
+    "sent": "Report sent",
+    "heading": "Report {who}",
+    "whatHappened": "What happened?",
+    "chooseReason": "Choose a reason",
+    "reasons": {
+      "SCAM": "Scam or fraud",
+      "MISREPRESENTED_DEVICE": "Device not as described",
+      "HARASSMENT": "Harassment",
+      "INAPPROPRIATE": "Inappropriate content",
+      "SPAM": "Spam",
+      "OTHER": "Something else"
+    },
+    "detailsPlaceholder": "Anything we should know? (optional)",
+    "sending": "Sending…",
+    "send": "Send report",
+    "cancel": "Cancel"
+  },
+  "chat": {
+    "back": "← Dashboard",
+    "title": "{name} · about {title}",
+    "verified": "ID-verified",
+    "meta": "{place} · for “{request}”",
+    "safetyTip": "Meet somewhere public and busy — a bank, a filling station, a campus gate — and bring a friend if you can.",
+    "blockedClosed": "You blocked {name}, so this match was cancelled and the chat is closed. Unblocking them won't reopen it, but you can match again.",
+    "blocked": "You blocked {name}. Unblock them to message again.",
+    "cancelled": "This match was cancelled, so the chat is closed. The device and the request are open to new offers again.",
+    "closed": "Messages are closed for this conversation.",
+    "empty": "No messages yet. Say hello and suggest a public place and time to meet.",
+    "write": "Write a message",
+    "sending": "Sending…",
+    "send": "Send"
+  },
+  "handoff": {
+    "complete": "Handoff complete",
+    "confirmed": "Handoff confirmed",
+    "waiting": "You've confirmed. Waiting for {who} to confirm too.",
+    "theyConfirmed": "{who} has confirmed the handoff. Once the device has changed hands, confirm here.",
+    "prompt": "Once the device has changed hands, you both confirm here. Ratings open after that.",
+    "confirming": "Confirming…",
+    "confirm": "Confirm handoff",
+    "both": "Both of you confirmed the handoff"
+  },
+  "phone": {
+    "shared": "Number shared",
+    "stopped": "No longer sharing your number",
+    "stop": "Stop sharing my number",
+    "numbersShared": "Numbers shared",
+    "whoNumber": "{who} — {number}",
+    "theyCanSee": "{who} can see yours too. Nyeaka keeps the chat either way, in case you need a record.",
+    "youAgreed": "You've agreed to share your number. {who}'s appears here as soon as they agree too.",
+    "theyAgreed": "{who} has agreed to share their number. Share yours to see it.",
+    "hidden": "Phone numbers stay hidden until you both agree.",
+    "sharing": "Sharing…",
+    "share": "Share my number",
+    "yourNumber": "Your phone number",
+    "placeholder": "+234 806 412 0088",
+    "shareShort": "Share",
+    "cancel": "Cancel",
+    "saved": "Saved to your account. Only shown to {who}, and only once they share theirs."
+  },
+  "rating": {
+    "thanks": "Thank you. You rated {who} {score} ★",
+    "onProfile": "Your rating is on {who}'s profile.",
+    "saved": "Rating saved",
+    "howWasTalking": "This match was cancelled. How was talking to {who}?",
+    "howWasMeeting": "How was meeting {who}?",
+    "stars": "Star rating",
+    "star": "{count, plural, one {# star} other {# stars}}",
+    "comment": "Add a comment (optional)",
+    "saving": "Saving…",
+    "leave": "Leave rating"
+  },
+  "verify": {
+    "headingList": "Before you list, we confirm it is really you",
+    "headingRequest": "Before you request, we confirm it is really you",
+    "reasonList": "The person collecting this device is going to meet you in person. They deserve to know your name is real — and you deserve the same from them.",
+    "reasonRequest": "Donors choose who receives their device. Knowing every requester is a real, single, verified person is what makes that choice safe to make.",
+    "submitted": "Verification submitted",
+    "phoneConfirmed": "Phone confirmed",
+    "phoneDone": "Done at sign-up. This is all you need to browse.",
+    "ninTitle": "National Identity Number",
+    "ninBody": "We check the NIN matches your name. Nothing is stored beyond a yes or no, and it never appears on your profile.",
+    "ninPlaceholder": "11-digit NIN",
+    "photoTitle": "ID photo and a selfie",
+    "photoBody": "Only for people listing devices — a reviewer checks the two match. Usually under an hour; you can finish your listing while it's pending.",
+    "idPhoto": "Photo of your ID",
+    "selfie": "Selfie holding it",
+    "note": "Nyeaka is free and always will be. We ask for this once, not per handoff — and nobody sees your documents except the reviewer.",
+    "submit": "Verify and continue",
+    "keepBrowsing": "Keep browsing for now"
+  }
+}

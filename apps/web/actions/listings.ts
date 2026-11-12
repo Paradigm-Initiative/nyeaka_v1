@@ -13,14 +13,14 @@ function revalidate(id?: string) {
   revalidatePath("/");
 }
 
-const SIGN_IN = "Please sign in first.";
+const SIGN_IN = "signIn";
 
 export async function createListingAction(input: unknown): Promise<ActionResult<{ id: string }>> {
   const session = await getServerSession();
   if (!session) return { ok: false, error: SIGN_IN };
   const parsed = createListingSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, error: "Check the highlighted fields.", fieldErrors: toFieldErrors(parsed.error) };
+    return { ok: false, error: "checkFields", fieldErrors: toFieldErrors(parsed.error) };
   try {
     const { id } = await createListing(session.user.id, parsed.data);
     revalidate();
@@ -35,7 +35,7 @@ export async function updateListingAction(id: string, input: unknown): Promise<A
   if (!session) return { ok: false, error: SIGN_IN };
   const parsed = createListingSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, error: "Check the highlighted fields.", fieldErrors: toFieldErrors(parsed.error) };
+    return { ok: false, error: "checkFields", fieldErrors: toFieldErrors(parsed.error) };
   try {
     await updateListing(session.user.id, id, parsed.data);
     revalidate(id);

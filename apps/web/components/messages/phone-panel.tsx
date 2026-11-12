@@ -9,12 +9,16 @@ import { Label } from "../ui/label";
 import FormError from "../post/form-error";
 import { sharePhoneAction } from "@/actions/lifecycle";
 import type { Thread } from "@/lib/messages";
+import { useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 
 /**
  * Phone numbers stay hidden until both people opt in. Each person's choice is
  * saved on the match; the other person's number only reaches this page once both agree.
  */
 const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; phone: Thread["phone"] }) => {
+  const t = useTranslations("phone");
+  const errText = useErrorText();
   const router = useRouter();
   const [pending, start] = useTransition();
   const [entering, setEntering] = useState(false);
@@ -28,30 +32,30 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
       setError(undefined);
       const res = await sharePhoneAction(matchId, { share, phone: typed });
       if (!res.ok) {
-        setError(res.fieldErrors?.phone ?? res.error);
-        if (!res.fieldErrors?.phone) toast.error(res.error);
+        setError(errText(res.fieldErrors?.phone ?? res.error));
+        if (!res.fieldErrors?.phone) toast.error(errText(res.error));
         return;
       }
       setEntering(false);
-      toast.success(share ? "Number shared" : "No longer sharing your number");
+      toast.success(share ? t("shared") : t("stopped"));
       router.refresh();
     });
 
   const stopButton = (
     <Button size="sm" variant="ghost" disabled={pending} onClick={() => set(false)}>
-      Stop sharing my number
+      {t("stop")}
     </Button>
   );
 
   if (phone.iShared && phone.theyShared && phone.theirNumber)
     return (
       <div className="flex flex-col gap-1.5 bg-surface-feature p-4 border border-pin-green-600 rounded-lg">
-        <span className="text-pin-green-600 text-micro-uppercase">Numbers shared</span>
+        <span className="text-pin-green-600 text-micro-uppercase">{t("numbersShared")}</span>
         <a href={`tel:${phone.theirNumber}`} className="text-heading-4 hover:underline">
-          {who} — {phone.theirNumber}
+          {t("whoNumber", { who, number: phone.theirNumber })}
         </a>
         <span className="text-muted-foreground text-body-sm">
-          {who} can see yours too. Nyeaka keeps the chat either way, in case you need a record.
+          {t("theyCanSee", { who })}
         </span>
         <div>{stopButton}</div>
       </div>
@@ -61,7 +65,7 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
     return (
       <div className="flex flex-wrap justify-between items-center gap-3 p-4 border rounded-lg">
         <p className="max-w-[46ch] text-muted-foreground text-body-sm">
-          You&rsquo;ve agreed to share your number. {who}&rsquo;s appears here as soon as they agree too.
+          {t("youAgreed", { who })}
         </p>
         {stopButton}
       </div>
@@ -71,13 +75,11 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
     <div className="flex flex-col gap-3 p-4 border rounded-lg">
       <div className="flex flex-wrap justify-between items-center gap-3">
         <p className="max-w-[46ch] text-muted-foreground text-body-sm">
-          {phone.theyShared
-            ? `${who} has agreed to share their number. Share yours to see it.`
-            : "Phone numbers stay hidden until you both agree."}
+          {phone.theyShared ? t("theyAgreed", { who }) : t("hidden")}
         </p>
         {!entering && (
           <Button variant="outline" disabled={pending} onClick={() => (phone.hasMine ? set(true) : setEntering(true))}>
-            {pending ? "Sharing…" : "Share my number"}
+            {pending ? t("sharing") : t("share")}
           </Button>
         )}
       </div>
@@ -91,7 +93,7 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
         >
           <div className="flex flex-col gap-1.5 text-body-sm">
             <Label htmlFor="phone-number" className="font-semibold text-body-sm leading-normal">
-              Your phone number
+              {t("yourNumber")}
             </Label>
             <Input
               id="phone-number"
@@ -100,21 +102,21 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
               autoFocus
               value={number}
               onChange={(e) => setNumber(e.target.value)}
-              placeholder="+234 806 412 0088"
+              placeholder={t("placeholder")}
               className="rounded-sm h-12"
             />
           </div>
           <FormError message={error} />
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={pending || !number.trim()}>
-              {pending ? "Sharing…" : "Share"}
+              {pending ? t("sharing") : t("shareShort")}
             </Button>
             <Button type="button" size="sm" variant="ghost" disabled={pending} onClick={() => setEntering(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
           </div>
           <span className="text-muted-foreground text-caption">
-            Saved to your account. Only shown to {who}, and only once they share theirs.
+            {t("saved", { who })}
           </span>
         </form>
       )}

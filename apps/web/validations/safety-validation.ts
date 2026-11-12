@@ -4,11 +4,11 @@ import { ReportReason } from "@/generated/prisma/enums";
 export const reportSchema = z.object({
   targetType: z.enum(["USER", "LISTING", "REQUEST"]),
   targetId: z.string().min(1),
-  reason: z.enum(ReportReason, { error: "Choose a reason" }),
+  reason: z.enum(ReportReason, { error: "chooseReason" }),
   details: z
     .string()
     .trim()
-    .max(1000, "Keep it under 1000 characters")
+    .max(1000, "tooLong1000")
     .optional()
     .transform((v) => v || undefined),
 });

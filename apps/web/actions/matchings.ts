@@ -7,7 +7,7 @@ import { acceptOffer, cancelMatch, declineOffer } from "@/lib/matches";
 import { failure, type ActionResult } from "@/lib/action-result";
 import { emailMatchCancelled, emailOfferAccepted } from "@/lib/offer-emails";
 
-const SIGN_IN = "Please sign in first.";
+const SIGN_IN = "signIn";
 
 function revalidate() {
   revalidatePath("/dashboard");

@@ -8,7 +8,7 @@ import { createOfferSchema } from "@/validations/offer-validation";
 import { failure, toFieldErrors, type ActionResult } from "@/lib/action-result";
 import { emailOfferReceived } from "@/lib/offer-emails";
 
-const SIGN_IN = "Please sign in first.";
+const SIGN_IN = "signIn";
 
 function revalidate(listingId?: string, requestId?: string) {
   revalidatePath("/dashboard");
@@ -21,7 +21,7 @@ export async function createOfferAction(input: unknown): Promise<ActionResult<{ 
   if (!session) return { ok: false, error: SIGN_IN };
   const parsed = createOfferSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, error: "Check the highlighted fields.", fieldErrors: toFieldErrors(parsed.error) };
+    return { ok: false, error: "checkFields", fieldErrors: toFieldErrors(parsed.error) };
   try {
     const { id } = await createOffer(session.user.id, parsed.data);
     revalidate(parsed.data.listingId, parsed.data.requestId);

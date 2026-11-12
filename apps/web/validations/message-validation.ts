@@ -6,8 +6,8 @@ export const sendMessageSchema = z.object({
   body: z
     .string()
     .trim()
-    .min(1, "Write a message first")
-    .max(MESSAGE_MAX, `Keep messages under ${MESSAGE_MAX} characters`),
+    .min(1, "messageEmpty")
+    .max(MESSAGE_MAX, "messageTooLong"),
 });
 
 export type SendMessageInput = z.input<typeof sendMessageSchema>;

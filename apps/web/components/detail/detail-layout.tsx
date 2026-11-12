@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DeviceTile from "../device-tile";
 import type { DeviceType } from "@/generated/prisma/enums";
+import { useTranslations } from "next-intl";
 
 const DetailLayout = ({
   kind,
@@ -35,6 +36,7 @@ const DetailLayout = ({
   backLabel: string;
   children: React.ReactNode;
 }) => {
+  const t = useTranslations("detail");
   return (
     <div className="section-wrapper">
       <div className="flex flex-col gap-6">
@@ -81,7 +83,7 @@ const DetailLayout = ({
               </span>
               <h1 className="text-heading-1 text-pretty">{title}</h1>
               <span className="text-muted-foreground text-subtitle">
-                {place} · posted {posted}
+                {t("placePosted", { place, posted })}
               </span>
             </div>
 
@@ -93,7 +95,7 @@ const DetailLayout = ({
                   <span className="text-micro-uppercase text-pin-gray-400">
                     {spec.label}
                   </span>
-                  <span className="text-body-md capitalize">
+                  <span className="text-body-md">
                     {spec.value}
                   </span>
                 </div>
@@ -110,13 +112,12 @@ const DetailLayout = ({
                     {who}
                   </span>
                   <span className="text-muted-foreground text-body-sm">
-                    {rating !== null ? `${rating.toFixed(1)} ★` : "No ratings yet"} · {handoffs} completed handoff{handoffs === 1 ? "" : "s"}
+                    {rating !== null ? `${rating.toFixed(1)} ★` : t("noRatings")} · {t("handoffs", { count: handoffs })}
                   </span>
                 </div>
               </div>
               <p className="text-muted-foreground text-body-sm">
-                First name and general area only until you both agree to
-                share more. Exact address is never published.
+                {t("privacyNote")}
               </p>
             </div>
 

@@ -9,13 +9,11 @@ const ChipPicker = ({
   options,
   value,
   onChange,
-  capitalize,
 }: {
   label: string;
-  options: string[];
+  options: { value: string; label: string }[];
   value: string;
   onChange: (value: string) => void;
-  capitalize?: boolean;
 }) => {
   return (
     <div className="flex flex-col gap-2.5">
@@ -25,17 +23,16 @@ const ChipPicker = ({
       <div className="flex flex-wrap gap-2.5">
         {options.map((option) => (
           <Toggle
-            key={option}
+            key={option.value}
             variant="outline"
             size="lg"
-            pressed={option === value}
-            onPressedChange={() => onChange(option)}
+            pressed={option.value === value}
+            onPressedChange={() => onChange(option.value)}
             className={cn(
               "rounded-sm border-hairline-strong data-[state=on]:bg-pin-green-600 data-[state=on]:border-pin-green-600 data-[state=on]:text-white",
-              capitalize && "capitalize",
             )}
           >
-            {option}
+            {option.label}
           </Toggle>
         ))}
       </div>

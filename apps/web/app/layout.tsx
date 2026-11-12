@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -18,20 +20,20 @@ const raleway = Raleway({
   variable: "--font-body",
 });
 
-export const metadata: Metadata = {
-  title: "Nyeaka - Device Sharing Platform",
-  description:
-    "Nyeaka is a device sharing platform that allows users to share their devices with others. It provides a secure and convenient way to share devices, making it easier for people to access the technology they need. Set up by Paradigm Initiatives, Nyeaka aims to foster a collaborative and resource-efficient environment where users can easily share and access devices, promoting sustainability and reducing electronic waste.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return { title: t("title"), description: t("description") };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
+      lang={locale}
       className={cn(
         "h-full",
         "antialiased",
@@ -40,10 +42,12 @@ export default function RootLayout({
       )}
     >
       <body className="flex flex-col w-full min-h-full">
-        <Header />
-        <main className="flex flex-col flex-1">{children}</main>
-        <Footer />
-        <Toaster />
+        <NextIntlClientProvider>
+          <Header />
+          <main className="flex flex-col flex-1">{children}</main>
+          <Footer />
+          <Toaster />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

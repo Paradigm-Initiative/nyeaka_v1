@@ -6,7 +6,7 @@ import { blockUser, reportUser, unblockUser } from "@/lib/safety";
 import { reportSchema } from "@/validations/safety-validation";
 import { failure, toFieldErrors, type ActionResult } from "@/lib/action-result";
 
-const SIGN_IN = "Please sign in first.";
+const SIGN_IN = "signIn";
 
 function revalidate() {
   revalidatePath("/dashboard");

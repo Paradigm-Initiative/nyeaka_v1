@@ -4,10 +4,15 @@ const CODES =
     " ",
   );
 
-const names = new Intl.DisplayNames(["en"], { type: "region" });
+export type CountryOption = { code: string; name: string };
 
-export const COUNTRIES: { code: string; name: string }[] = CODES.map(
-  (code) => ({ code, name: names.of(code) ?? code }),
-).sort((a, b) => a.name.localeCompare(b.name));
+/** Country names in the given language, sorted for that language. */
+export function getCountries(locale: string): CountryOption[] {
+  const names = new Intl.DisplayNames([locale], { type: "region" });
+  return CODES.map((code) => ({ code, name: names.of(code) ?? code })).sort((a, b) =>
+    a.name.localeCompare(b.name, locale),
+  );
+}
 
-export const countryName = (code: string) => names.of(code) ?? code;
+export const countryName = (code: string, locale: string) =>
+  new Intl.DisplayNames([locale], { type: "region" }).of(code) ?? code;

@@ -1,4 +1,6 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
 
 const photoHost = process.env.S3_PUBLIC_URL
   ? new URL(process.env.S3_PUBLIC_URL)
@@ -19,4 +21,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+
+
+export default withNextIntl(nextConfig);
+

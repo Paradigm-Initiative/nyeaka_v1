@@ -8,7 +8,8 @@ import OrganicEdge from "@/components/layout/organic-edge";
 import { useSession } from "@/lib/auth-client";
 import type { ListingCardData, RequestCardData } from "@/lib/queries";
 import { browseHref, type BrowseFilters } from "@/lib/browse-params";
-import { KIND_OPTIONS } from "@/lib/device-options";
+import { KIND_VALUES } from "@/lib/device-options";
+import { useTranslations } from "next-intl";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -39,6 +40,8 @@ const BrowsePage = ({
   pageCount: number;
   filters: BrowseFilters;
 }) => {
+  const t = useTranslations("browse");
+  const tDevice = useTranslations("device");
   const basePath = tab === "devices" ? "/listings" : "/requests";
   const items = tab === "devices" ? listings ?? [] : requests ?? [];
   const hasFilters = Boolean(filters.q || filters.type || filters.city);
@@ -54,12 +57,8 @@ const BrowsePage = ({
     );
   };
 
-  const heading =
-    tab === "devices" ? "What's available near you" : "People asking nearby";
-  const description =
-    tab === "devices"
-      ? "Browse freely. Names, photos and contact details open up once you verify your identity."
-      : "See what people near you need. Offering a device opens a chat once they accept.";
+  const heading = t(`${tab}.heading`);
+  const description = t(`${tab}.description`);
 
   return (
     <div className="flex flex-col">
@@ -79,7 +78,7 @@ const BrowsePage = ({
                   : "text-pin-gray-400 hover:text-pin-gray-50",
               )}
             >
-              Devices available
+              {t("tabDevices")}
             </Link>
             <Link
               href="/requests"
@@ -90,7 +89,7 @@ const BrowsePage = ({
                   : "text-pin-gray-400 hover:text-pin-gray-50",
               )}
             >
-              People asking
+              {t("tabRequests")}
             </Link>
           </div>
         </div>
@@ -110,16 +109,16 @@ const BrowsePage = ({
             type="search"
             name="q"
             defaultValue={filters.q}
-            placeholder={tab === "devices" ? "Search brand or model" : "Search requests"}
-            aria-label="Search"
+            placeholder={t(`${tab}.searchPlaceholder`)}
+            aria-label={t("search")}
             className="rounded-sm w-full sm:flex-1 sm:basis-0 sm:w-auto h-11"
           />
           <Select value={filters.city ?? ALL_CITIES} onValueChange={pickCity}>
-            <SelectTrigger aria-label="City" className="flex-1 sm:flex-none rounded-sm sm:w-44 h-11">
+            <SelectTrigger aria-label={t("city")} className="flex-1 sm:flex-none rounded-sm sm:w-44 h-11">
               <SelectValue />
             </SelectTrigger>
             <SelectContent align="end">
-              <SelectItem value={ALL_CITIES}>All cities</SelectItem>
+              <SelectItem value={ALL_CITIES}>{t("allCities")}</SelectItem>
               {filters.city && !cities.includes(filters.city) && (
                 <SelectItem value={filters.city}>{filters.city}</SelectItem>
               )}
@@ -130,16 +129,16 @@ const BrowsePage = ({
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" className="h-11 px-6">Search</Button>
+          <Button type="submit" className="h-11 px-6">{t("search")}</Button>
         </form>
 
         <div className="flex flex-wrap gap-2">
-          {[{ label: "All devices", value: undefined }, ...KIND_OPTIONS].map((o) => (
+          {[{ label: t("allDevices"), value: undefined }, ...KIND_VALUES.map((v) => ({ label: tDevice(`kind.${v}`), value: v }))].map((o) => (
             <Link
-              key={o.label}
+              key={o.value ?? "all"}
               href={browseHref(basePath, { ...filters, type: o.value, page: 1 })}
               className={cn(
-                "min-h-10 rounded-sm border px-3.5 py-2 font-heading text-sm font-semibold capitalize",
+                "min-h-10 rounded-sm border px-3.5 py-2 font-heading text-sm font-semibold",
                 o.value === filters.type
                   ? "bg-pin-gray-900 text-white border-pin-gray-900"
                   : "border-hairline-strong text-muted-foreground",
@@ -151,12 +150,12 @@ const BrowsePage = ({
         </div>
 
         <p className="text-muted-foreground text-body-sm">
-          {total} {tab === "devices" ? "devices available" : "open requests"}
+          {t(`${tab}.count`, { count: total })}
           {hasFilters && (
             <>
               {" · "}
               <Link href={basePath} className="text-link hover:underline">
-                Clear filters
+                {t("clear")}
               </Link>
             </>
           )}
@@ -164,9 +163,7 @@ const BrowsePage = ({
 
         {items.length === 0 ? (
           <div className="p-14 border border-hairline-strong border-dashed rounded-lg text-body-md text-muted-foreground text-center">
-            {hasFilters ? "Nothing matches those filters. Try fewer filters, or post a" : "Nothing listed yet. Post a"}{" "}
-            {tab === "devices" ? "request" : "listing"} so people nearby can
-            see you.
+            {t(`${tab}.${hasFilters ? "emptyFiltered" : "empty"}`)}
           </div>
         ) : (
           <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -181,20 +178,20 @@ const BrowsePage = ({
         )}
 
         {pageCount > 1 && (
-          <nav aria-label="Pagination" className="flex justify-between items-center gap-3">
+          <nav aria-label={t("pagination")} className="flex justify-between items-center gap-3">
             {page > 1 ? (
               <Button asChild variant="outline">
-                <Link href={browseHref(basePath, { ...filters, page: page - 1 })}>← Previous</Link>
+                <Link href={browseHref(basePath, { ...filters, page: page - 1 })}>{t("previous")}</Link>
               </Button>
             ) : (
               <span />
             )}
             <span className="text-muted-foreground text-body-sm">
-              Page {page} of {pageCount}
+              {t("page", { page, total: pageCount })}
             </span>
             {page < pageCount ? (
               <Button asChild variant="outline">
-                <Link href={browseHref(basePath, { ...filters, page: page + 1 })}>Next →</Link>
+                <Link href={browseHref(basePath, { ...filters, page: page + 1 })}>{t("next")}</Link>
               </Button>
             ) : (
               <span />
@@ -205,11 +202,10 @@ const BrowsePage = ({
         {!isPending && !session && (
           <div className="flex flex-wrap justify-between items-center gap-3 bg-pin-orange-100 p-4 rounded-lg">
             <p className="max-w-[60ch] text-body-md">
-              You&apos;re seeing summaries only. Create an account to open a
-              listing, read the note and send a request.
+              {t("summariesOnly")}
             </p>
             <Button asChild>
-              <Link href="/sign-up">Create an account</Link>
+              <Link href="/sign-up">{t("createAccount")}</Link>
             </Button>
           </div>
         )}

@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useTranslations } from "next-intl";
 
 export type CountryOption = { code: string; name: string };
 
@@ -25,10 +26,12 @@ const CountrySelect = ({
   value: string;
   onChange: (code: string) => void;
   invalid?: boolean;
-}) => (
+}) => {
+  const t = useTranslations("form");
+  return (
   <Select value={value || undefined} onValueChange={onChange}>
     <SelectTrigger id={id} size="lg" className="rounded-sm" aria-invalid={invalid}>
-      <SelectValue placeholder="Select country" />
+      <SelectValue placeholder={t("selectCountry")} />
     </SelectTrigger>
     <SelectContent className="max-h-72">
       {countries.map((c) => (
@@ -38,6 +41,7 @@ const CountrySelect = ({
       ))}
     </SelectContent>
   </Select>
-);
+  );
+};
 
 export default CountrySelect;

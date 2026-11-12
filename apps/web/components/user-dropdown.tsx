@@ -19,8 +19,10 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { signOut, useSession } from "@/lib/auth-client";
+import { useTranslations } from "next-intl";
 
 export function UserDropdown() {
+  const t = useTranslations("userMenu");
   const { data: session } = useSession();
 
   // Header only renders this when session exists, but guard anyway
@@ -55,32 +57,33 @@ export function UserDropdown() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/dashboard">
-            <LayoutDashboardIcon className="size-4" /> <span>Dashboard</span>
+            <LayoutDashboardIcon className="size-4" /> <span>{t("dashboard")}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/profile">
-            <UserIcon className="size-4" /> <span>Profile</span>
+            <UserIcon className="size-4" /> <span>{t("profile")}</span>
           </Link>
         </DropdownMenuItem>
-        {user.role === "ADMIN" && <AdminItem />}
+        {user.role === "ADMIN" && <AdminItem label={t("admin")} />}
         <SignOutItem />
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-function AdminItem() {
+function AdminItem({ label }: { label: string }) {
   return (
     <DropdownMenuItem asChild>
       <Link href="/admin">
-        <ShieldIcon className="size-4" /> <span>Admin</span>
+        <ShieldIcon className="size-4" /> <span>{label}</span>
       </Link>
     </DropdownMenuItem>
   );
 }
 
 function SignOutItem() {
+  const t = useTranslations("userMenu");
   const router = useRouter();
 
   async function handleSignOut() {
@@ -96,7 +99,7 @@ function SignOutItem() {
 
   return (
     <DropdownMenuItem onClick={handleSignOut}>
-      <LogOutIcon className="size-4" /> <span>Sign out</span>
+      <LogOutIcon className="size-4" /> <span>{t("signOut")}</span>
     </DropdownMenuItem>
   );
 }

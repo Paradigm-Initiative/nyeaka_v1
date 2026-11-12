@@ -13,14 +13,14 @@ function revalidate(id?: string) {
   
 }
 
-const SIGN_IN = "Please sign in first.";
+const SIGN_IN = "signIn";
 
 export async function createRequestAction(input: unknown): Promise<ActionResult<{ id: string }>> {
   const session = await getServerSession();
   if (!session) return { ok: false, error: SIGN_IN };
   const parsed = createRequestSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, error: "Check the highlighted fields.", fieldErrors: toFieldErrors(parsed.error) };
+    return { ok: false, error: "checkFields", fieldErrors: toFieldErrors(parsed.error) };
   try {
     const { id } = await createRequest(session.user.id, parsed.data);
     revalidate();
@@ -35,7 +35,7 @@ export async function updateRequestAction(id: string, input: unknown): Promise<A
   if (!session) return { ok: false, error: SIGN_IN };
   const parsed = createRequestSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, error: "Check the highlighted fields.", fieldErrors: toFieldErrors(parsed.error) };
+    return { ok: false, error: "checkFields", fieldErrors: toFieldErrors(parsed.error) };
   try {
     await updateRequest(session.user.id, id, parsed.data);
     revalidate(id);

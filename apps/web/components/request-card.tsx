@@ -3,10 +3,13 @@ import Link from "next/link";
 import DeviceTile from "./device-tile";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import type { RequestCardData } from "@/lib/queries";
-import { conditionLabel } from "@/lib/device-options";
-import { placeLabel, timeAgo } from "@/lib/format";
+import { placeLabel } from "@/lib/format";
+import { useFormatter, useTranslations } from "next-intl";
 
 const RequestCard = ({ request }: { request: RequestCardData }) => {
+  const t = useTranslations("card");
+  const tDevice = useTranslations("device");
+  const format = useFormatter();
   const { id, deviceType, title, minCondition, city, area, createdAt, requester } = request;
 
   return (
@@ -17,17 +20,17 @@ const RequestCard = ({ request }: { request: RequestCardData }) => {
           <h3 className="text-heading-5">{title}</h3>
           <p className="text-muted-foreground text-body-sm">
             {placeLabel(city, area)}
-            {minCondition ? ` · ${conditionLabel(minCondition)} or better` : ""}
+            {minCondition ? ` · ${t("orBetter", { condition: tDevice(`condition.${minCondition}`) })}` : ""}
           </p>
         </CardContent>
         <CardFooter className="justify-between items-center px-0 pt-3 border-t">
           {requester.idVerified ? (
-            <span className="badge badge-orange">ID-verified requester</span>
+            <span className="badge badge-orange">{t("verifiedRequester")}</span>
           ) : (
             <span />
           )}
           <span className="text-muted-foreground text-caption-bold">
-            {timeAgo(createdAt)}
+            {format.relativeTime(createdAt)}
           </span>
         </CardFooter>
       </Card>

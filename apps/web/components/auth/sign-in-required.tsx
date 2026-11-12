@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { useTranslations } from "next-intl";
 
 const SignInRequired = ({
   title,
@@ -11,6 +12,7 @@ const SignInRequired = ({
   description: string;
   callbackUrl: string;
 }) => {
+  const t = useTranslations("auth.required");
   return (
     <div className="flex flex-col items-start gap-4 mx-auto py-16 max-w-lg section-wrapper">
       <h1 className="text-heading-2">{title}</h1>
@@ -18,11 +20,11 @@ const SignInRequired = ({
       <div className="flex flex-wrap gap-3">
         <Button asChild>
           <Link href={`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
-            Sign in
+            {t("signIn")}
           </Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/sign-up">Create an account</Link>
+          <Link href="/sign-up">{t("createAccount")}</Link>
         </Button>
       </div>
     </div>

@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
 import { getServerSession } from "@/lib/get-session";
 import { getUserProfile } from "@/lib/queries";
-import { COUNTRIES } from "@/lib/countries";
+import { getCountries } from "@/lib/countries";
 import PostListingForm from "@/components/post/post-listing-form";
 import SignInRequired from "@/components/auth/sign-in-required";
+import { getLocale, getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "List a device - Nyeaka",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("newListing")} - Nyeaka` };
+}
 
 export default async function NewListingPage() {
+  const t = await getTranslations("signInRequired");
   const session = await getServerSession();
 
   if (!session) {
     return (
       <SignInRequired
-        title="Sign in to list a device"
-        description="Donors verify their identity so the person collecting the device knows who they're meeting."
+        title={t("newListing.title")}
+        description={t("newListing.description")}
         callbackUrl="/listings/new"
       />
     );
@@ -26,7 +29,7 @@ export default async function NewListingPage() {
 
   return (
     <div className="section-wrapper">
-      <PostListingForm defaultCountry={profile?.countryCode ?? ""} countries={COUNTRIES} />
+      <PostListingForm defaultCountry={profile?.countryCode ?? ""} countries={getCountries(await getLocale())} />
     </div>
   );
 }

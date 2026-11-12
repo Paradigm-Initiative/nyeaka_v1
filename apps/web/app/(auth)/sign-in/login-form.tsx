@@ -11,8 +11,13 @@ import FieldInput from "@/components/custom/field-input";
 import { SignInSchema, signInSchema } from "@/validations/auth-validation";
 import { useState } from "react";
 import { safeRedirectPath } from "@/lib/safe-redirect";
+import { useTranslations } from "next-intl";
+import { useAuthErrorText, useErrorText } from "@/lib/use-error-text";
 
 export function LoginForm() {
+  const t = useTranslations("auth.signIn");
+  const authError = useAuthErrorText();
+  const errText = useErrorText();
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = safeRedirectPath(searchParams.get("callbackUrl"));
@@ -44,9 +49,9 @@ export function LoginForm() {
           router.push(`/verify-email?email=${encodeURIComponent(email)}`);
           return;
         }
-        setError(error.message || "Something went wrong");
+        setError(authError(error.code));
       } else {
-        toast.success("Logged in successfully");
+        toast.success(t("success"));
         router.push(callbackUrl);
       }
     } catch (error) {
@@ -56,7 +61,7 @@ export function LoginForm() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-heading-2">Welcome back</h1>
+      <h1 className="text-heading-2">{t("title")}</h1>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup className="gap-4">
@@ -65,12 +70,12 @@ export function LoginForm() {
             name="email"
             render={({ field }) => (
               <FieldInput
-                label="Email address"
+                label={t("email")}
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
                 field={field}
-                errorMessage={errors.email?.message}
+                errorMessage={errText(errors.email?.message)}
               />
             )}
           />
@@ -80,12 +85,12 @@ export function LoginForm() {
             name="password"
             render={({ field }) => (
               <FieldInput
-                label="Password"
+                label={t("password")}
                 name="password"
                 type="password"
                 isPassword
                 field={field}
-                errorMessage={errors.password?.message}
+                errorMessage={errText(errors.password?.message)}
               />
             )}
           />
@@ -98,15 +103,15 @@ export function LoginForm() {
             href="/forgot-password"
             className="inline-flex items-center self-start min-h-11 font-semibold text-body-sm text-link hover:underline"
           >
-            Forgot your password?
+            {t("forgot")}
           </Link>
 
           <div className="flex flex-col items-start gap-3">
             <Button type="submit" disabled={isSubmitting}>
-              Sign in
+              {t("submit")}
             </Button>
             <Button variant="link" type="button" asChild>
-              <Link href="/sign-up">Create an account instead</Link>
+              <Link href="/sign-up">{t("createInstead")}</Link>
             </Button>
           </div>
         </FieldGroup>

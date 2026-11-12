@@ -6,10 +6,14 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { sendVerificationEmail } from "@/lib/auth-client";
+import { useTranslations } from "next-intl";
+import { useAuthErrorText } from "@/lib/use-error-text";
 
 const COOLDOWN_SECONDS = 60;
 
 export function VerifyEmailNotice() {
+  const t = useTranslations("auth.verifyEmail");
+  const authError = useAuthErrorText();
   const email = useSearchParams().get("email");
   const [cooldown, setCooldown] = useState(COOLDOWN_SECONDS);
   const [sending, setSending] = useState(false);
@@ -29,24 +33,21 @@ export function VerifyEmailNotice() {
     });
     setSending(false);
     if (error) {
-      toast.error(error.message || "Could not resend the email");
+      toast.error(authError(error.code));
       return;
     }
-    toast.success("Verification email sent");
+    toast.success(t("sent"));
     setCooldown(COOLDOWN_SECONDS);
   };
 
   return (
     <div className="flex flex-col items-start gap-4">
-      <h1 className="text-heading-2">Check your email</h1>
+      <h1 className="text-heading-2">{t("title")}</h1>
       <p className="text-muted-foreground text-body-md">
         {email ? (
-          <>
-            We sent a verification link to <strong>{email}</strong>. Click it to
-            activate your account. It expires in 1 hour.
-          </>
+          t.rich("withEmail", { email, strong: (c) => <strong>{c}</strong> })
         ) : (
-          "We sent you a verification link. Click it to activate your account."
+          t("withoutEmail")
         )}
       </p>
       {email && (
@@ -55,11 +56,11 @@ export function VerifyEmailNotice() {
           onClick={resend}
           disabled={sending || cooldown > 0}
         >
-          {cooldown > 0 ? `Resend email in ${cooldown}s` : "Resend email"}
+          {cooldown > 0 ? t("resendIn", { seconds: cooldown }) : t("resend")}
         </Button>
       )}
       <Button variant="link" asChild className="p-0">
-        <Link href="/sign-in">Back to sign in</Link>
+        <Link href="/sign-in">{t("back")}</Link>
       </Button>
     </div>
   );

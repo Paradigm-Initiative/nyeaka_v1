@@ -8,6 +8,7 @@ import { FieldError } from "../ui/field";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
+import { useTranslations } from "next-intl";
 
 interface Props {
   label: string;
@@ -30,6 +31,7 @@ export default function FieldInput({
   description,
   errorMessage,
 }: Props) {
+  const t = useTranslations("common");
   const [visible, setVisible] = useState(false);
   const inputType = isPassword ? (visible ? "text" : "password") : type;
 
@@ -53,7 +55,7 @@ export default function FieldInput({
             variant="ghost"
             size="icon"
             onClick={() => setVisible((v) => !v)}
-            aria-label={visible ? "Hide password" : "Show password"}
+            aria-label={visible ? t("hidePassword") : t("showPassword")}
             className="top-0 right-0 absolute h-full text-muted-foreground hover:text-foreground"
           >
             {visible ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}

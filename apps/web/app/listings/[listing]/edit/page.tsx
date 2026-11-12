@@ -2,13 +2,17 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import { getListingForEdit } from "@/lib/queries";
-import { COUNTRIES } from "@/lib/countries";
+import { getCountries } from "@/lib/countries";
 import { postState } from "@/lib/lifecycle";
 import PostListingForm from "@/components/post/post-listing-form";
 import SignInRequired from "@/components/auth/sign-in-required";
 import RenewPrompt from "@/components/post/renew-prompt";
+import { getLocale, getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = { title: "Edit listing - Nyeaka" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("editListing")} - Nyeaka` };
+}
 
 export default async function EditListingPage({
   params,
@@ -16,12 +20,13 @@ export default async function EditListingPage({
   params: Promise<{ listing: string }>;
 }) {
   const { listing: id } = await params;
+  const t = await getTranslations("signInRequired");
   const session = await getServerSession();
   if (!session) {
     return (
       <SignInRequired
-        title="Sign in to edit your listing"
-        description="Only the person who listed a device can change it."
+        title={t("editListing.title")}
+        description={t("editListing.description")}
         callbackUrl={`/listings/${id}/edit`}
       />
     );
@@ -38,7 +43,7 @@ export default async function EditListingPage({
   return (
     <div className="section-wrapper">
       <PostListingForm
-        countries={COUNTRIES}
+        countries={getCountries(await getLocale())}
         editing={{
           id,
           values: {

@@ -3,10 +3,12 @@ import BrowsePage from "@/components/browse/browse-page";
 import { parseBrowseParams } from "@/lib/browse-params";
 import { getCities, getLiveListings } from "@/lib/queries";
 import { getServerSession } from "@/lib/get-session";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Browse devices - Nyeaka",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("browse")} - Nyeaka` };
+}
 
 export const dynamic = "force-dynamic";
 

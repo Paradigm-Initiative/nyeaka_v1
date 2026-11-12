@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { unblockUserAction } from "@/actions/safety";
+import { useTranslations } from "next-intl";
+import { useErrorText } from "@/lib/use-error-text";
 
 const UnblockButton = ({ userId, who }: { userId: string; who: string }) => {
+  const t = useTranslations("safety");
+  const errText = useErrorText();
   const router = useRouter();
   const [pending, start] = useTransition();
   return (
@@ -18,15 +22,15 @@ const UnblockButton = ({ userId, who }: { userId: string; who: string }) => {
         start(async () => {
           const res = await unblockUserAction(userId);
           if (!res.ok) {
-            toast.error(res.error);
+            toast.error(errText(res.error));
             return;
           }
-          toast.success(`${who} unblocked`);
+          toast.success(t("unblocked", { who }));
           router.refresh();
         })
       }
     >
-      {pending ? "Unblocking…" : "Unblock"}
+      {pending ? t("unblocking") : t("unblock")}
     </Button>
   );
 };

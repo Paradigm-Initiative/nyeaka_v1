@@ -2,16 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "@/lib/get-session";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Email verified - Nyeaka",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("emailVerified")} - Nyeaka` };
+}
 
 export default async function EmailVerifiedPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
+  const t = await getTranslations("auth.emailVerified");
   const { error } = await searchParams;
   const session = await getServerSession();
 
@@ -19,13 +22,12 @@ export default async function EmailVerifiedPage({
     return (
       <div className="flex flex-1 justify-center items-center py-16 text-center section-wrapper">
         <div className="flex flex-col items-center gap-4">
-          <h1 className="text-heading-2">This link isn&apos;t valid</h1>
+          <h1 className="text-heading-2">{t("invalidTitle")}</h1>
           <p className="max-w-[48ch] text-muted-foreground text-body-lg">
-            The verification link is invalid or has expired. Sign in and we&apos;ll
-            send you a fresh one.
+            {t("invalidBody")}
           </p>
           <Button asChild>
-            <Link href="/sign-in">Sign in</Link>
+            <Link href="/sign-in">{t("signIn")}</Link>
           </Button>
         </div>
       </div>
@@ -39,15 +41,14 @@ export default async function EmailVerifiedPage({
           <div className="border-2 border-pin-green-600 rounded-xs w-6.5 h-4.5" />
         </div>
         <h1 className="text-heading-2">
-          {session ? `You're verified, ${session.user.name.split(" ")[0]}` : "Email verified"}
+          {session ? t("verifiedNamed", { name: session.user.name.split(" ")[0] }) : t("verified")}
         </h1>
         <p className="max-w-[48ch] text-muted-foreground text-body-lg">
-          Your email has been confirmed. You can now browse, list a device, or
-          ask for one.
+          {t("body")}
         </p>
         <Button asChild>
           <Link href={session ? "/dashboard" : "/sign-in"}>
-            {session ? "Go to my dashboard" : "Sign in"}
+            {session ? t("dashboard") : t("signIn")}
           </Link>
         </Button>
       </div>

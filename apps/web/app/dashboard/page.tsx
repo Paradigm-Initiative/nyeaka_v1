@@ -12,17 +12,19 @@ import {
   getReputation,
   getUserProfile,
 } from "@/lib/queries";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Dashboard - Nyeaka",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("dashboard")} - Nyeaka` };
+}
 
 export default async function DashboardPage() {
   const session = await getServerSession();
   if (!session) redirect("/sign-in?callbackUrl=/dashboard");
 
   const userId = session.user.id;
-  const firstName = session.user.name?.split(" ")[0] || "there";
+  const firstName = session.user.name?.split(" ")[0] || "";
   const [listings, requests, offers, matches, blocked, toRate, reputation, profile] = await Promise.all([
     getMyListings(userId),
     getMyRequests(userId),

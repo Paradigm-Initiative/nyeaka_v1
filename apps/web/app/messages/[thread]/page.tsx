@@ -4,10 +4,12 @@ import { getServerSession } from "@/lib/get-session";
 import { getThread, markThreadRead } from "@/lib/messages";
 import { ServiceError } from "@/lib/errors";
 import ChatThread from "@/components/messages/chat-thread";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Messages - Nyeaka",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("messages")} - Nyeaka` };
+}
 
 export default async function MessageThreadPage({
   params,

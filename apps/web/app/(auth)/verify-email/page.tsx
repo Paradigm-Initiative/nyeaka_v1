@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { VerifyEmailNotice } from "./verify-email-notice";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Check your email - Nyeaka",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("titles");
+  return { title: `${t("verifyEmail")} - Nyeaka` };
+}
 
 export default function Page() {
   return (

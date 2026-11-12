@@ -8,8 +8,8 @@ import { getListingDetail } from "@/lib/queries";
 import { getListingOfferContext } from "@/lib/offer-queries";
 import { sharesMatch } from "@/lib/safety";
 import ReportPanel from "@/components/safety/report-panel";
-import { conditionLabel, kindLabel } from "@/lib/device-options";
-import { placeLabel, timeAgo } from "@/lib/format";
+import { placeLabel } from "@/lib/format";
+import { getFormatter, getTranslations } from "next-intl/server";
 
 export async function generateMetadata({
   params,
@@ -19,7 +19,8 @@ export async function generateMetadata({
   const { listing } = await params;
   const session = await getServerSession();
   const data = await getListingDetail(listing, session?.user.id);
-  return { title: data ? `${data.listing.title} - Nyeaka` : "Listing - Nyeaka" };
+  const t = await getTranslations("titles");
+  return { title: `${data ? data.listing.title : t("listing")} - Nyeaka` };
 }
 
 const ListingDetailPage = async ({
@@ -28,6 +29,9 @@ const ListingDetailPage = async ({
   params: Promise<{ listing: string }>;
 }) => {
   const { listing: id } = await params;
+  const t = await getTranslations("detail");
+  const tDevice = await getTranslations("device");
+  const format = await getFormatter();
   const session = await getServerSession();
   const data = await getListingDetail(id, session?.user.id);
   if (!data) notFound();
@@ -42,29 +46,29 @@ const ListingDetailPage = async ({
   const canReport = !!viewerId && !isOwner && (await sharesMatch(viewerId, item.donor.id));
 
   const extras = [
-    item.spec?.hasCharger && "Charger",
-    item.spec?.hasKeyboard && "Keyboard",
+    item.spec?.hasCharger && t("charger"),
+    item.spec?.hasKeyboard && t("keyboard"),
   ].filter(Boolean) as string[];
 
   return (
     <DetailLayout
       kind={item.deviceType}
       photos={item.photos}
-      eyebrow={`${conditionLabel(item.condition)} · ${kindLabel(item.deviceType)}`}
+      eyebrow={`${tDevice(`condition.${item.condition}`)} · ${tDevice(`kind.${item.deviceType}`)}`}
       title={item.title}
       place={placeLabel(item.city, item.area)}
-      posted={timeAgo(item.createdAt)}
+      posted={format.relativeTime(item.createdAt)}
       note={item.description}
       specs={[
-        { label: "Brand", value: item.brand },
-        { label: "Condition", value: conditionLabel(item.condition) },
-        { label: "Comes with", value: extras.join(", ") || "Nothing extra" },
+        { label: t("brand"), value: item.brand },
+        { label: t("condition"), value: tDevice(`condition.${item.condition}`) },
+        { label: t("comesWith"), value: extras.join(", ") || t("nothingExtra") },
       ]}
       who={item.donor.firstName}
       rating={reputation.rating}
       handoffs={reputation.handoffs}
       backHref="/listings"
-      backLabel="← Back to browsing"
+      backLabel={t("backToBrowsing")}
     >
       {isOwner ? (
         <OwnerPanel kind="listing" id={item.id} state={state} expiresAt={item.expiresAt} />
@@ -75,11 +79,11 @@ const ListingDetailPage = async ({
           signedIn={!!viewerId}
           targetId={item.id}
           context={context}
-          closedMessage={state === "ACTIVE" ? undefined : "This device has been matched and is no longer available."}
+          closedMessage={state === "ACTIVE" ? undefined : t("listingClosed")}
         />
       )}
       {canReport && (
-        <ReportPanel targetType="LISTING" targetId={item.id} who={`${item.donor.firstName}'s listing`} label="Report this listing" />
+        <ReportPanel targetType="LISTING" targetId={item.id} who={t("whoseListing", { name: item.donor.firstName })} label={t("reportListing")} />
       )}
     </DetailLayout>
   );
