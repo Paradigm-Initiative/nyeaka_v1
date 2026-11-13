@@ -8,6 +8,7 @@ import { ServiceError } from "./errors";
 import { assertState, postState } from "./lifecycle";
 import { limitOffers } from "./rate-limit";
 import { assertNotRestricted, isBlockedBetween } from "./safety";
+import { assertSameCountry, requirePostingCountry } from "./country-rules";
 
 const ALREADY_OFFERED = "You already have an active offer on this request.";
 
@@ -24,11 +25,11 @@ export async function createOffer(userId: string, input: CreateOfferInput) {
   const [listing, request] = await Promise.all([
     prisma.listing.findUnique({
       where: { id: listingId },
-      select: { donorId: true, status: true, expiresAt: true },
+      select: { donorId: true, status: true, expiresAt: true, countryCode: true },
     }),
     prisma.request.findUnique({
       where: { id: requestId },
-      select: { requesterId: true, status: true, expiresAt: true },
+      select: { requesterId: true, status: true, expiresAt: true, countryCode: true },
     }),
   ]);
   if (!listing) throw new ServiceError("NOT_FOUND", "Listing not found");
@@ -39,7 +40,9 @@ export async function createOffer(userId: string, input: CreateOfferInput) {
   if (userId !== listing.donorId && userId !== request.requesterId)
     throw new ServiceError("FORBIDDEN", "You can only offer with your own listing or request.");
 
+  assertSameCountry(listing.countryCode, request.countryCode);
   await assertNotRestricted(userId);
+  await requirePostingCountry(userId);
   // Same wording whichever of them blocked the other, so it never reveals who did.
   if (await isBlockedBetween(listing.donorId, request.requesterId))
     throw new ServiceError("INVALID", "You can't send an offer to this person.");

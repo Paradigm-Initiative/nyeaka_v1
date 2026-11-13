@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import { getRequestForEdit } from "@/lib/queries";
-import { getCountries } from "@/lib/countries";
 import { postState } from "@/lib/lifecycle";
 import PostRequestForm from "@/components/post/post-request-form";
 import SignInRequired from "@/components/auth/sign-in-required";
 import RenewPrompt from "@/components/post/renew-prompt";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("titles");
@@ -43,7 +42,7 @@ export default async function EditRequestPage({
   return (
     <div className="section-wrapper">
       <PostRequestForm
-        countries={getCountries(await getLocale())}
+        country={r.countryCode}
         editing={{
           id,
           values: {
@@ -55,7 +54,6 @@ export default async function EditRequestPage({
             isUrgent: r.isUrgent,
             city: r.city,
             area: r.area ?? "",
-            countryCode: r.countryCode,
             pledge: true,
           },
         }}

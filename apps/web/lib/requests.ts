@@ -8,6 +8,7 @@ import { assertOwner } from "./ownership";
 import { assertState, postState } from "./lifecycle";
 import { limitRequests } from "./rate-limit";
 import { assertNotRestricted } from "./safety";
+import { requirePostingCountry } from "./country-rules";
 
 export async function createRequest(
   requesterId: string,
@@ -17,10 +18,11 @@ export async function createRequest(
   void pledge; // validated only, not stored
 
   await assertNotRestricted(requesterId);
+  const countryCode = await requirePostingCountry(requesterId);
   await limitRequests(requesterId);
 
   return prisma.request.create({
-    data: { requesterId, ...d, expiresAt: defaultExpiry() },
+    data: { requesterId, ...d, countryCode, expiresAt: defaultExpiry() },
     select: { id: true },
   });
 }

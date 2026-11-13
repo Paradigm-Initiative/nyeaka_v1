@@ -25,6 +25,9 @@ export const signUpSchema = z
       .string()
       .min(2, "lastNameMin")
       .max(100, "lastNameMax"),
+    // A country must be chosen ("countryCode" = "Choose a country."). Whether it is enabled is
+    // checked on the server at sign-up (the list comes from the database, which the client can't read).
+    countryCode: z.string({ error: "countryCode" }).length(2, "countryCode"),
     password: passwordRules,
     confirmPassword: z.string(),
   })

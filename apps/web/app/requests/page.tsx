@@ -19,7 +19,8 @@ export default async function RequestsPage({
 }) {
   const filters = parseBrowseParams(await searchParams);
   const session = await getServerSession();
-  const [result, cities] = await Promise.all([getLiveRequests(filters, session?.user.id), getCities("request")]);
+  const country = filters.country ?? session?.user.countryCode;
+  const [result, cities] = await Promise.all([getLiveRequests(filters, session?.user.id, country), getCities("request", country)]);
   return (
     <BrowsePage
       tab="requests"

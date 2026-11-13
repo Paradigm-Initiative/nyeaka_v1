@@ -15,12 +15,12 @@ import {
  * failures: a mail problem must never undo or fail what the user just did.
  */
 
-type Who = { id: string; email: string; firstName: string };
+type Who = { id: string; email: string; firstName: string; locale: string };
 
 async function usersById(ids: string[]): Promise<Map<string, Who>> {
   const rows = await prisma.user.findMany({
     where: { id: { in: [...new Set(ids)] } },
-    select: { id: true, email: true, firstName: true },
+    select: { id: true, email: true, firstName: true, locale: true },
   });
   return new Map(rows.map((u) => [u.id, u]));
 }
@@ -54,6 +54,7 @@ export function emailOfferReceived(offerId: string) {
     await sendSafely(
       to.email,
       offerReceivedEmail({
+        locale: to.locale,
         firstName: to.firstName,
         from: from.firstName,
         kind: offer.initiatedById === offer.donorId ? "donor-offer" : "requester-ask",
@@ -84,6 +85,7 @@ export function emailOfferAccepted(accepterId: string, result: AcceptResult) {
       await sendSafely(
         sender.email,
         offerAcceptedEmail({
+          locale: sender.locale,
           firstName: sender.firstName,
           accepter: accepter.firstName,
           listingTitle: match.listing.title,
@@ -98,6 +100,7 @@ export function emailOfferAccepted(accepterId: string, result: AcceptResult) {
       await sendSafely(
         to.email,
         offerNotSelectedEmail({
+          locale: to.locale,
           firstName: to.firstName,
           role: n.recipientRole,
           listingTitle: n.listingTitle,
@@ -131,6 +134,7 @@ export function emailMatchCancelled(cancellerId: string, matchId: string) {
     await sendSafely(
       other.email,
       matchCancelledEmail({
+        locale: other.locale,
         firstName: other.firstName,
         canceller: canceller.firstName,
         role: otherId === m.donorId ? "donor" : "requester",

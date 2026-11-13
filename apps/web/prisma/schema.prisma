@@ -109,8 +109,11 @@ model User {
   image                String?
   phone                String?
   phoneVerified        Boolean            @default(false)
-  country              String?
-  countryCode          String?
+  // ISO 3166-1 alpha-2, required at sign-up. Country names are never stored:
+  // they come from Intl.DisplayNames in the viewer's language (see lib/countries.ts).
+  countryCode          String
+  // The language the person chose (en, fr, pt...). Used for emails sent to them.
+  locale               String             @default("en")
   role                 Role               @default(GUEST)
   bio                  String?
   idVerified           Boolean            @default(false)
@@ -143,6 +146,7 @@ model User {
   idVerifications  IdVerification[]
   offersAsDonor    Offer[]          @relation("OfferDonor")
   offersInitiated  Offer[]          @relation("OfferInitiator")
+  countriesEnabled EnabledCountry[]
 
   @@map("user")
 }
@@ -461,4 +465,14 @@ model IdVerification {
 
   @@index([userId])
   @@index([status])
+}
+
+// The countries Nyeaka is switched on in. Only enabled ones are stored (not every
+// country); an admin adds and removes rows at /admin/countries. Which codes are
+// possible at all is in lib/countries.ts.
+model EnabledCountry {
+  code        String   @id // ISO 3166-1 alpha-2
+  enabledAt   DateTime @default(now())
+  enabledById String?
+  enabledBy   User?    @relation(fields: [enabledById], references: [id], onDelete: SetNull)
 }

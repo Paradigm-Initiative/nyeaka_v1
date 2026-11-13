@@ -3,11 +3,7 @@ import { Condition, DeviceType } from "@/generated/prisma/enums";
 
 const city = z.string().trim().min(2, "enterCity").max(100);
 const area = z.string().trim().max(100).optional();
-const countryCode = z
-  .string()
-  .trim()
-  .length(2, "countryCode")
-  .transform((v) => v.toUpperCase());
+// The country of a post is never typed: it is set from the poster's account (lib/country-rules.ts).
 
 export const MAX_PHOTOS = 3;
 
@@ -23,7 +19,6 @@ export const createListingSchema = z.object({
     .optional(),
   city,
   area,
-  countryCode,
   photos: z.array(z.url("photoInvalid")).max(MAX_PHOTOS).default([]),
   hasCharger: z.boolean().optional(),
   hasKeyboard: z.boolean().optional(),
@@ -42,7 +37,6 @@ export const createRequestSchema = z.object({
   minCondition: z.enum(Condition).optional(),
   city,
   area,
-  countryCode,
   pledge: z
     .boolean()
     .refine((v) => v === true, "acceptPledge"),

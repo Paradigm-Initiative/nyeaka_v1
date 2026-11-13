@@ -10,6 +10,7 @@ import { ServiceError } from "./errors";
 import { listingPhotoPrefix } from "./storage";
 import { limitListings } from "./rate-limit";
 import { assertNotRestricted } from "./safety";
+import { requirePostingCountry } from "./country-rules";
 
 export async function createListing(donorId: string, input: CreateListingInput) {
   const d = createListingSchema.parse(input);
@@ -19,6 +20,7 @@ export async function createListing(donorId: string, input: CreateListingInput) 
     throw new ServiceError("INVALID", "Photos must be uploaded through Nyeaka");
 
   await assertNotRestricted(donorId);
+  const countryCode = await requirePostingCountry(donorId);
   await limitListings(donorId);
 
   return prisma.listing.create({
@@ -33,7 +35,7 @@ export async function createListing(donorId: string, input: CreateListingInput) 
       condition: d.condition,
       city: d.city,
       area: d.area || null,
-      countryCode: d.countryCode,
+      countryCode,
       photos: d.photos,
       expiresAt: defaultExpiry(),
       spec:
@@ -80,8 +82,7 @@ export async function updateListing(userId: string, id: string, input: CreateLis
       condition: d.condition,
       city: d.city,
       area: d.area || null,
-      countryCode: d.countryCode,
-      photos: d.photos,
+      photos: d.photos, // the country is fixed when the post is created
       spec: { upsert: { create: spec, update: spec } },
     },
     select: { id: true },

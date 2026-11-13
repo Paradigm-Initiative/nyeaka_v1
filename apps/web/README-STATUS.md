@@ -24,8 +24,8 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 | Handoff and ratings | Done | Both confirm; ratings after a handoff, or after a cancel if both people messaged; 30 days; never after a block. |
 | Safety | Done | Block, report, restriction. Rules below. |
 | Rate limits | Done | See below. |
-| Emails | Done, untested live | Offer received, accepted, not selected, match cancelled, report (to admin), restriction (to admin and the user). |
-| Tests | Done | 130 tests in 9 files on an in-memory Postgres running the real migrations. Browser flows were also run by hand in Chrome against a throwaway database (those scripts are not in the repo). |
+| Emails | Done, untested live | Offer received, accepted, not selected, match cancelled, verification, password reset and restriction notice, in the recipient's saved language (`user.locale`: en, fr, pt). Report and restriction emails to the admin stay English. |
+| Tests | Done | 249 tests in 16 files on an in-memory Postgres running the real migrations. Browser flows were also run by hand in Chrome against a throwaway database (those scripts are not in the repo). |
 
 ## Rules in force
 
@@ -41,7 +41,7 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 
 ## Before launch checklist
 
-1. **Apply the migrations to every database you run the app against.** All 11 are applied to the Neon database `nyeaka_test` (the four newest on 2026-11-11, checked afterwards: backfills correct, new indexes and columns present, row counts unchanged, the app's read queries run against it). If production uses a different database, run `pnpm exec prisma migrate status` against it, then `pnpm exec prisma migrate deploy`. The safety migration makes `Report.reportedUserId` required and fills it for old reports; it fails loudly (it does not drop data) if a report's target was already deleted. The check is in the migration's comment.
+1. **Apply the migrations to every database you run the app against.** All 13 are applied to the Neon database `nyeaka_test` (the last two on 2026-11-13: `country_required_and_locale` made `user.countryCode` required, dropped `user.country` and added `user.locale`; `enabled_countries` created the `EnabledCountry` table, seeded with NG, GH, KE, CM, SN, ZM and ZW). Run `pnpm exec prisma migrate status` against any other database, then `migrate deploy`. (the four newest on 2026-11-11, checked afterwards: backfills correct, new indexes and columns present, row counts unchanged, the app's read queries run against it). If production uses a different database, run `pnpm exec prisma migrate status` against it, then `pnpm exec prisma migrate deploy`. The safety migration makes `Report.reportedUserId` required and fills it for old reports; it fails loudly (it does not drop data) if a report's target was already deleted. The check is in the migration's comment.
 2. **Set `BETTER_AUTH_URL` to the real site address.** Email links use it and fall back to localhost.
 3. **Set `ADMIN_EMAIL`**, or reports and restriction notices won't reach anyone.
 4. **Send a real email of each kind** with a live `SENDBYTE_KEY`. The browser runs used a fake key, so only that the send was attempted is verified, not delivery or how the emails look in a mail client.

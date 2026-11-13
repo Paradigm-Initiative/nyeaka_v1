@@ -25,7 +25,7 @@ const ago = (seconds: number) => new Date(Date.now() - seconds * 1000);
 
 let n = 0;
 const user = (tag: string) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T` } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG" } });
 const listing = (donorId: string) =>
   prisma.listing.create({
     data: {
@@ -181,8 +181,8 @@ describe("offers", () => {
 });
 
 describe("new posts", () => {
-  const listingInput: CreateListingInput = { deviceType: "LAPTOP", brand: "HP", model: "450", condition: "GOOD", city: "Lagos", countryCode: "NG", photos: [] };
-  const requestInput: CreateRequestInput = { deviceType: "LAPTOP", title: "Need a laptop", description: "For my studies this term", city: "Lagos", countryCode: "NG", pledge: true };
+  const listingInput: CreateListingInput = { deviceType: "LAPTOP", brand: "HP", model: "450", condition: "GOOD", city: "Lagos", photos: [] };
+  const requestInput: CreateRequestInput = { deviceType: "LAPTOP", title: "Need a laptop", description: "For my studies this term", city: "Lagos", pledge: true };
 
   it("limits new listings to 5 a day", async () => {
     const donor = await user("d");

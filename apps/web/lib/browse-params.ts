@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DeviceType } from "@/generated/prisma/enums";
+import { getCountryConfig } from "./countries";
 
 export const PAGE_SIZE = 12;
 
@@ -7,6 +8,8 @@ export interface BrowseFilters {
   q: string;
   type?: DeviceType;
   city?: string;
+  /** Explicit country from the URL. Left unset, signed-in people see their own country. */
+  country?: string;
   page: number;
 }
 
@@ -14,6 +17,13 @@ const schema = z.object({
   q: z.string().trim().max(80).catch(""),
   type: z.enum(DeviceType).optional().catch(undefined),
   city: z.string().trim().max(100).optional().catch(undefined),
+  country: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .refine((v) => !!getCountryConfig(v))
+    .optional()
+    .catch(undefined),
   page: z.coerce.number().int().min(1).max(1000).catch(1),
 });
 
@@ -25,9 +35,10 @@ export function parseBrowseParams(raw: RawParams): BrowseFilters {
     q: first(raw.q) ?? "",
     type: first(raw.type),
     city: first(raw.city) || undefined,
+    country: first(raw.country) || undefined,
     page: first(raw.page) ?? 1,
   });
-  return { q: parsed.q, type: parsed.type, city: parsed.city, page: parsed.page };
+  return { q: parsed.q, type: parsed.type, city: parsed.city, country: parsed.country, page: parsed.page };
 }
 
 /** Build a query string from filters, dropping defaults. */
@@ -36,6 +47,7 @@ export function browseHref(basePath: string, f: Partial<BrowseFilters>): string 
   if (f.q) sp.set("q", f.q);
   if (f.type) sp.set("type", f.type);
   if (f.city) sp.set("city", f.city);
+  if (f.country) sp.set("country", f.country);
   if (f.page && f.page > 1) sp.set("page", String(f.page));
   const qs = sp.toString();
   return qs ? `${basePath}?${qs}` : basePath;

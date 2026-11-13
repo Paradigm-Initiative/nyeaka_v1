@@ -22,18 +22,16 @@ import { Label } from "../ui/label";
 import { Toggle } from "../ui/toggle";
 import ChipPicker from "./chip-picker";
 import PhotoUploader from "./photo-uploader";
-import CountrySelect, { type CountryOption } from "./country-select";
 import FormError from "./form-error";
 
 const EXTRAS = ["hasCharger", "hasKeyboard"] as const;
 
 const PostListingForm = ({
-  defaultCountry = "",
-  countries,
+  country,
   editing,
 }: {
-  defaultCountry?: string;
-  countries: CountryOption[];
+  /** The poster's own country (set at sign-up). Only used for the city example; posts always use it. */
+  country: string;
   /** When set, the form edits this listing instead of creating one. */
   editing?: { id: string; values: CreateListingInput };
 }) => {
@@ -61,12 +59,13 @@ const PostListingForm = ({
       condition: "GOOD",
       city: "",
       area: "",
-      countryCode: defaultCountry,
       photos: [],
       hasCharger: true,
       hasKeyboard: false,
     },
   });
+  const tCities = useTranslations("cityExamples");
+  const cityHint = tCities.has(country) ? tCities(country) : undefined;
 
   const onSubmit = async (values: CreateListingData) => {
     setFormError(null);
@@ -214,27 +213,10 @@ const PostListingForm = ({
         </div>
       </div>
 
-      <div className="gap-3 grid grid-cols-1 sm:grid-cols-3">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="countryCode" className="field-label">{tForm("country")}</Label>
-          <Controller
-            control={control}
-            name="countryCode"
-            render={({ field }) => (
-              <CountrySelect
-                id="countryCode"
-                countries={countries}
-                value={field.value}
-                onChange={field.onChange}
-                invalid={!!errors.countryCode}
-              />
-            )}
-          />
-          <FormError message={errText(errors.countryCode?.message)} />
-        </div>
+      <div className="gap-3 grid grid-cols-1 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="city" className="field-label">{tForm("city")}</Label>
-          <Input id="city" placeholder={tForm("cityPlaceholder")} className="h-13.5 rounded-sm" {...register("city")} />
+          <Input id="city" placeholder={cityHint ? tForm("cityExample", { city: cityHint }) : tForm("cityPlaceholder")} className="h-13.5 rounded-sm" {...register("city")} />
           <FormError message={errText(errors.city?.message)} />
         </div>
         <div className="flex flex-col gap-1.5">

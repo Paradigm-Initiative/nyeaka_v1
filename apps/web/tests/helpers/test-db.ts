@@ -39,6 +39,21 @@ export async function startTestDb(opts: { port?: number } = {}) {
     }
   }
 
+  // The tests reset data with `TRUNCATE "user" CASCADE`, which also empties EnabledCountry
+  // (it references user). Put the migration's seed rows back after any such truncate so
+  // every test starts with the same enabled countries. Test database only: production never truncates.
+  await db.exec(`
+    CREATE FUNCTION test_reseed_enabled_countries() RETURNS trigger LANGUAGE plpgsql AS $$
+    BEGIN
+      INSERT INTO "EnabledCountry"("code") VALUES ('NG'),('GH'),('KE'),('CM'),('SN'),('ZM'),('ZW') ON CONFLICT DO NOTHING;
+      RETURN NULL;
+    END $$;
+  `);
+  await db.exec(`
+    CREATE TRIGGER test_reseed_enabled_countries AFTER TRUNCATE ON "EnabledCountry"
+    FOR EACH STATEMENT EXECUTE FUNCTION test_reseed_enabled_countries();
+  `);
+
   const server = new PGLiteSocketServer({ db, port: opts.port ?? 0, host: "127.0.0.1", maxConnections: 10 });
   await server.start();
   const addr = server.getServerConn();

@@ -19,7 +19,6 @@ import { confirmHandoff, setPhoneShare } from "@/lib/handoff";
 import { getMatchesToRate, rateMatch } from "@/lib/ratings";
 import { blockUser } from "@/lib/safety";
 import { getReputation } from "@/lib/queries";
-import { normalizePhone } from "@/lib/phone";
 import { ratingVerdict, RATING_WINDOW_DAYS } from "@/lib/rating-rules";
 
 const prisma = _prisma as unknown as PrismaClient;
@@ -28,7 +27,7 @@ const daysAgo = (d: number) => new Date(Date.now() - d * 86_400_000);
 
 let n = 0;
 const user = (tag: string, extra: Record<string, unknown> = {}) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, ...extra } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG", ...extra } });
 
 async function matched(donorExtra: Record<string, unknown> = {}, reqExtra: Record<string, unknown> = {}) {
   const [donor, req] = [await user("dee", donorExtra), await user("rae", reqExtra)];
@@ -65,17 +64,6 @@ beforeEach(async () => {
 });
 afterAll(() => testDb.stop());
 
-describe("normalizePhone", () => {
-  it("strips separators and keeps a leading +", () => {
-    expect(normalizePhone(" +234 (806) 412-0088 ")).toBe("+2348064120088");
-    expect(normalizePhone("0806.412.0088")).toBe("08064120088");
-  });
-  it("rejects anything that is not 7 to 15 digits", () => {
-    for (const bad of ["", "abc", "123456", "1234567890123456", "+23 48x064120088", "080-6412-0088-ext"])
-      expect(() => normalizePhone(bad)).toThrow(ServiceError);
-  });
-});
-
 describe("setPhoneShare", () => {
   it("needs a number: none on file and none given is refused", async () => {
     const m = await matched();
@@ -83,12 +71,27 @@ describe("setPhoneShare", () => {
     expect((await matchRow(m.matchId)).donorSharedPhone).toBe(false);
   });
 
-  it("saves a typed number to the account (unverified) and records the choice", async () => {
-    const m = await matched();
+  it("saves a typed number as E.164 (unverified) using the caller's country, and records the choice", async () => {
+    const m = await matched({ countryCode: "NG" });
     await setPhoneShare(m.donor.id, m.matchId, true, "0806 412 0088");
     const u = await prisma.user.findUniqueOrThrow({ where: { id: m.donor.id } });
-    expect(u).toMatchObject({ phone: "08064120088", phoneVerified: false });
+    expect(u).toMatchObject({ phone: "+2348064120088", phoneVerified: false });
     expect(await matchRow(m.matchId)).toMatchObject({ donorSharedPhone: true, requesterSharedPhone: false });
+  });
+
+  it("reads a local number in the caller's own country, whichever it is", async () => {
+    const m = await matched();
+    // Offers need an enabled country, so move the donor afterwards (e.g. a country switched on later).
+    await prisma.user.update({ where: { id: m.donor.id }, data: { countryCode: "GH" } });
+    await setPhoneShare(m.donor.id, m.matchId, true, "024 123 4567"); // a Ghana mobile
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: m.donor.id } })).phone).toBe("+233241234567");
+  });
+
+  it("refuses a number that is not real for the caller's country", async () => {
+    const m = await matched({ countryCode: "NG" });
+    await rejects(setPhoneShare(m.donor.id, m.matchId, true, "0806 412"), "INVALID", /valid phone number/);
+    await rejects(setPhoneShare(m.donor.id, m.matchId, true, "024 123 4567"), "INVALID", /valid phone number/); // Ghana number, read as Nigerian
+    expect((await matchRow(m.matchId)).donorSharedPhone).toBe(false);
   });
 
   it("uses the number on file, and a bad number changes nothing", async () => {

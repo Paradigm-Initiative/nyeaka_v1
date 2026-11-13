@@ -11,8 +11,8 @@ async function loadParticipant(userId: string, matchId: string) {
       status: true,
       donorId: true,
       requesterId: true,
-      donor: { select: { phone: true } },
-      requester: { select: { phone: true } },
+      donor: { select: { phone: true, countryCode: true } },
+      requester: { select: { phone: true, countryCode: true } },
     },
   });
   if (!match) throw new ServiceError("NOT_FOUND", "Match not found");
@@ -52,7 +52,8 @@ export async function setPhoneShare(
   }
 
   const onFile = (role === "donor" ? match.donor.phone : match.requester.phone) ?? null;
-  const number = phone?.trim() ? normalizePhone(phone) : onFile;
+  const country = role === "donor" ? match.donor.countryCode : match.requester.countryCode;
+  const number = phone?.trim() ? normalizePhone(phone, country) : onFile;
   if (!number) throw new ServiceError("INVALID", "Add your phone number to share it.");
 
   await prisma.$transaction(async (tx) => {

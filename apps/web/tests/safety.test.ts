@@ -31,7 +31,7 @@ const ADMIN = "admin@nyeaka.test";
 
 let n = 0;
 const user = (tag: string, extra: Record<string, unknown> = {}) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, ...extra } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG", ...extra } });
 const listing = (donorId: string, title = "HP") =>
   prisma.listing.create({
     data: {
@@ -240,8 +240,8 @@ describe("restriction", () => {
 
   it("a restricted user cannot post or send offers, but can still chat and finish matches", async () => {
     const [restricted, other] = [await user("bad", { restrictedAt: new Date() }), await user("ok")];
-    const l: CreateListingInput = { deviceType: "LAPTOP", brand: "HP", model: "1", condition: "GOOD", city: "Lagos", countryCode: "NG", photos: [] };
-    const q: CreateRequestInput = { deviceType: "LAPTOP", title: "Need a laptop", description: "For my studies this term", city: "Lagos", countryCode: "NG", pledge: true };
+    const l: CreateListingInput = { deviceType: "LAPTOP", brand: "HP", model: "1", condition: "GOOD", city: "Lagos", photos: [] };
+    const q: CreateRequestInput = { deviceType: "LAPTOP", title: "Need a laptop", description: "For my studies this term", city: "Lagos", pledge: true };
     await rejects(createListing(restricted.id, l), "FORBIDDEN", /restricted/);
     await rejects(createRequest(restricted.id, q), "FORBIDDEN", /restricted/);
     const [theirListing, otherReq] = [await listing(restricted.id), await request(other.id)];
@@ -257,7 +257,7 @@ describe("restriction", () => {
     const u = await user("bad", { restrictedAt: new Date(), restrictedReason: "x" });
     await liftRestriction(u.id);
     expect(await isRestricted(u.id)).toBe(false);
-    await createListing(u.id, { deviceType: "LAPTOP", brand: "HP", model: "1", condition: "GOOD", city: "Lagos", countryCode: "NG", photos: [] });
+    await createListing(u.id, { deviceType: "LAPTOP", brand: "HP", model: "1", condition: "GOOD", city: "Lagos", photos: [] });
   });
 });
 

@@ -37,6 +37,8 @@ export interface Thread {
     iShared: boolean;
     theyShared: boolean;
     theirNumber: string | null;
+    /** The caller's own country: the phone input starts in it. */
+    country: string;
   };
   handoff: { iConfirmed: boolean; theyConfirmed: boolean };
   rating: {
@@ -76,8 +78,8 @@ export async function getThread(userId: string, conversationId: string): Promise
           cancelledAt: true,
           updatedAt: true,
           ratings: { where: { raterId: userId }, select: { score: true, comment: true } },
-          donor: { select: { id: true, firstName: true, idVerified: true, phone: true } },
-          requester: { select: { id: true, firstName: true, idVerified: true, phone: true } },
+          donor: { select: { id: true, firstName: true, idVerified: true, phone: true, countryCode: true } },
+          requester: { select: { id: true, firstName: true, idVerified: true, phone: true, countryCode: true } },
           listing: { select: { title: true, city: true, area: true } },
           request: { select: { title: true } },
         },
@@ -136,6 +138,7 @@ export async function getThread(userId: string, conversationId: string): Promise
       theyShared,
       // Never leaves the server unless both opted in and sharing is still open.
       theirNumber: phoneOpen && iShared && theyShared ? other.phone : null,
+      country: me.countryCode,
     },
     handoff: {
       iConfirmed: !!(isDonor ? m.donorConfirmedAt : m.requesterConfirmedAt),

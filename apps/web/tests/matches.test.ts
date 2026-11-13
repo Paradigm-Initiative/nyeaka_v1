@@ -19,7 +19,7 @@ const future = () => new Date(Date.now() + 30 * 86_400_000);
 
 let n = 0;
 const user = (tag: string) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T` } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG" } });
 const listing = (donorId: string, title = "HP") =>
   prisma.listing.create({
     data: {

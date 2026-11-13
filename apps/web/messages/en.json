@@ -148,6 +148,7 @@
       "success": "Logged in successfully"
     },
     "signUp": {
+      "country": "Country",
       "title": "Create your account",
       "subtitle": "One account covers both sides — you can give a device today and ask for one next year.",
       "firstName": "First name",
@@ -218,7 +219,8 @@
     "PASSWORD_TOO_SHORT": "That password is too short.",
     "PASSWORD_TOO_LONG": "That password is too long.",
     "INVALID_TOKEN": "This link is invalid or has expired.",
-    "TOO_MANY_REQUESTS": "Too many attempts. Please wait a moment and try again."
+    "TOO_MANY_REQUESTS": "Too many attempts. Please wait a moment and try again.",
+    "COUNTRY_NOT_AVAILABLE": "Nyeaka isn't available in that country yet."
   },
   "validation": {
     "emailInvalid": "Enter a valid email address.",
@@ -301,7 +303,7 @@
     "requestClosed": "This request is no longer open.",
     "onlyMatchCancel": "Only the two people in this match can cancel it.",
     "onlyActiveCancel": "Only an active match can be cancelled.",
-    "invalidPhone": "Enter a valid phone number, including the country code, for example +234 806 412 0088.",
+    "invalidPhone": "Enter a valid phone number, including the country code.",
     "editLiveListing": "Only live listings can be edited. Renew it first.",
     "listingNotLive": "This listing is not live.",
     "renewListing": "Only closed or expired listings can be renewed.",
@@ -317,7 +319,9 @@
     "uploadTooBig": "Photos must be 5 MB or smaller.",
     "uploadSignIn": "Sign in to upload photos.",
     "uploadInvalid": "Invalid upload request.",
-    "uploadFailed": "Upload failed. Please try again."
+    "uploadFailed": "Upload failed. Please try again.",
+    "countryUnavailable": "Nyeaka isn't available in your country yet, so you can't post or send offers.",
+    "differentCountry": "Offers are only possible between people in the same country."
   },
   "device": {
     "kind": {
@@ -442,6 +446,7 @@
     "country": "Country",
     "city": "City",
     "cityPlaceholder": "e.g. Lagos",
+    "cityExample": "e.g. {city}",
     "area": "Area (optional)",
     "areaPlaceholder": "e.g. Yaba",
     "privacy": "Only your area shows publicly — never your street or house number. You choose the meeting place later, in the chat."
@@ -686,7 +691,6 @@
     "sharing": "Sharing…",
     "share": "Share my number",
     "yourNumber": "Your phone number",
-    "placeholder": "+234 806 412 0088",
     "shareShort": "Share",
     "cancel": "Cancel",
     "saved": "Saved to your account. Only shown to {who}, and only once they share theirs."
@@ -721,5 +725,118 @@
     "note": "Nyeaka is free and always will be. We ask for this once, not per handoff — and nobody sees your documents except the reviewer.",
     "submit": "Verify and continue",
     "keepBrowsing": "Keep browsing for now"
+  },
+  "cityExamples": {
+    "DZ": "Algiers",
+    "AO": "Luanda",
+    "BJ": "Cotonou",
+    "BW": "Gaborone",
+    "BF": "Ouagadougou",
+    "BI": "Bujumbura",
+    "CV": "Praia",
+    "CM": "Douala",
+    "CF": "Bangui",
+    "TD": "N'Djamena",
+    "KM": "Moroni",
+    "CG": "Brazzaville",
+    "CD": "Kinshasa",
+    "CI": "Abidjan",
+    "DJ": "Djibouti",
+    "EG": "Cairo",
+    "GQ": "Malabo",
+    "ER": "Asmara",
+    "SZ": "Mbabane",
+    "ET": "Addis Ababa",
+    "GA": "Libreville",
+    "GM": "Banjul",
+    "GH": "Accra",
+    "GN": "Conakry",
+    "GW": "Bissau",
+    "KE": "Nairobi",
+    "LS": "Maseru",
+    "LR": "Monrovia",
+    "LY": "Tripoli",
+    "MG": "Antananarivo",
+    "MW": "Lilongwe",
+    "ML": "Bamako",
+    "MR": "Nouakchott",
+    "MU": "Port Louis",
+    "MA": "Casablanca",
+    "MZ": "Maputo",
+    "NA": "Windhoek",
+    "NE": "Niamey",
+    "NG": "Lagos",
+    "RW": "Kigali",
+    "ST": "São Tomé",
+    "SN": "Dakar",
+    "SC": "Victoria",
+    "SL": "Freetown",
+    "SO": "Mogadishu",
+    "ZA": "Johannesburg",
+    "SS": "Juba",
+    "SD": "Khartoum",
+    "TZ": "Dar es Salaam",
+    "TG": "Lomé",
+    "TN": "Tunis",
+    "UG": "Kampala",
+    "ZM": "Lusaka",
+    "ZW": "Harare"
+  },
+  "emails": {
+    "common": {
+      "fallback": "If the button doesn't work, paste this link into your browser:"
+    },
+    "verification": {
+      "subject": "Verify your email for Nyeaka",
+      "heading": "Welcome, {firstName}",
+      "body": "Confirm your email address to finish setting up your Nyeaka account. This link expires in 1 hour. If you didn't sign up, you can ignore this email.",
+      "cta": "Verify my email"
+    },
+    "reset": {
+      "subject": "Reset your Nyeaka password",
+      "heading": "Hi {firstName}, reset your password",
+      "body": "We received a request to reset your password. This link expires in 1 hour. If you didn't ask for this, you can ignore this email and your password will stay the same.",
+      "cta": "Choose a new password"
+    },
+    "restricted": {
+      "subject": "Your Nyeaka account has been restricted",
+      "heading": "Hi {firstName}, your account is restricted",
+      "body": "Because of reports from other members, you can't post new listings, requests or offers while we review your account. You can still sign in, browse and finish any matches you already have.",
+      "contact": "If you think this is a mistake, write to us at {contact} and we will look at it.",
+      "noContact": "If you think this is a mistake, contact the Nyeaka team and we will look at it."
+    },
+    "offerReceived": {
+      "subjectAsk": "{from} asked for your {listingTitle}",
+      "subjectOffer": "{from} offered you a device on Nyeaka",
+      "headingAsk": "{from} would like your device",
+      "headingOffer": "{from} sent you an offer",
+      "bodyAsk": "Hi {firstName}, {from} would like your <strong>{listingTitle}</strong> for their request “{requestTitle}”. Open your dashboard to read it and accept or decline.",
+      "bodyOffer": "Hi {firstName}, {from} is offering <strong>{listingTitle}</strong> for your request “{requestTitle}”. Open your dashboard to read it and accept or decline.",
+      "cta": "Open my dashboard"
+    },
+    "offerAccepted": {
+      "subject": "{accepter} accepted: a chat is open",
+      "heading": "Your offer was accepted",
+      "body": "Hi {firstName}, {accepter} accepted the match for <strong>{listingTitle}</strong>. A chat is open so you can agree a public place and time to meet.",
+      "cta": "Open the chat"
+    },
+    "notSelected": {
+      "subjectDonor": "Your offer wasn't selected",
+      "subjectRequester": "That device has gone to someone else",
+      "bodyDonor": "Hi {firstName}, the request “{requestTitle}” was matched with another device, so your offer of <strong>{listingTitle}</strong> is closed. Your device stays listed for other people who need one.",
+      "bodyRequester": "Hi {firstName}, the <strong>{listingTitle}</strong> you asked for has been given to someone else. Your request “{requestTitle}” is still open, so you're not left waiting: you can keep browsing for another device.",
+      "ctaDonor": "See other requests",
+      "ctaRequester": "Browse devices",
+      "headingDonor": "Your offer wasn't selected",
+      "headingRequester": "That device has gone to someone else"
+    },
+    "matchCancelled": {
+      "subject": "{canceller} cancelled your match",
+      "heading": "Your match was cancelled",
+      "body": "Hi {firstName}, {canceller} cancelled the match for <strong>{listingTitle}</strong>.",
+      "tailDonor": "Your device is open to new offers again.",
+      "tailRequester": "Your request “{requestTitle}” is open to new offers again.",
+      "cta": "Open my dashboard"
+    }
   }
 }

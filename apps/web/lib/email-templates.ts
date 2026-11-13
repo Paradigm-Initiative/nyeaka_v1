@@ -1,3 +1,5 @@
+import { emailTranslator } from "./email-i18n";
+
 /** Escape user-supplied text before it goes into an HTML email. */
 export function esc(value: string): string {
   return value
@@ -8,9 +10,10 @@ export function esc(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function layout(heading: string, body: string, cta?: { label: string; url: string }) {
+function layout(heading: string, body: string, cta?: { label: string; url: string }, locale?: string) {
+  const { locale: lang, t } = emailTranslator(locale);
   return `<!doctype html>
-<html><body style="margin:0;background:#f6f5f1;font-family:Arial,Helvetica,sans-serif;color:#1f2a24;">
+<html lang="${lang}"><head><meta charset="utf-8"></head><body style="margin:0;background:#f6f5f1;font-family:Arial,Helvetica,sans-serif;color:#1f2a24;">
   <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px;">
     <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;padding:32px;max-width:480px;">
       <tr><td>
@@ -20,7 +23,7 @@ function layout(heading: string, body: string, cta?: { label: string; url: strin
         ${
           cta
             ? `<a href="${cta.url}" style="display:inline-block;background:#2f7a4d;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:bold;">${cta.label}</a>
-        <p style="margin:24px 0 0;font-size:12px;color:#6b7280;line-height:1.5;">If the button doesn't work, paste this link into your browser:<br>${cta.url}</p>`
+        <p style="margin:24px 0 0;font-size:12px;color:#6b7280;line-height:1.5;">${t("common.fallback")}<br>${cta.url}</p>`
             : ""
         }
       </td></tr>
@@ -29,24 +32,28 @@ function layout(heading: string, body: string, cta?: { label: string; url: strin
 </body></html>`;
 }
 
-export function verificationEmail(firstName: string, url: string) {
+export function verificationEmail(firstName: string, url: string, locale?: string) {
+  const { t } = emailTranslator(locale);
   return {
-    subject: "Verify your email for Nyeaka",
+    subject: t("verification.subject"),
     html: layout(
-      `Welcome, ${firstName}`,
-      "Confirm your email address to finish setting up your Nyeaka account. This link expires in 1 hour. If you didn't sign up, you can ignore this email.",
-      { label: "Verify my email", url },
+      t("verification.heading", { firstName }),
+      t("verification.body"),
+      { label: t("verification.cta"), url },
+      locale,
     ),
   };
 }
 
-export function resetPasswordEmail(firstName: string, url: string) {
+export function resetPasswordEmail(firstName: string, url: string, locale?: string) {
+  const { t } = emailTranslator(locale);
   return {
-    subject: "Reset your Nyeaka password",
+    subject: t("reset.subject"),
     html: layout(
-      `Hi ${firstName}, reset your password`,
-      "We received a request to reset your password. This link expires in 1 hour. If you didn't ask for this, you can ignore this email and your password will stay the same.",
-      { label: "Choose a new password", url },
+      t("reset.heading", { firstName }),
+      t("reset.body"),
+      { label: t("reset.cta"), url },
+      locale,
     ),
   };
 }
@@ -95,16 +102,17 @@ Review their reports, then either dismiss the reports and clear <code>restricted
 }
 
 /** To the restricted user. Says what changed and how to ask for a review. */
-export function restrictedUserEmail(firstName: string, contact?: string) {
+export function restrictedUserEmail(firstName: string, contact?: string, locale?: string) {
+  const { t } = emailTranslator(locale);
   return {
-    subject: "Your Nyeaka account has been restricted",
+    subject: t("restricted.subject"),
     html: layout(
-      `Hi ${esc(firstName)}, your account is restricted`,
-      `Because of reports from other members, you can't post new listings, requests or offers while we review your account. You can still sign in, browse and finish any matches you already have.<br><br>${
-        contact
-          ? `If you think this is a mistake, write to us at ${esc(contact)} and we will look at it.`
-          : "If you think this is a mistake, contact the Nyeaka team and we will look at it."
+      t("restricted.heading", { firstName: esc(firstName) }),
+      `${t("restricted.body")}<br><br>${
+        contact ? t("restricted.contact", { contact: esc(contact) }) : t("restricted.noContact")
       }`,
+      undefined,
+      locale,
     ),
   };
 }
@@ -121,20 +129,26 @@ export function offerReceivedEmail(d: {
   listingTitle: string;
   requestTitle: string;
   url: string;
+  locale?: string;
 }) {
+  const { t, html } = emailTranslator(d.locale);
   const asked = d.kind === "requester-ask";
+  const v = {
+    firstName: esc(d.firstName),
+    from: esc(d.from),
+    listingTitle: esc(d.listingTitle),
+    requestTitle: esc(d.requestTitle),
+  };
   return {
-    subject: asked
-      ? `${d.from} asked for your ${d.listingTitle}`
-      : `${d.from} offered you a device on Nyeaka`,
+    subject: t(asked ? "offerReceived.subjectAsk" : "offerReceived.subjectOffer", {
+      from: d.from,
+      listingTitle: d.listingTitle,
+    }),
     html: layout(
-      asked ? `${esc(d.from)} would like your device` : `${esc(d.from)} sent you an offer`,
-      `Hi ${esc(d.firstName)}, ${
-        asked
-          ? `${esc(d.from)} would like your <strong>${esc(d.listingTitle)}</strong> for their request &ldquo;${esc(d.requestTitle)}&rdquo;.`
-          : `${esc(d.from)} is offering <strong>${esc(d.listingTitle)}</strong> for your request &ldquo;${esc(d.requestTitle)}&rdquo;.`
-      } Open your dashboard to read it and accept or decline.`,
-      { label: "Open my dashboard", url: d.url },
+      t(asked ? "offerReceived.headingAsk" : "offerReceived.headingOffer", { from: v.from }),
+      html(asked ? "offerReceived.bodyAsk" : "offerReceived.bodyOffer", v),
+      { label: t("offerReceived.cta"), url: d.url },
+      d.locale,
     ),
   };
 }
@@ -145,13 +159,20 @@ export function offerAcceptedEmail(d: {
   accepter: string;
   listingTitle: string;
   url: string;
+  locale?: string;
 }) {
+  const { t, html } = emailTranslator(d.locale);
   return {
-    subject: `${d.accepter} accepted: a chat is open`,
+    subject: t("offerAccepted.subject", { accepter: d.accepter }),
     html: layout(
-      "Your offer was accepted",
-      `Hi ${esc(d.firstName)}, ${esc(d.accepter)} accepted the match for <strong>${esc(d.listingTitle)}</strong>. A chat is open so you can agree a public place and time to meet.`,
-      { label: "Open the chat", url: d.url },
+      t("offerAccepted.heading"),
+      html("offerAccepted.body", {
+        firstName: esc(d.firstName),
+        accepter: esc(d.accepter),
+        listingTitle: esc(d.listingTitle),
+      }),
+      { label: t("offerAccepted.cta"), url: d.url },
+      d.locale,
     ),
   };
 }
@@ -163,18 +184,21 @@ export function offerNotSelectedEmail(d: {
   listingTitle: string;
   requestTitle: string;
   url: string;
+  locale?: string;
 }) {
-  const donor = d.role === "donor";
+  const { t, html } = emailTranslator(d.locale);
+  const r = d.role === "donor" ? "Donor" : "Requester";
   return {
-    subject: donor ? "Your offer wasn't selected" : "That device has gone to someone else",
+    subject: t(`notSelected.subject${r}`),
     html: layout(
-      donor ? "Your offer wasn't selected" : "That device has gone to someone else",
-      donor
-        ? `Hi ${esc(d.firstName)}, the request &ldquo;${esc(d.requestTitle)}&rdquo; was matched with another device, so your offer of <strong>${esc(d.listingTitle)}</strong> is closed. Your device stays listed for other people who need one.`
-        : `Hi ${esc(d.firstName)}, the <strong>${esc(d.listingTitle)}</strong> you asked for has been given to someone else. Your request &ldquo;${esc(d.requestTitle)}&rdquo; is still open, so you're not left waiting: you can keep browsing for another device.`,
-      donor
-        ? { label: "See other requests", url: d.url }
-        : { label: "Browse devices", url: d.url },
+      t(`notSelected.heading${r}`),
+      html(`notSelected.body${r}`, {
+        firstName: esc(d.firstName),
+        listingTitle: esc(d.listingTitle),
+        requestTitle: esc(d.requestTitle),
+      }),
+      { label: t(`notSelected.cta${r}`), url: d.url },
+      d.locale,
     ),
   };
 }
@@ -187,17 +211,21 @@ export function matchCancelledEmail(d: {
   listingTitle: string;
   requestTitle: string;
   url: string;
+  locale?: string;
 }) {
+  const { t, html } = emailTranslator(d.locale);
+  const r = d.role === "donor" ? "Donor" : "Requester";
   return {
-    subject: `${d.canceller} cancelled your match`,
+    subject: t("matchCancelled.subject", { canceller: d.canceller }),
     html: layout(
-      "Your match was cancelled",
-      `Hi ${esc(d.firstName)}, ${esc(d.canceller)} cancelled the match for <strong>${esc(d.listingTitle)}</strong>. ${
-        d.role === "donor"
-          ? "Your device is open to new offers again."
-          : `Your request &ldquo;${esc(d.requestTitle)}&rdquo; is open to new offers again.`
-      }`,
-      { label: "Open my dashboard", url: d.url },
+      t("matchCancelled.heading"),
+      `${html("matchCancelled.body", {
+        firstName: esc(d.firstName),
+        canceller: esc(d.canceller),
+        listingTitle: esc(d.listingTitle),
+      })} ${html(`matchCancelled.tail${r}`, { requestTitle: esc(d.requestTitle) })}`,
+      { label: t("matchCancelled.cta"), url: d.url },
+      d.locale,
     ),
   };
 }

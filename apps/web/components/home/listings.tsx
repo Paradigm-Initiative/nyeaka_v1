@@ -8,7 +8,7 @@ import { getTranslations } from "next-intl/server";
 const Listings = async () => {
   const t = await getTranslations("home.listings");
   const session = await getServerSession();
-  const listings = await getRecentListings(3, session?.user.id);
+  const listings = await getRecentListings(3, session?.user.id, session?.user.countryCode);
   return (
     <section className="bg-canvas">
       <div className="flex flex-col gap-6 section-wrapper">

@@ -51,9 +51,9 @@ const requestCardSelect = {
 export type ListingCardData = Prisma.ListingGetPayload<{ select: typeof listingCardSelect }>;
 export type RequestCardData = Prisma.RequestGetPayload<{ select: typeof requestCardSelect }>;
 
-export function getRecentListings(take = 3, viewerId?: string): Promise<ListingCardData[]> {
+export function getRecentListings(take = 3, viewerId?: string, country?: string): Promise<ListingCardData[]> {
   return prisma.listing.findMany({
-    where: { ...live(), donor: visibleOwner(viewerId) },
+    where: { ...live(), donor: visibleOwner(viewerId), ...(country && { countryCode: country }) },
     orderBy: { createdAt: "desc" },
     take,
     select: listingCardSelect,
@@ -71,10 +71,15 @@ function paged<T>(items: T[], total: number, page: number): Paged<T> {
   return { items, total, page, pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)) };
 }
 
-export async function getLiveListings(f: BrowseFilters, viewerId?: string): Promise<Paged<ListingCardData>> {
+/**
+ * `country` is the viewer's own country by default (callers pass it from the session);
+ * an explicit `f.country` wins, and with neither (a guest) every country is shown.
+ */
+export async function getLiveListings(f: BrowseFilters, viewerId?: string, country?: string): Promise<Paged<ListingCardData>> {
   const where: Prisma.ListingWhereInput = {
     ...live(),
     donor: visibleOwner(viewerId),
+    ...((f.country ?? country) && { countryCode: f.country ?? country }),
     ...(f.type && { deviceType: f.type }),
     ...(f.city && { city: { equals: f.city, mode: "insensitive" } }),
     ...(f.q && {
@@ -99,10 +104,11 @@ export async function getLiveListings(f: BrowseFilters, viewerId?: string): Prom
   return paged(items, total, f.page);
 }
 
-export async function getLiveRequests(f: BrowseFilters, viewerId?: string): Promise<Paged<RequestCardData>> {
+export async function getLiveRequests(f: BrowseFilters, viewerId?: string, country?: string): Promise<Paged<RequestCardData>> {
   const where: Prisma.RequestWhereInput = {
     ...live(),
     requester: visibleOwner(viewerId),
+    ...((f.country ?? country) && { countryCode: f.country ?? country }),
     ...(f.type && { deviceType: f.type }),
     ...(f.city && { city: { equals: f.city, mode: "insensitive" } }),
     ...(f.q && {
@@ -127,11 +133,12 @@ export async function getLiveRequests(f: BrowseFilters, viewerId?: string): Prom
 }
 
 /** Distinct cities that currently have live posts of the given kind. */
-export async function getCities(kind: "listing" | "request"): Promise<string[]> {
+export async function getCities(kind: "listing" | "request", country?: string): Promise<string[]> {
+  const where = { ...live(), ...(country && { countryCode: country }) };
   const rows =
     kind === "listing"
-      ? await prisma.listing.findMany({ where: live(), distinct: ["city"], select: { city: true }, orderBy: { city: "asc" } })
-      : await prisma.request.findMany({ where: live(), distinct: ["city"], select: { city: true }, orderBy: { city: "asc" } });
+      ? await prisma.listing.findMany({ where, distinct: ["city"], select: { city: true }, orderBy: { city: "asc" } })
+      : await prisma.request.findMany({ where, distinct: ["city"], select: { city: true }, orderBy: { city: "asc" } });
   return rows.map((r) => r.city);
 }
 

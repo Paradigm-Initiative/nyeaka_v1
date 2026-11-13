@@ -13,13 +13,15 @@ async function main() {
   }
 
   const users = [
-    { n: "amara", first: "Amara", last: "Osei", role: "DONOR", cc: "GH", country: "Ghana", idv: true },
-    { n: "chidi", first: "Chidinma", last: "Eze", role: "REQUESTER", cc: "NG", country: "Nigeria", idv: false },
-    { n: "kwame", first: "Kwame", last: "Mensah", role: "DONOR", cc: "GH", country: "Ghana", idv: false },
-    { n: "zanele", first: "Zanele", last: "Dlamini", role: "BOTH", cc: "ZA", country: "South Africa", idv: false },
+    { n: "amara", first: "Amara", last: "Osei", role: "DONOR", cc: "NG", idv: true },
+    { n: "chidi", first: "Chidinma", last: "Eze", role: "REQUESTER", cc: "NG", idv: false },
+    { n: "kwame", first: "Kwame", last: "Mensah", role: "DONOR", cc: "NG", idv: false },
+    { n: "zanele", first: "Zanele", last: "Dlamini", role: "BOTH", cc: "NG", idv: false },
   ] as const;
 
-  const CITY = { GH: "Accra", NG: "Lagos", ZA: "Johannesburg" } as const;
+  // Matching is same-country only and only NG is enabled, so every seed user is in NG
+  // (otherwise the seeded offers between users could not be made).
+  const CITY = { NG: "Lagos" } as const;
 
   for (const u of users) {
     const data = {
@@ -29,7 +31,6 @@ async function main() {
       lastName: u.last,
       name: `${u.first} ${u.last}`,
       role: u.role,
-      country: u.country,
       countryCode: u.cc,
       idVerified: u.idv,
       idVerificationStatus: u.idv ? ("VERIFIED" as const) : ("NONE" as const),
@@ -38,10 +39,10 @@ async function main() {
   }
 
   const listings = [
-    { n: "l1", donor: "amara", type: "LAPTOP", title: "Dell Latitude 5490", brand: "Dell", model: "Latitude 5490", condition: "GOOD", cc: "GH", spec: { ram: 8, storage: 256, year: 2018, os: "WINDOWS", screenSize: 14, hasCharger: true } },
-    { n: "l2", donor: "kwame", type: "TABLET", title: "Samsung Galaxy Tab A7", brand: "Samsung", model: "Galaxy Tab A7", condition: "LIKE_NEW", cc: "GH", spec: { ram: 3, storage: 32, year: 2020, os: "ANDROID", screenSize: 10.4, hasCharger: true } },
-    { n: "l3", donor: "amara", type: "SMARTPHONE", title: "iPhone 8", brand: "Apple", model: "iPhone 8", condition: "FAIR", cc: "GH", spec: { ram: 2, storage: 64, year: 2017, os: "IOS", hasCharger: false } },
-    { n: "l4", donor: "zanele", type: "LAPTOP", title: "HP EliteBook 840 G5", brand: "HP", model: "EliteBook 840 G5", condition: "NEW", cc: "ZA", spec: { ram: 16, storage: 512, year: 2019, os: "WINDOWS", screenSize: 14, hasCharger: true } },
+    { n: "l1", donor: "amara", type: "LAPTOP", title: "Dell Latitude 5490", brand: "Dell", model: "Latitude 5490", condition: "GOOD", cc: "NG", spec: { ram: 8, storage: 256, year: 2018, os: "WINDOWS", screenSize: 14, hasCharger: true } },
+    { n: "l2", donor: "kwame", type: "TABLET", title: "Samsung Galaxy Tab A7", brand: "Samsung", model: "Galaxy Tab A7", condition: "LIKE_NEW", cc: "NG", spec: { ram: 3, storage: 32, year: 2020, os: "ANDROID", screenSize: 10.4, hasCharger: true } },
+    { n: "l3", donor: "amara", type: "SMARTPHONE", title: "iPhone 8", brand: "Apple", model: "iPhone 8", condition: "FAIR", cc: "NG", spec: { ram: 2, storage: 64, year: 2017, os: "IOS", hasCharger: false } },
+    { n: "l4", donor: "zanele", type: "LAPTOP", title: "HP EliteBook 840 G5", brand: "HP", model: "EliteBook 840 G5", condition: "NEW", cc: "NG", spec: { ram: 16, storage: 512, year: 2019, os: "WINDOWS", screenSize: 14, hasCharger: true } },
   ] as const;
 
   for (const l of listings) {
@@ -54,7 +55,7 @@ async function main() {
   const requests = [
     { n: "r1", by: "chidi", type: "LAPTOP", title: "Laptop for coding classes", cc: "NG", urgent: true },
     { n: "r2", by: "chidi", type: "TABLET", title: "Tablet for my daughter's schoolwork", cc: "NG", urgent: false },
-    { n: "r3", by: "zanele", type: "SMARTPHONE", title: "Phone for job applications", cc: "ZA", urgent: false },
+    { n: "r3", by: "zanele", type: "SMARTPHONE", title: "Phone for job applications", cc: "NG", urgent: false },
   ] as const;
 
   for (const r of requests) {

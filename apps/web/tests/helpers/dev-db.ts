@@ -28,7 +28,7 @@ async function main() {
     await prisma.user.create({
       data: {
         id, email: `${id}@dev.nyeaka.test`, emailVerified: true, firstName: first, lastName: last,
-        name: `${first} ${last}`, countryCode: "NG", country: "Nigeria", role: "BOTH",
+        name: `${first} ${last}`, countryCode: "NG", role: "BOTH",
         accounts: { create: { id: `acc-${id}`, accountId: id, providerId: "credential", password: hash } },
       },
     });

@@ -148,6 +148,7 @@
       "success": "Sessão iniciada com sucesso"
     },
     "signUp": {
+      "country": "País",
       "title": "Crie a sua conta",
       "subtitle": "Uma conta serve para os dois lados — pode dar um dispositivo hoje e pedir outro para o ano.",
       "firstName": "Nome próprio",
@@ -218,7 +219,8 @@
     "PASSWORD_TOO_SHORT": "Essa palavra-passe é demasiado curta.",
     "PASSWORD_TOO_LONG": "Essa palavra-passe é demasiado longa.",
     "INVALID_TOKEN": "Esta ligação é inválida ou expirou.",
-    "TOO_MANY_REQUESTS": "Demasiadas tentativas. Aguarde um momento e tente novamente."
+    "TOO_MANY_REQUESTS": "Demasiadas tentativas. Aguarde um momento e tente novamente.",
+    "COUNTRY_NOT_AVAILABLE": "A Nyeaka ainda não está disponível nesse país."
   },
   "validation": {
     "emailInvalid": "Introduza um endereço de e-mail válido.",
@@ -301,7 +303,7 @@
     "requestClosed": "Este pedido já não está aberto.",
     "onlyMatchCancel": "Só as duas pessoas deste emparelhamento o podem cancelar.",
     "onlyActiveCancel": "Só um emparelhamento ativo pode ser cancelado.",
-    "invalidPhone": "Introduza um número de telefone válido, com o indicativo do país, por exemplo +234 806 412 0088.",
+    "invalidPhone": "Introduza um número de telefone válido, com o indicativo do país.",
     "editLiveListing": "Só os anúncios ativos podem ser editados. Renove-o primeiro.",
     "listingNotLive": "Este anúncio não está ativo.",
     "renewListing": "Só os anúncios fechados ou expirados podem ser renovados.",
@@ -317,7 +319,9 @@
     "uploadTooBig": "As fotos devem ter no máximo 5 MB.",
     "uploadSignIn": "Inicie sessão para carregar fotos.",
     "uploadInvalid": "Pedido de carregamento inválido.",
-    "uploadFailed": "O carregamento falhou. Tente novamente."
+    "uploadFailed": "O carregamento falhou. Tente novamente.",
+    "countryUnavailable": "A Nyeaka ainda não está disponível no seu país, por isso não pode publicar nem enviar ofertas.",
+    "differentCountry": "As ofertas só são possíveis entre pessoas do mesmo país."
   },
   "device": {
     "kind": {
@@ -442,6 +446,7 @@
     "country": "País",
     "city": "Cidade",
     "cityPlaceholder": "ex.: Luanda",
+    "cityExample": "ex.: {city}",
     "area": "Zona (opcional)",
     "areaPlaceholder": "ex.: Maianga",
     "privacy": "Só a sua zona é pública — nunca a sua rua ou o número da porta. Escolhe o local de encontro mais tarde, na conversa."
@@ -686,7 +691,6 @@
     "sharing": "A partilhar…",
     "share": "Partilhar o meu número",
     "yourNumber": "O seu número de telefone",
-    "placeholder": "+234 806 412 0088",
     "shareShort": "Partilhar",
     "cancel": "Cancelar",
     "saved": "Guardado na sua conta. Só é mostrado a {who}, e só depois de a pessoa partilhar o dela."
@@ -721,5 +725,118 @@
     "note": "A Nyeaka é gratuita e sempre será. Pedimos isto uma vez, não por entrega — e ninguém vê os seus documentos além do revisor.",
     "submit": "Verificar e continuar",
     "keepBrowsing": "Continuar a explorar por agora"
+  },
+  "cityExamples": {
+    "DZ": "Argel",
+    "AO": "Luanda",
+    "BJ": "Cotonou",
+    "BW": "Gaborone",
+    "BF": "Uagadugu",
+    "BI": "Bujumbura",
+    "CV": "Praia",
+    "CM": "Duala",
+    "CF": "Bangui",
+    "TD": "N'Djamena",
+    "KM": "Moroni",
+    "CG": "Brazavile",
+    "CD": "Quinxasa",
+    "CI": "Abidjã",
+    "DJ": "Jibuti",
+    "EG": "Cairo",
+    "GQ": "Malabo",
+    "ER": "Asmara",
+    "SZ": "Mbabane",
+    "ET": "Adis Abeba",
+    "GA": "Libreville",
+    "GM": "Banjul",
+    "GH": "Acra",
+    "GN": "Conacri",
+    "GW": "Bissau",
+    "KE": "Nairobi",
+    "LS": "Maseru",
+    "LR": "Monróvia",
+    "LY": "Trípoli",
+    "MG": "Antananarivo",
+    "MW": "Lilongué",
+    "ML": "Bamaco",
+    "MR": "Nuaquexote",
+    "MU": "Port Louis",
+    "MA": "Casablanca",
+    "MZ": "Maputo",
+    "NA": "Windhoek",
+    "NE": "Niamei",
+    "NG": "Lagos",
+    "RW": "Quigali",
+    "ST": "São Tomé",
+    "SN": "Dacar",
+    "SC": "Vitória",
+    "SL": "Freetown",
+    "SO": "Mogadíscio",
+    "ZA": "Joanesburgo",
+    "SS": "Juba",
+    "SD": "Cartum",
+    "TZ": "Dar es Salaam",
+    "TG": "Lomé",
+    "TN": "Tunes",
+    "UG": "Campala",
+    "ZM": "Lusaca",
+    "ZW": "Harare"
+  },
+  "emails": {
+    "common": {
+      "fallback": "Se o botão não funcionar, cole esta ligação no seu navegador:"
+    },
+    "verification": {
+      "subject": "Confirme o seu e-mail na Nyeaka",
+      "heading": "Bem-vindo, {firstName}",
+      "body": "Confirme o seu endereço de e-mail para concluir a criação da sua conta Nyeaka. Esta ligação expira em 1 hora. Se não se registou, pode ignorar este e-mail.",
+      "cta": "Confirmar o meu e-mail"
+    },
+    "reset": {
+      "subject": "Redefina a sua palavra-passe da Nyeaka",
+      "heading": "Olá, {firstName}, redefina a sua palavra-passe",
+      "body": "Recebemos um pedido para redefinir a sua palavra-passe. Esta ligação expira em 1 hora. Se não fez este pedido, ignore este e-mail e a sua palavra-passe continuará igual.",
+      "cta": "Escolher uma nova palavra-passe"
+    },
+    "restricted": {
+      "subject": "A sua conta Nyeaka foi restringida",
+      "heading": "Olá, {firstName}, a sua conta está restringida",
+      "body": "Devido a denúncias de outros membros, não pode publicar novos anúncios, pedidos ou ofertas enquanto analisamos a sua conta. Ainda pode iniciar sessão, explorar e concluir os emparelhamentos que já tem.",
+      "contact": "Se acha que é um engano, escreva-nos para {contact} e iremos analisar a situação.",
+      "noContact": "Se acha que é um engano, contacte a equipa da Nyeaka e iremos analisar a situação."
+    },
+    "offerReceived": {
+      "subjectAsk": "{from} pediu o seu {listingTitle}",
+      "subjectOffer": "{from} ofereceu-lhe um dispositivo na Nyeaka",
+      "headingAsk": "{from} gostaria do seu dispositivo",
+      "headingOffer": "{from} enviou-lhe uma oferta",
+      "bodyAsk": "Olá, {firstName}, {from} gostaria de receber o seu <strong>{listingTitle}</strong> para o pedido “{requestTitle}”. Abra o seu painel para ler e aceitar ou recusar.",
+      "bodyOffer": "Olá, {firstName}, {from} está a oferecer <strong>{listingTitle}</strong> para o seu pedido “{requestTitle}”. Abra o seu painel para ler e aceitar ou recusar.",
+      "cta": "Abrir o meu painel"
+    },
+    "offerAccepted": {
+      "subject": "{accepter} aceitou: há uma conversa aberta",
+      "heading": "A sua oferta foi aceite",
+      "body": "Olá, {firstName}, {accepter} aceitou o emparelhamento para <strong>{listingTitle}</strong>. Há uma conversa aberta para combinarem um local público e uma hora para o encontro.",
+      "cta": "Abrir a conversa"
+    },
+    "notSelected": {
+      "subjectDonor": "A sua oferta não foi selecionada",
+      "subjectRequester": "Esse dispositivo foi para outra pessoa",
+      "bodyDonor": "Olá, {firstName}, o pedido “{requestTitle}” foi emparelhado com outro dispositivo, por isso a sua oferta de <strong>{listingTitle}</strong> está encerrada. O seu dispositivo continua publicado para outras pessoas que precisem dele.",
+      "bodyRequester": "Olá, {firstName}, o <strong>{listingTitle}</strong> que pediu foi entregue a outra pessoa. O seu pedido “{requestTitle}” continua aberto, por isso pode continuar a procurar outro dispositivo.",
+      "ctaDonor": "Ver outros pedidos",
+      "ctaRequester": "Ver dispositivos",
+      "headingDonor": "A sua oferta não foi selecionada",
+      "headingRequester": "Esse dispositivo foi para outra pessoa"
+    },
+    "matchCancelled": {
+      "subject": "{canceller} cancelou o seu emparelhamento",
+      "heading": "O seu emparelhamento foi cancelado",
+      "body": "Olá, {firstName}, {canceller} cancelou o emparelhamento para <strong>{listingTitle}</strong>.",
+      "tailDonor": "O seu dispositivo volta a poder receber ofertas.",
+      "tailRequester": "O seu pedido “{requestTitle}” volta a poder receber ofertas.",
+      "cta": "Abrir o meu painel"
+    }
   }
 }

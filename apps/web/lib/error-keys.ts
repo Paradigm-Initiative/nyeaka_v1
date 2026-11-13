@@ -6,7 +6,7 @@ import type { ServiceErrorCode } from "./errors";
  * shows raw English. New service errors should be added here, or, better,
  * switched to throw a key directly.
  */
-const BY_MESSAGE: Record<string, string> = {
+export const BY_MESSAGE: Record<string, string> = {
   "Your account is restricted while we review reports about it, so you can't post or send offers right now.": "restricted",
   "You can't block yourself.": "blockSelf",
   "You can only block someone you have been matched with.": "blockNotMatched",
@@ -45,7 +45,7 @@ const BY_MESSAGE: Record<string, string> = {
   "This request is no longer open.": "requestClosed",
   "Only the two people in this match can cancel it.": "onlyMatchCancel",
   "Only an active match can be cancelled.": "onlyActiveCancel",
-  "Enter a valid phone number, for example +234 806 412 0088.": "invalidPhone",
+  "Enter a valid phone number, including the country code.": "invalidPhone",
   "Only live listings can be edited. Renew it first.": "editLiveListing",
   "This listing is not live.": "listingNotLive",
   "Only closed or expired listings can be renewed.": "renewListing",
@@ -60,9 +60,11 @@ const BY_MESSAGE: Record<string, string> = {
   "Please sign in first.": "signIn",
   "Check the highlighted fields.": "checkFields",
   "Check the phone number.": "checkPhone",
+  "Nyeaka isn't available in your country yet, so you can't post or send offers.": "countryUnavailable",
+  "Offers are only possible between people in the same country.": "differentCountry",
 };
 
-const BY_CODE: Record<ServiceErrorCode, string> = {
+export const BY_CODE: Record<ServiceErrorCode, string> = {
   NOT_FOUND: "notFound",
   FORBIDDEN: "forbidden",
   INVALID: "invalid",

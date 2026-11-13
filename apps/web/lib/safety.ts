@@ -51,7 +51,7 @@ export async function assertNotRestricted(userId: string): Promise<void> {
 export async function evaluateRestriction(userId: string): Promise<string | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, firstName: true, name: true, restrictedAt: true },
+    select: { id: true, email: true, firstName: true, name: true, locale: true, restrictedAt: true },
   });
   if (!user || user.restrictedAt) return null;
 
@@ -82,7 +82,7 @@ export async function evaluateRestriction(userId: string): Promise<string | null
 
   await Promise.all([
     notifyAdmin(restrictionAdminEmail({ user: { id: user.id, name: user.name, email: user.email }, reason }), "restriction"),
-    sendSafely(user.email, restrictedUserEmail(user.firstName, process.env.ADMIN_EMAIL), "restriction notice"),
+    sendSafely(user.email, restrictedUserEmail(user.firstName, process.env.ADMIN_EMAIL, user.locale), "restriction notice"),
   ]);
   return reason;
 }

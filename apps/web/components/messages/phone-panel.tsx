@@ -5,11 +5,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import PhoneInput, { isValidPhoneNumber, type Country } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import enLabels from "react-phone-number-input/locale/en.json";
+import frLabels from "react-phone-number-input/locale/fr.json";
+import ptLabels from "react-phone-number-input/locale/pt.json";
 import { Label } from "../ui/label";
 import FormError from "../post/form-error";
 import { sharePhoneAction } from "@/actions/lifecycle";
 import type { Thread } from "@/lib/messages";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useErrorText } from "@/lib/use-error-text";
 
 /**
@@ -18,6 +23,7 @@ import { useErrorText } from "@/lib/use-error-text";
  */
 const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; phone: Thread["phone"] }) => {
   const t = useTranslations("phone");
+  const labels = { en: enLabels, fr: frLabels, pt: ptLabels }[useLocale() as "en" | "fr" | "pt"] ?? enLabels;
   const errText = useErrorText();
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -30,6 +36,11 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
   const set = (share: boolean, typed?: string) =>
     start(async () => {
       setError(undefined);
+      // Typed numbers are checked here for a quick answer; the server checks again.
+      if (typed !== undefined && !isValidPhoneNumber(typed)) {
+        setError(errText("invalidPhone"));
+        return;
+      }
       const res = await sharePhoneAction(matchId, { share, phone: typed });
       if (!res.ok) {
         setError(errText(res.fieldErrors?.phone ?? res.error));
@@ -95,15 +106,17 @@ const PhonePanel = ({ matchId, who, phone }: { matchId: string; who: string; pho
             <Label htmlFor="phone-number" className="font-semibold text-body-sm leading-normal">
               {t("yourNumber")}
             </Label>
-            <Input
+            <PhoneInput
               id="phone-number"
-              type="tel"
-              required
-              autoFocus
+              international
+              countryCallingCodeEditable={false}
+              defaultCountry={phone.country as Country}
+              labels={labels}
               value={number}
-              onChange={(e) => setNumber(e.target.value)}
-              placeholder={t("placeholder")}
-              className="rounded-sm h-12"
+              onChange={(v) => setNumber(v ?? "")}
+              inputComponent={Input}
+              className="phone-field"
+              numberInputProps={{ className: "rounded-sm h-12", autoFocus: true, required: true }}
             />
           </div>
           <FormError message={error} />

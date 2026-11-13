@@ -1,18 +1,93 @@
-// ISO 3166-1 alpha-2 codes. Names come from Intl.DisplayNames, so no extra dependency or API call.
-const CODES =
-  "AF AX AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CG CD CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB US UM UY UZ VU VE VN VG VI WF EH YE ZM ZW".split(
+/**
+ * Which countries exist and their defaults. Nyeaka is Africa-wide by design, but a
+ * country is only usable once an admin has enabled it: that list lives in the
+ * database (EnabledCountry, see lib/enabled-countries.ts), not here.
+ * Names are NOT stored: they come from Intl.DisplayNames in the user's language.
+ */
+
+export type IdDocType =
+  | "NATIONAL_ID"
+  | "PASSPORT"
+  | "DRIVERS_LICENSE"
+  | "VOTERS_CARD"
+  | "RESIDENCE_PERMIT";
+
+export type CountryConfig = {
+  /** ISO 3166-1 alpha-2. */
+  code: string;
+  /** Documents we accept for manual ID review. Passport is accepted everywhere. */
+  idDocTypes: IdDocType[];
+  /** Format check for a typed ID number, only where a reliable one exists. */
+  idNumber?: { docType: IdDocType; pattern: RegExp };
+  /** For the admin reviewer (English only for now). */
+  reviewerChecklist: string[];
+};
+
+const GENERIC_CHECKLIST = [
+  "The document type matches what the user selected.",
+  "The name on the ID matches the account name.",
+  "The ID is not expired and the photo and text are clear.",
+  "The selfie shows the same person as the ID photo.",
+  "No signs of editing, and it is not a photo of a screen or a photocopy.",
+];
+
+const DEFAULT_DOCS: IdDocType[] = ["NATIONAL_ID", "PASSPORT", "DRIVERS_LICENSE"];
+
+// Phone numbers need no per-country data: libphonenumber-js knows every country's
+// dialling code and numbering plan (see lib/phone.ts). Example cities live in messages/*.json.
+const AFRICA =
+  "DZ AO BJ BW BF BI CV CM CF TD KM CG CD CI DJ EG GQ ER SZ ET GA GM GH GN GW KE LS LR LY MG MW ML MR MU MA MZ NA NE NG RW ST SN SC SL SO ZA SS SD TZ TG TN UG ZM ZW".split(
     " ",
   );
 
+/** Optional per-country extras (accepted documents, ID-number format, checklist). Never required to enable a country. */
+const OVERRIDES: Record<string, Partial<CountryConfig>> = {
+  NG: {
+    idDocTypes: ["NATIONAL_ID", "PASSPORT", "DRIVERS_LICENSE", "VOTERS_CARD"],
+    idNumber: { docType: "NATIONAL_ID", pattern: /^\d{11}$/ }, // NIN
+    reviewerChecklist: [
+      ...GENERIC_CHECKLIST,
+      "National ID: a NIMC card or NIN slip. If a NIN was typed, it is 11 digits.",
+      "Voter's card: a permanent voter's card (PVC), not a temporary slip.",
+    ],
+  },
+};
+
+export const COUNTRY_CONFIG: CountryConfig[] = AFRICA.map((code) => ({
+  code,
+  idDocTypes: DEFAULT_DOCS,
+  reviewerChecklist: GENERIC_CHECKLIST,
+  ...OVERRIDES[code],
+}));
+
+const BY_CODE = new Map(COUNTRY_CONFIG.map((c) => [c.code, c]));
+
+export const getCountryConfig = (code?: string | null): CountryConfig | undefined =>
+  code ? BY_CODE.get(code.toUpperCase()) : undefined;
+
+/** Is this a country Nyeaka knows about (enabled or not)? */
+export const isKnownCountry = (code?: string | null): boolean => !!getCountryConfig(code);
+
+
 export type CountryOption = { code: string; name: string };
 
-/** Country names in the given language, sorted for that language. */
-export function getCountries(locale: string): CountryOption[] {
+/**
+ * Country names in the given language, sorted for that language.
+ * `only` limits the list to those codes (pass the enabled ones); `include` keeps one
+ * extra code in it (e.g. an existing post's country, even if since disabled).
+ */
+export function getCountries(
+  locale: string,
+  opts: { only?: readonly string[]; include?: string | null } = {},
+): CountryOption[] {
   const names = new Intl.DisplayNames([locale], { type: "region" });
-  return CODES.map((code) => ({ code, name: names.of(code) ?? code })).sort((a, b) =>
-    a.name.localeCompare(b.name, locale),
-  );
+  const include = opts.include?.toUpperCase();
+  return COUNTRY_CONFIG.filter((c) => !opts.only || opts.only.includes(c.code) || c.code === include)
+    .map((c) => ({ code: c.code, name: names.of(c.code) ?? c.code }))
+    .sort((a, b) => a.name.localeCompare(b.name, locale));
 }
 
+/** Works for any ISO code, including legacy rows outside the config. */
 export const countryName = (code: string, locale: string) =>
   new Intl.DisplayNames([locale], { type: "region" }).of(code) ?? code;
+

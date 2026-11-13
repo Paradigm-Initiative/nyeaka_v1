@@ -19,7 +19,8 @@ export default async function ListingsPage({
 }) {
   const filters = parseBrowseParams(await searchParams);
   const session = await getServerSession();
-  const [result, cities] = await Promise.all([getLiveListings(filters, session?.user.id), getCities("listing")]);
+  const country = filters.country ?? session?.user.countryCode;
+  const [result, cities] = await Promise.all([getLiveListings(filters, session?.user.id, country), getCities("listing", country)]);
   return (
     <BrowsePage
       tab="devices"

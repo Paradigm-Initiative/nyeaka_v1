@@ -14,7 +14,9 @@ import { signUp } from "@/lib/auth-client";
 import FieldInput from "@/components/custom/field-input";
 import { AppleIcon, GoogleIcon } from "@/components/custom/brand-icons";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import CountrySelect, { type CountryOption } from "@/components/post/country-select";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { useAuthErrorText, useErrorText } from "@/lib/use-error-text";
 import {
   Card,
@@ -23,8 +25,9 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 
-export function SignupForm() {
+export function SignupForm({ countries }: { countries: CountryOption[] }) {
   const t = useTranslations("auth.signUp");
+  const locale = useLocale();
   const authError = useAuthErrorText();
   const errText = useErrorText();
   const router = useRouter();
@@ -40,13 +43,15 @@ export function SignupForm() {
       email: "",
       firstName: "",
       lastName: "",
+      // With a single enabled country there is nothing to choose, so it is preselected.
+      countryCode: countries.length === 1 ? countries[0].code : "",
       password: "",
       confirmPassword: "",
     },
   });
 
   const submitHandler = async (values: SignUpSchema) => {
-    const { email, firstName, lastName, password } = values;
+    const { email, firstName, lastName, countryCode, password } = values;
     setError(null);
     const { error } = await signUp.email({
       email,
@@ -54,6 +59,8 @@ export function SignupForm() {
       name: `${firstName} ${lastName}`,
       firstName,
       lastName,
+      countryCode,
+      locale,
       callbackURL: "/email-verified",
     });
 
@@ -119,6 +126,26 @@ export function SignupForm() {
                   field={field}
                   errorMessage={errText(errors.email?.message)}
                 />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="countryCode"
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel htmlFor="countryCode">{t("country")}</FieldLabel>
+                  <CountrySelect
+                    id="countryCode"
+                    countries={countries}
+                    value={field.value}
+                    onChange={field.onChange}
+                    invalid={!!errors.countryCode}
+                  />
+                  {errors.countryCode && (
+                    <FieldError>{errText(errors.countryCode.message)}</FieldError>
+                  )}
+                </Field>
               )}
             />
 

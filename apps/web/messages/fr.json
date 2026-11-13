@@ -148,6 +148,7 @@
       "success": "Connexion réussie"
     },
     "signUp": {
+      "country": "Pays",
       "title": "Créez votre compte",
       "subtitle": "Un seul compte pour les deux côtés — vous pouvez donner un appareil aujourd'hui et en demander un l'an prochain.",
       "firstName": "Prénom",
@@ -218,7 +219,8 @@
     "PASSWORD_TOO_SHORT": "Ce mot de passe est trop court.",
     "PASSWORD_TOO_LONG": "Ce mot de passe est trop long.",
     "INVALID_TOKEN": "Ce lien est invalide ou a expiré.",
-    "TOO_MANY_REQUESTS": "Trop de tentatives. Patientez un instant puis réessayez."
+    "TOO_MANY_REQUESTS": "Trop de tentatives. Patientez un instant puis réessayez.",
+    "COUNTRY_NOT_AVAILABLE": "Nyeaka n'est pas encore disponible dans ce pays."
   },
   "validation": {
     "emailInvalid": "Saisissez une adresse e-mail valide.",
@@ -301,7 +303,7 @@
     "requestClosed": "Cette demande n'est plus ouverte.",
     "onlyMatchCancel": "Seules les deux personnes de cette mise en relation peuvent l'annuler.",
     "onlyActiveCancel": "Seule une mise en relation active peut être annulée.",
-    "invalidPhone": "Saisissez un numéro de téléphone valide, avec l'indicatif du pays, par exemple +234 806 412 0088.",
+    "invalidPhone": "Saisissez un numéro de téléphone valide, avec l'indicatif du pays.",
     "editLiveListing": "Seules les annonces actives peuvent être modifiées. Renouvelez-la d'abord.",
     "listingNotLive": "Cette annonce n'est pas active.",
     "renewListing": "Seules les annonces fermées ou expirées peuvent être renouvelées.",
@@ -317,7 +319,9 @@
     "uploadTooBig": "Les photos doivent faire 5 Mo maximum.",
     "uploadSignIn": "Connectez-vous pour téléverser des photos.",
     "uploadInvalid": "Demande de téléversement invalide.",
-    "uploadFailed": "Échec du téléversement. Veuillez réessayer."
+    "uploadFailed": "Échec du téléversement. Veuillez réessayer.",
+    "countryUnavailable": "Nyeaka n'est pas encore disponible dans votre pays : vous ne pouvez pas publier ni envoyer d'offres pour le moment.",
+    "differentCountry": "Les offres ne sont possibles qu'entre personnes d'un même pays."
   },
   "device": {
     "kind": {
@@ -442,6 +446,7 @@
     "country": "Pays",
     "city": "Ville",
     "cityPlaceholder": "p. ex. Dakar",
+    "cityExample": "p. ex. {city}",
     "area": "Quartier (facultatif)",
     "areaPlaceholder": "p. ex. Plateau",
     "privacy": "Seul votre quartier est visible publiquement — jamais votre rue ni votre numéro. Vous choisirez le lieu de rencontre plus tard, dans la discussion."
@@ -686,7 +691,6 @@
     "sharing": "Partage…",
     "share": "Partager mon numéro",
     "yourNumber": "Votre numéro de téléphone",
-    "placeholder": "+234 806 412 0088",
     "shareShort": "Partager",
     "cancel": "Annuler",
     "saved": "Enregistré sur votre compte. Visible uniquement par {who}, et seulement une fois qu'il ou elle a partagé le sien."
@@ -721,5 +725,118 @@
     "note": "Nyeaka est gratuit et le restera. Nous vous demandons cela une seule fois, pas à chaque remise — et personne ne voit vos documents hormis le vérificateur.",
     "submit": "Vérifier et continuer",
     "keepBrowsing": "Continuer à parcourir pour l'instant"
+  },
+  "cityExamples": {
+    "DZ": "Alger",
+    "AO": "Luanda",
+    "BJ": "Cotonou",
+    "BW": "Gaborone",
+    "BF": "Ouagadougou",
+    "BI": "Bujumbura",
+    "CV": "Praia",
+    "CM": "Douala",
+    "CF": "Bangui",
+    "TD": "N'Djamena",
+    "KM": "Moroni",
+    "CG": "Brazzaville",
+    "CD": "Kinshasa",
+    "CI": "Abidjan",
+    "DJ": "Djibouti",
+    "EG": "Le Caire",
+    "GQ": "Malabo",
+    "ER": "Asmara",
+    "SZ": "Mbabane",
+    "ET": "Addis-Abeba",
+    "GA": "Libreville",
+    "GM": "Banjul",
+    "GH": "Accra",
+    "GN": "Conakry",
+    "GW": "Bissau",
+    "KE": "Nairobi",
+    "LS": "Maseru",
+    "LR": "Monrovia",
+    "LY": "Tripoli",
+    "MG": "Antananarive",
+    "MW": "Lilongwe",
+    "ML": "Bamako",
+    "MR": "Nouakchott",
+    "MU": "Port-Louis",
+    "MA": "Casablanca",
+    "MZ": "Maputo",
+    "NA": "Windhoek",
+    "NE": "Niamey",
+    "NG": "Lagos",
+    "RW": "Kigali",
+    "ST": "São Tomé",
+    "SN": "Dakar",
+    "SC": "Victoria",
+    "SL": "Freetown",
+    "SO": "Mogadiscio",
+    "ZA": "Johannesburg",
+    "SS": "Juba",
+    "SD": "Khartoum",
+    "TZ": "Dar es Salaam",
+    "TG": "Lomé",
+    "TN": "Tunis",
+    "UG": "Kampala",
+    "ZM": "Lusaka",
+    "ZW": "Harare"
+  },
+  "emails": {
+    "common": {
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+    },
+    "verification": {
+      "subject": "Confirmez votre adresse e-mail pour Nyeaka",
+      "heading": "Bienvenue, {firstName}",
+      "body": "Confirmez votre adresse e-mail pour terminer la création de votre compte Nyeaka. Ce lien expire dans 1 heure. Si vous ne vous êtes pas inscrit, vous pouvez ignorer ce message.",
+      "cta": "Confirmer mon e-mail"
+    },
+    "reset": {
+      "subject": "Réinitialisez votre mot de passe Nyeaka",
+      "heading": "Bonjour {firstName}, réinitialisez votre mot de passe",
+      "body": "Nous avons reçu une demande de réinitialisation de votre mot de passe. Ce lien expire dans 1 heure. Si vous n'êtes pas à l'origine de cette demande, ignorez ce message : votre mot de passe ne changera pas.",
+      "cta": "Choisir un nouveau mot de passe"
+    },
+    "restricted": {
+      "subject": "Votre compte Nyeaka a été restreint",
+      "heading": "Bonjour {firstName}, votre compte est restreint",
+      "body": "À la suite de signalements d'autres membres, vous ne pouvez pas publier de nouvelles annonces, demandes ou offres pendant que nous examinons votre compte. Vous pouvez toujours vous connecter, parcourir le site et terminer les mises en relation déjà en cours.",
+      "contact": "Si vous pensez qu'il s'agit d'une erreur, écrivez-nous à {contact} et nous examinerons votre situation.",
+      "noContact": "Si vous pensez qu'il s'agit d'une erreur, contactez l'équipe Nyeaka et nous examinerons votre situation."
+    },
+    "offerReceived": {
+      "subjectAsk": "{from} souhaite votre {listingTitle}",
+      "subjectOffer": "{from} vous a proposé un appareil sur Nyeaka",
+      "headingAsk": "{from} souhaite votre appareil",
+      "headingOffer": "{from} vous a envoyé une offre",
+      "bodyAsk": "Bonjour {firstName}, {from} souhaite recevoir votre <strong>{listingTitle}</strong> pour sa demande « {requestTitle} ». Ouvrez votre tableau de bord pour la lire, puis l'accepter ou la refuser.",
+      "bodyOffer": "Bonjour {firstName}, {from} propose <strong>{listingTitle}</strong> pour votre demande « {requestTitle} ». Ouvrez votre tableau de bord pour la lire, puis l'accepter ou la refuser.",
+      "cta": "Ouvrir mon tableau de bord"
+    },
+    "offerAccepted": {
+      "subject": "{accepter} a accepté : une discussion est ouverte",
+      "heading": "Votre offre a été acceptée",
+      "body": "Bonjour {firstName}, {accepter} a accepté la mise en relation pour <strong>{listingTitle}</strong>. Une discussion est ouverte pour convenir d'un lieu public et d'une heure de rencontre.",
+      "cta": "Ouvrir la discussion"
+    },
+    "notSelected": {
+      "subjectDonor": "Votre offre n'a pas été retenue",
+      "subjectRequester": "Cet appareil a été attribué à quelqu'un d'autre",
+      "bodyDonor": "Bonjour {firstName}, la demande « {requestTitle} » a été mise en relation avec un autre appareil : votre offre de <strong>{listingTitle}</strong> est donc close. Votre appareil reste publié pour d'autres personnes qui en ont besoin.",
+      "bodyRequester": "Bonjour {firstName}, l'appareil <strong>{listingTitle}</strong> que vous aviez demandé a été donné à quelqu'un d'autre. Votre demande « {requestTitle} » reste ouverte : vous pouvez continuer à chercher un autre appareil.",
+      "ctaDonor": "Voir d'autres demandes",
+      "ctaRequester": "Parcourir les appareils",
+      "headingDonor": "Votre offre n'a pas été retenue",
+      "headingRequester": "Cet appareil a été attribué à quelqu'un d'autre"
+    },
+    "matchCancelled": {
+      "subject": "{canceller} a annulé votre mise en relation",
+      "heading": "Votre mise en relation a été annulée",
+      "body": "Bonjour {firstName}, {canceller} a annulé la mise en relation pour <strong>{listingTitle}</strong>.",
+      "tailDonor": "Votre appareil peut de nouveau recevoir des offres.",
+      "tailRequester": "Votre demande « {requestTitle} » peut de nouveau recevoir des offres.",
+      "cta": "Ouvrir mon tableau de bord"
+    }
   }
 }
