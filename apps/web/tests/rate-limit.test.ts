@@ -25,7 +25,7 @@ const ago = (seconds: number) => new Date(Date.now() - seconds * 1000);
 
 let n = 0;
 const user = (tag: string) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG" } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, idVerificationStatus: "VERIFIED", countryCode: "NG" } });
 const listing = (donorId: string) =>
   prisma.listing.create({
     data: {

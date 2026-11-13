@@ -8,6 +8,7 @@ import { ServiceError } from "./errors";
 import { assertState, postState } from "./lifecycle";
 import { limitOffers } from "./rate-limit";
 import { assertNotRestricted, isBlockedBetween } from "./safety";
+import { assertVerified } from "./verification";
 import { assertSameCountry, requirePostingCountry } from "./country-rules";
 
 const ALREADY_OFFERED = "You already have an active offer on this request.";
@@ -42,6 +43,7 @@ export async function createOffer(userId: string, input: CreateOfferInput) {
 
   assertSameCountry(listing.countryCode, request.countryCode);
   await assertNotRestricted(userId);
+  await assertVerified(userId);
   await requirePostingCountry(userId);
   // Same wording whichever of them blocked the other, so it never reveals who did.
   if (await isBlockedBetween(listing.donorId, request.requesterId))

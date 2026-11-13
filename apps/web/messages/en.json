@@ -254,7 +254,13 @@
     "acceptPledge": "You must accept the pledge.",
     "chooseReason": "Choose a reason.",
     "chooseRating": "Choose a star rating.",
-    "commentTooLong": "Keep it under 500 characters."
+    "commentTooLong": "Keep it under 500 characters.",
+    "chooseDocType": "Choose a document type.",
+    "enterFullName": "Enter your full name as it appears on the ID.",
+    "enterDocNumber": "Enter the document number.",
+    "invalidDate": "Enter a valid date.",
+    "uploadFront": "Add a photo of the front of the document.",
+    "uploadSelfie": "Add a selfie holding the document."
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -321,7 +327,16 @@
     "uploadInvalid": "Invalid upload request.",
     "uploadFailed": "Upload failed. Please try again.",
     "countryUnavailable": "Nyeaka isn't available in your country yet, so you can't post or send offers.",
-    "differentCountry": "Offers are only possible between people in the same country."
+    "differentCountry": "Offers are only possible between people in the same country.",
+    "notVerified": "Verify your identity first. You need a verified identity to post, request or send offers.",
+    "verifyPending": "Your verification is already being reviewed.",
+    "verifyAlready": "Your identity is already verified.",
+    "verifyDocType": "That document isn't accepted in your country.",
+    "verifyDocNumber": "Enter the document number exactly as printed on it.",
+    "verifyImages": "Upload all the required photos.",
+    "verifyExpired": "That ID has expired. Use one that is still valid.",
+    "countryUnavailableShort": "Nyeaka isn't available in your country yet.",
+    "verifyNotAllowed": "You can't upload ID photos right now."
   },
   "device": {
     "kind": {
@@ -560,7 +575,7 @@
     "handoffs": "Completed handoffs",
     "verified": "Verified",
     "notVerified": "Not verified",
-    "idConfirmed": "NIN and ID confirmed",
+    "idConfirmed": "Identity confirmed",
     "verifyIdentity": "Verify your identity",
     "requestsForDevices": "Requests for your devices",
     "noRequestsYet": "No one has asked for your devices yet.",
@@ -592,7 +607,9 @@
     "rate": "Rate",
     "blockedTitle": "Blocked people",
     "activeMatches": "Active matches",
-    "sentByYou": "Sent by you"
+    "sentByYou": "Sent by you",
+    "idPending": "Under review",
+    "idFailed": "Not approved. Try again"
   },
   "matchCard": {
     "cancelled": "Match cancelled. Your post is live again.",
@@ -710,21 +727,46 @@
   "verify": {
     "headingList": "Before you list, we confirm it is really you",
     "headingRequest": "Before you request, we confirm it is really you",
-    "reasonList": "The person collecting this device is going to meet you in person. They deserve to know your name is real — and you deserve the same from them.",
-    "reasonRequest": "Donors choose who receives their device. Knowing every requester is a real, single, verified person is what makes that choice safe to make.",
-    "submitted": "Verification submitted",
-    "phoneConfirmed": "Phone confirmed",
-    "phoneDone": "Done at sign-up. This is all you need to browse.",
-    "ninTitle": "National Identity Number",
-    "ninBody": "We check the NIN matches your name. Nothing is stored beyond a yes or no, and it never appears on your profile.",
-    "ninPlaceholder": "11-digit NIN",
-    "photoTitle": "ID photo and a selfie",
-    "photoBody": "Only for people listing devices — a reviewer checks the two match. Usually under an hour; you can finish your listing while it's pending.",
-    "idPhoto": "Photo of your ID",
-    "selfie": "Selfie holding it",
-    "note": "Nyeaka is free and always will be. We ask for this once, not per handoff — and nobody sees your documents except the reviewer.",
-    "submit": "Verify and continue",
-    "keepBrowsing": "Keep browsing for now"
+    "reasonList": "The person collecting this device is going to meet you in person. They deserve to know your name is real, and you deserve the same from them.",
+    "reasonRequest": "Donors choose who receives their device. Knowing every requester is a real, verified person is what makes that choice safe to make.",
+    "country": "Verifying for {country}",
+    "docType": "Document type",
+    "docTypePlaceholder": "Choose a document",
+    "docTypes": {
+      "NATIONAL_ID": "National ID card",
+      "PASSPORT": "Passport",
+      "DRIVERS_LICENSE": "Driver's licence",
+      "VOTERS_CARD": "Voter's card",
+      "RESIDENCE_PERMIT": "Residence permit"
+    },
+    "fullName": "Full name on the ID",
+    "fullNameHint": "Write it exactly as it is printed.",
+    "docNumber": "Document number",
+    "docNumberHint": "We keep only a one-way code of this number, never the number itself. It lets a reviewer spot the same document on two accounts.",
+    "docNumberPlaceholder": "As printed on the document",
+    "docExpiry": "Expiry date (if it has one)",
+    "front": "Front of the document",
+    "back": "Back of the document",
+    "selfie": "Selfie holding the document",
+    "photoHint": "JPG, PNG or WebP, up to 5 MB. Location and device details are removed from the photo before it leaves your phone.",
+    "choosePhoto": "Choose a photo",
+    "replacePhoto": "Replace photo",
+    "removePhoto": "Remove photo",
+    "noticeTitle": "How we use your documents",
+    "noticeBody": "Only a Nyeaka reviewer sees these photos, through links that stop working after a minute. We delete them 30 days after we decide. Your profile only shows a Verified badge, never your documents or number.",
+    "submit": "Submit for review",
+    "submitting": "Submitting…",
+    "uploading": "Uploading photos…",
+    "submitted": "Submitted for review",
+    "keepBrowsing": "Keep browsing for now",
+    "pendingTitle": "We're reviewing your documents",
+    "pendingBody": "We'll email you as soon as there is a decision. You can keep browsing in the meantime.",
+    "verifiedTitle": "You're verified",
+    "verifiedBody": "You can now list devices, ask for devices and send offers.",
+    "toDashboard": "Go to your dashboard",
+    "failedTitle": "We couldn't verify you",
+    "failedReason": "Reason: {reason}",
+    "failedBody": "You can submit again with clearer photos or a different document."
   },
   "cityExamples": {
     "DZ": "Algiers",
@@ -837,6 +879,18 @@
       "tailDonor": "Your device is open to new offers again.",
       "tailRequester": "Your request “{requestTitle}” is open to new offers again.",
       "cta": "Open my dashboard"
+    },
+    "verificationApproved": {
+      "subject": "You're verified on Nyeaka",
+      "heading": "Your identity is verified",
+      "body": "Hi {firstName}, we've confirmed your identity. You can now list devices, ask for devices and send offers.",
+      "cta": "Open Nyeaka"
+    },
+    "verificationRejected": {
+      "subject": "We couldn't verify your identity",
+      "heading": "Your verification wasn't approved",
+      "body": "Hi {firstName}, we couldn't confirm your identity. Reason: <strong>{reason}</strong>. You can submit again with clearer photos or a different document.",
+      "cta": "Try again"
     }
   }
 }

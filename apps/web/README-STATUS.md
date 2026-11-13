@@ -46,12 +46,12 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 3. **Set `ADMIN_EMAIL`**, or reports and restriction notices won't reach anyone.
 4. **Send a real email of each kind** with a live `SENDBYTE_KEY`. The browser runs used a fake key, so only that the send was attempted is verified, not delivery or how the emails look in a mail client.
 5. **Try two simultaneous accepts** on a Neon dev branch. The in-memory test database is a single session, so the race can't be reproduced there. The code uses conditional updates inside one transaction, which is the correct pattern, but it has not been exercised in parallel.
-6. **Decide what to do about ID verification** (below), since several screens show "ID-verified" badges that nobody can earn.
+6. **Set the ID verification variables** (new): `S3_PRIVATE_BUCKET` (a private R2 bucket you create; the existing `S3_*` key must be allowed on it, and it needs a CORS rule allowing `PUT` from the site) and `ID_HASH_SECRET` (random, 32+ characters; changing it later breaks duplicate-document matching for old hashes). Neither is read from `.env` by the code until set.
 
 ## Known gaps
 
 ### Not built
-- **ID verification.** `/verify` is a placeholder: the NIN field and uploads do nothing, and the "Verification submitted" toast saves nothing. Nothing in the app ever sets `idVerified`, so the badge only appears on seeded or hand-edited users. The post pages' copy also claims verification comes first, but nothing enforces it.
+- **ID verification, admin side.** Users can submit documents at `/verify` and posting, requests and offers are gated on `idVerificationStatus === VERIFIED`, but there is no admin review screen yet (Step G) and no purge job (Step H). Until then a submission can only be decided from code or the database.
 - **No notification for a new chat message.** The chat only refreshes while the page is open. Nobody is emailed or badged when someone writes to them, so a reply can sit unseen. `Message.readAt` is saved but not shown anywhere. This is probably the biggest practical gap.
 - **No admin area.** Reports are reviewed from the email; a report's status, a restriction, a user's role and `idVerified` are changed in the database only. The app never writes a report's status or a user's role.
 - **No profile page.** The user menu links every signed-in user to `/profile`, which is a 404. Admins also see an `/admin` link, which is a 404 too.

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import { getUserProfile } from "@/lib/queries";
 import PostRequestForm from "@/components/post/post-request-form";
@@ -25,6 +26,7 @@ export default async function NewRequestPage() {
   }
 
   const profile = await getUserProfile(session.user.id);
+  if (profile?.idVerificationStatus !== "VERIFIED") redirect("/verify?for=request");
 
   return (
     <div className="section-wrapper">

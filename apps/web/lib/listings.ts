@@ -10,6 +10,7 @@ import { ServiceError } from "./errors";
 import { listingPhotoPrefix } from "./storage";
 import { limitListings } from "./rate-limit";
 import { assertNotRestricted } from "./safety";
+import { assertVerified } from "./verification";
 import { requirePostingCountry } from "./country-rules";
 
 export async function createListing(donorId: string, input: CreateListingInput) {
@@ -20,6 +21,7 @@ export async function createListing(donorId: string, input: CreateListingInput) 
     throw new ServiceError("INVALID", "Photos must be uploaded through Nyeaka");
 
   await assertNotRestricted(donorId);
+  await assertVerified(donorId);
   const countryCode = await requirePostingCountry(donorId);
   await limitListings(donorId);
 

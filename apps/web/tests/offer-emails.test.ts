@@ -24,7 +24,7 @@ const SITE = "https://nyeaka.test";
 
 let n = 0;
 const user = (tag: string, extra: Record<string, unknown> = {}) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG", ...extra } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, idVerificationStatus: "VERIFIED", countryCode: "NG", ...extra } });
 const listing = (donorId: string, title: string) =>
   prisma.listing.create({
     data: {

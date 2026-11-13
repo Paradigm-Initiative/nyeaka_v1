@@ -27,7 +27,7 @@ const daysAgo = (d: number) => new Date(Date.now() - d * 86_400_000);
 
 let n = 0;
 const user = (tag: string, extra: Record<string, unknown> = {}) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG", ...extra } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, idVerificationStatus: "VERIFIED", countryCode: "NG", ...extra } });
 
 async function matched(donorExtra: Record<string, unknown> = {}, reqExtra: Record<string, unknown> = {}) {
   const [donor, req] = [await user("dee", donorExtra), await user("rae", reqExtra)];

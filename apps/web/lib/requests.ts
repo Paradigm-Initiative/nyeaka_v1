@@ -8,6 +8,7 @@ import { assertOwner } from "./ownership";
 import { assertState, postState } from "./lifecycle";
 import { limitRequests } from "./rate-limit";
 import { assertNotRestricted } from "./safety";
+import { assertVerified } from "./verification";
 import { requirePostingCountry } from "./country-rules";
 
 export async function createRequest(
@@ -18,6 +19,7 @@ export async function createRequest(
   void pledge; // validated only, not stored
 
   await assertNotRestricted(requesterId);
+  await assertVerified(requesterId);
   const countryCode = await requirePostingCountry(requesterId);
   await limitRequests(requesterId);
 

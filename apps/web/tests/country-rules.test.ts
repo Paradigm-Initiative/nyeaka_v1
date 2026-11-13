@@ -32,7 +32,7 @@ const future = () => new Date(Date.now() + 30 * 86_400_000);
 
 let n = 0;
 const user = (tag: string, countryCode = "NG") =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, idVerificationStatus: "VERIFIED", countryCode } });
 const listing = (donorId: string, countryCode = "NG", city = "Lagos") =>
   prisma.listing.create({
     data: { donorId, deviceType: "LAPTOP", title: `HP ${countryCode} ${city}`, description: "d", brand: "HP", model: "450", condition: "GOOD", countryCode, city, expiresAt: future() },

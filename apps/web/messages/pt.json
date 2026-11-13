@@ -254,7 +254,13 @@
     "acceptPledge": "Tem de aceitar o compromisso.",
     "chooseReason": "Escolha um motivo.",
     "chooseRating": "Escolha uma classificação em estrelas.",
-    "commentTooLong": "Mantenha abaixo de 500 caracteres."
+    "commentTooLong": "Mantenha abaixo de 500 caracteres.",
+    "chooseDocType": "Escolha um tipo de documento.",
+    "enterFullName": "Introduza o seu nome completo como aparece no documento.",
+    "enterDocNumber": "Introduza o número do documento.",
+    "invalidDate": "Introduza uma data válida.",
+    "uploadFront": "Adicione uma foto da frente do documento.",
+    "uploadSelfie": "Adicione uma selfie com o documento."
   },
   "errors": {
     "generic": "Algo correu mal. Tente novamente.",
@@ -321,7 +327,16 @@
     "uploadInvalid": "Pedido de carregamento inválido.",
     "uploadFailed": "O carregamento falhou. Tente novamente.",
     "countryUnavailable": "A Nyeaka ainda não está disponível no seu país, por isso não pode publicar nem enviar ofertas.",
-    "differentCountry": "As ofertas só são possíveis entre pessoas do mesmo país."
+    "differentCountry": "As ofertas só são possíveis entre pessoas do mesmo país.",
+    "notVerified": "Verifique primeiro a sua identidade. É preciso uma identidade verificada para publicar, pedir ou enviar ofertas.",
+    "verifyPending": "A sua verificação já está a ser analisada.",
+    "verifyAlready": "A sua identidade já está verificada.",
+    "verifyDocType": "Esse documento não é aceite no seu país.",
+    "verifyDocNumber": "Introduza o número do documento exatamente como está impresso.",
+    "verifyImages": "Carregue todas as fotos pedidas.",
+    "verifyExpired": "Esse documento expirou. Use um que ainda seja válido.",
+    "countryUnavailableShort": "O Nyeaka ainda não está disponível no seu país.",
+    "verifyNotAllowed": "Não pode carregar fotos de identificação neste momento."
   },
   "device": {
     "kind": {
@@ -560,7 +575,7 @@
     "handoffs": "Entregas concluídas",
     "verified": "Verificado",
     "notVerified": "Não verificado",
-    "idConfirmed": "NIN e documento confirmados",
+    "idConfirmed": "Identidade confirmada",
     "verifyIdentity": "Verificar a sua identidade",
     "requestsForDevices": "Pedidos para os seus dispositivos",
     "noRequestsYet": "Ainda ninguém pediu os seus dispositivos.",
@@ -592,7 +607,9 @@
     "rate": "Avaliar",
     "blockedTitle": "Pessoas bloqueadas",
     "activeMatches": "Emparelhamentos ativos",
-    "sentByYou": "Enviadas por si"
+    "sentByYou": "Enviadas por si",
+    "idPending": "Em análise",
+    "idFailed": "Não aprovada. Tente novamente"
   },
   "matchCard": {
     "cancelled": "Emparelhamento cancelado. A sua publicação está novamente ativa.",
@@ -708,23 +725,48 @@
     "leave": "Deixar avaliação"
   },
   "verify": {
-    "headingList": "Antes de anunciar, confirmamos que é mesmo você",
+    "headingList": "Antes de publicar, confirmamos que é mesmo você",
     "headingRequest": "Antes de pedir, confirmamos que é mesmo você",
-    "reasonList": "Quem vem buscar este dispositivo vai encontrar-se consigo pessoalmente. Merece saber que o seu nome é real — e você merece o mesmo da outra pessoa.",
-    "reasonRequest": "Os doadores escolhem quem recebe o seu dispositivo. Saber que cada requerente é uma pessoa real, única e verificada torna essa escolha segura.",
-    "submitted": "Verificação submetida",
-    "phoneConfirmed": "Telefone confirmado",
-    "phoneDone": "Feito no registo. É tudo o que precisa para explorar.",
-    "ninTitle": "Número de Identificação Nacional",
-    "ninBody": "Verificamos se o NIN corresponde ao seu nome. Nada é guardado além de um sim ou um não, e nunca aparece no seu perfil.",
-    "ninPlaceholder": "NIN de 11 dígitos",
-    "photoTitle": "Foto do documento e uma selfie",
-    "photoBody": "Apenas para quem anuncia dispositivos — um revisor confirma que as duas correspondem. Normalmente menos de uma hora; pode terminar o anúncio enquanto aguarda.",
-    "idPhoto": "Foto do seu documento",
-    "selfie": "Selfie a segurá-lo",
-    "note": "A Nyeaka é gratuita e sempre será. Pedimos isto uma vez, não por entrega — e ninguém vê os seus documentos além do revisor.",
-    "submit": "Verificar e continuar",
-    "keepBrowsing": "Continuar a explorar por agora"
+    "reasonList": "A pessoa que vai buscar este dispositivo vai encontrá-lo pessoalmente. Merece saber que o seu nome é real, e você merece o mesmo dela.",
+    "reasonRequest": "Os doadores escolhem quem recebe o seu dispositivo. Saber que cada requerente é uma pessoa real e verificada torna essa escolha segura.",
+    "country": "Verificação para {country}",
+    "docType": "Tipo de documento",
+    "docTypePlaceholder": "Escolher um documento",
+    "docTypes": {
+      "NATIONAL_ID": "Bilhete de identidade",
+      "PASSPORT": "Passaporte",
+      "DRIVERS_LICENSE": "Carta de condução",
+      "VOTERS_CARD": "Cartão de eleitor",
+      "RESIDENCE_PERMIT": "Autorização de residência"
+    },
+    "fullName": "Nome completo no documento",
+    "fullNameHint": "Escreva-o exatamente como está impresso.",
+    "docNumber": "Número do documento",
+    "docNumberHint": "Guardamos apenas um código unidirecional deste número, nunca o número em si. Permite a um revisor detetar o mesmo documento em duas contas.",
+    "docNumberPlaceholder": "Como está impresso no documento",
+    "docExpiry": "Data de validade (se tiver)",
+    "front": "Frente do documento",
+    "back": "Verso do documento",
+    "selfie": "Selfie com o documento",
+    "photoHint": "JPG, PNG ou WebP, até 5 MB. A localização e os dados do dispositivo são removidos da foto antes de sair do seu telemóvel.",
+    "choosePhoto": "Escolher uma foto",
+    "replacePhoto": "Substituir foto",
+    "removePhoto": "Remover foto",
+    "noticeTitle": "Como usamos os seus documentos",
+    "noticeBody": "Só um revisor do Nyeaka vê estas fotos, através de ligações que deixam de funcionar após um minuto. Apagamo-las 30 dias depois da nossa decisão. O seu perfil mostra apenas um selo de Verificado, nunca os seus documentos nem o número.",
+    "submit": "Enviar para análise",
+    "submitting": "A enviar…",
+    "uploading": "A carregar fotos…",
+    "submitted": "Enviado para análise",
+    "keepBrowsing": "Continuar a navegar por agora",
+    "pendingTitle": "Estamos a analisar os seus documentos",
+    "pendingBody": "Enviaremos um email assim que houver uma decisão. Pode continuar a navegar entretanto.",
+    "verifiedTitle": "Está verificado",
+    "verifiedBody": "Já pode publicar dispositivos, pedir dispositivos e enviar ofertas.",
+    "toDashboard": "Ir para o seu painel",
+    "failedTitle": "Não conseguimos verificá-lo",
+    "failedReason": "Motivo: {reason}",
+    "failedBody": "Pode enviar novamente com fotos mais nítidas ou outro documento."
   },
   "cityExamples": {
     "DZ": "Argel",
@@ -837,6 +879,18 @@
       "tailDonor": "O seu dispositivo volta a poder receber ofertas.",
       "tailRequester": "O seu pedido “{requestTitle}” volta a poder receber ofertas.",
       "cta": "Abrir o meu painel"
+    },
+    "verificationApproved": {
+      "subject": "Está verificado no Nyeaka",
+      "heading": "A sua identidade está verificada",
+      "body": "Olá {firstName}, confirmámos a sua identidade. Já pode publicar dispositivos, pedir dispositivos e enviar ofertas.",
+      "cta": "Abrir o Nyeaka"
+    },
+    "verificationRejected": {
+      "subject": "Não conseguimos verificar a sua identidade",
+      "heading": "A sua verificação não foi aprovada",
+      "body": "Olá {firstName}, não conseguimos confirmar a sua identidade. Motivo: <strong>{reason}</strong>. Pode enviar novamente com fotos mais nítidas ou outro documento.",
+      "cta": "Tentar novamente"
     }
   }
 }

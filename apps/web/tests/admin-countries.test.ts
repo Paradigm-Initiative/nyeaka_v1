@@ -20,7 +20,7 @@ const SEEDED = ["CM", "GH", "KE", "NG", "SN", "ZM", "ZW"];
 
 let n = 0;
 const user = (tag: string, extra: Record<string, unknown> = {}) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG", ...extra } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, idVerificationStatus: "VERIFIED", countryCode: "NG", ...extra } });
 
 async function rejects(p: Promise<unknown>, code: string, msg?: string) {
   const err = await p.then(() => null, (e) => e);

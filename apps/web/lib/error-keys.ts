@@ -62,6 +62,14 @@ export const BY_MESSAGE: Record<string, string> = {
   "Check the phone number.": "checkPhone",
   "Nyeaka isn't available in your country yet, so you can't post or send offers.": "countryUnavailable",
   "Offers are only possible between people in the same country.": "differentCountry",
+  "Verify your identity first to post, request or send offers.": "notVerified",
+  "Your verification is already being reviewed.": "verifyPending",
+  "Your identity is already verified.": "verifyAlready",
+  "That document isn't accepted in your country.": "verifyDocType",
+  "Enter a valid ID number.": "verifyDocNumber",
+  "Upload the required ID photos.": "verifyImages",
+  "The ID has expired. Use one that is still valid.": "verifyExpired",
+  "Nyeaka isn't available in your country yet.": "countryUnavailableShort",
 };
 
 export const BY_CODE: Record<ServiceErrorCode, string> = {

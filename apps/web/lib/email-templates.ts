@@ -229,3 +229,30 @@ export function matchCancelledEmail(d: {
     ),
   };
 }
+
+export function verificationApprovedEmail(d: { firstName: string; url: string; locale?: string }) {
+  const { t } = emailTranslator(d.locale);
+  return {
+    subject: t("verificationApproved.subject"),
+    html: layout(
+      t("verificationApproved.heading"),
+      esc(t("verificationApproved.body", { firstName: d.firstName })),
+      { label: t("verificationApproved.cta"), url: d.url },
+      d.locale,
+    ),
+  };
+}
+
+/** `reason` is the admin's own text, written in English; it is escaped and shown as is. */
+export function verificationRejectedEmail(d: { firstName: string; reason: string; url: string; locale?: string }) {
+  const { t, html } = emailTranslator(d.locale);
+  return {
+    subject: t("verificationRejected.subject"),
+    html: layout(
+      t("verificationRejected.heading"),
+      html("verificationRejected.body", { firstName: esc(d.firstName), reason: esc(d.reason) }),
+      { label: t("verificationRejected.cta"), url: d.url },
+      d.locale,
+    ),
+  };
+}
