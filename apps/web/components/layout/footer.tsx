@@ -39,6 +39,13 @@ const Footer = async () => {
           </Link>
         </div>
         <div className="border-pin-gray-800 border-t w-full">
+          <nav aria-label={t("legal")} className="flex flex-wrap justify-center gap-x-6 gap-y-1 pt-3 section-wrapper">
+            {(["privacy", "terms", "contact"] as const).map((k) => (
+              <Link key={k} href={`/${k}`} className="font-semibold text-body-sm text-pin-gray-400 hover:text-pin-gray-50 hover:underline">
+                {t(k)}
+              </Link>
+            ))}
+          </nav>
           <div className="flex flex-wrap justify-center items-center gap-4 py-2! section-wrapper">
             <span className="font-semibold text-body-sm text-pin-gray-400">
               {t.rich("rights", {
