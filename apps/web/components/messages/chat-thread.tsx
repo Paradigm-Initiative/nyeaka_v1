@@ -150,6 +150,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
             >
               {m.body}
             </div>
+            {!m.mine && <ReportPanel targetType="MESSAGE" targetId={m.id} who={thread.other.firstName} label={t("reportMessage")} />}
             <time
               dateTime={new Date(m.createdAt).toISOString()}
               suppressHydrationWarning

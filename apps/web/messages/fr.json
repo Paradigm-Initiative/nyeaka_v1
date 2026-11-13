@@ -31,7 +31,11 @@
     "tagline": "Une place de marché gratuite de dons d'appareils pour l'Afrique. Pas de frais, pas d'intermédiaires, pas de revente.",
     "projectLabel": "Un projet de Paradigm Initiative",
     "projectOf": "Un projet de",
-    "rights": "© {year} <org>Paradigm Initiative</org>. Tous droits réservés."
+    "rights": "© {year} <org>Paradigm Initiative</org>. Tous droits réservés.",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "contact": "Contact",
+    "legal": "Mentions légales"
   },
   "home": {
     "hero": {
@@ -166,7 +170,8 @@
       "google": "S'inscrire avec Google",
       "apple": "S'inscrire avec Apple",
       "googleSoon": "La connexion avec Google n'est pas encore disponible",
-      "appleSoon": "La connexion avec Apple n'est pas encore disponible"
+      "appleSoon": "La connexion avec Apple n'est pas encore disponible",
+      "agree": "J'ai lu et j'accepte les <terms>Conditions d'utilisation</terms> et la <privacy>Politique de confidentialité</privacy>."
     },
     "verifyEmail": {
       "title": "Vérifiez votre e-mail",
@@ -220,7 +225,9 @@
     "PASSWORD_TOO_LONG": "Ce mot de passe est trop long.",
     "INVALID_TOKEN": "Ce lien est invalide ou a expiré.",
     "TOO_MANY_REQUESTS": "Trop de tentatives. Patientez un instant puis réessayez.",
-    "COUNTRY_NOT_AVAILABLE": "Nyeaka n'est pas encore disponible dans ce pays."
+    "COUNTRY_NOT_AVAILABLE": "Nyeaka n'est pas encore disponible dans ce pays.",
+    "ACCOUNT_SUSPENDED": "Ce compte est suspendu. Contactez l'assistance si vous pensez qu'il s'agit d'une erreur.",
+    "TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions et la politique de confidentialité pour créer un compte."
   },
   "validation": {
     "emailInvalid": "Saisissez une adresse e-mail valide.",
@@ -260,7 +267,8 @@
     "enterDocNumber": "Saisissez le numéro du document.",
     "invalidDate": "Saisissez une date valide.",
     "uploadFront": "Ajoutez une photo du recto du document.",
-    "uploadSelfie": "Ajoutez un selfie avec le document."
+    "uploadSelfie": "Ajoutez un selfie avec le document.",
+    "acceptTerms": "Cochez la case pour accepter les conditions et la politique de confidentialité."
   },
   "errors": {
     "generic": "Une erreur s'est produite. Veuillez réessayer.",
@@ -273,11 +281,11 @@
     "invalid": "Ce n'est pas possible pour le moment.",
     "restricted": "Votre compte est restreint pendant que nous examinons des signalements, vous ne pouvez donc pas publier ni envoyer d'offres pour l'instant.",
     "blockSelf": "Vous ne pouvez pas vous bloquer vous-même.",
-    "blockNotMatched": "Vous ne pouvez bloquer qu'une personne avec qui vous avez été mis en relation.",
+    "blockNotMatched": "Vous ne pouvez bloquer qu'une personne avec qui vous avez été mis en relation ou échangé une offre.",
     "listingNotFound": "Annonce introuvable.",
     "requestNotFound": "Demande introuvable.",
     "reportSelf": "Vous ne pouvez pas vous signaler vous-même.",
-    "reportNotMatched": "Vous ne pouvez signaler qu'une personne avec qui vous avez été mis en relation.",
+    "reportNotMatched": "Vous ne pouvez signaler qu'une personne avec qui vous avez été mis en relation ou échangé une offre.",
     "alreadyReported": "Vous avez déjà signalé cette personne. Nous examinons le signalement.",
     "conversationNotFound": "Conversation introuvable.",
     "notInConversation": "Vous ne faites pas partie de cette conversation.",
@@ -336,7 +344,10 @@
     "verifyImages": "Téléversez toutes les photos demandées.",
     "verifyExpired": "Cette pièce d'identité a expiré. Utilisez-en une encore valide.",
     "countryUnavailableShort": "Nyeaka n'est pas encore disponible dans votre pays.",
-    "verifyNotAllowed": "Vous ne pouvez pas téléverser de photos d'identité pour le moment."
+    "verifyNotAllowed": "Vous ne pouvez pas téléverser de photos d'identité pour le moment.",
+    "verifyBlocked": "Nous ne pouvons pas vérifier ce document. Essayez-en un autre ou contactez l'assistance.",
+    "deleteAdmin": "Les administrateurs ne peuvent pas supprimer leur compte. Demandez à un autre administrateur de changer votre rôle d'abord.",
+    "deleteConfirm": "Saisissez votre adresse e-mail pour confirmer."
   },
   "device": {
     "kind": {
@@ -637,7 +648,8 @@
     "declinedRequester": "Cet appareil est allé à quelqu'un d'autre ou le donateur a refusé votre demande. Votre demande reste en ligne.",
     "working": "En cours…",
     "accept": "Accepter",
-    "decline": "Refuser"
+    "decline": "Refuser",
+    "viewProfile": "Voir le profil de {name}"
   },
   "safety": {
     "block": "Bloquer",
@@ -683,7 +695,8 @@
     "empty": "Aucun message pour l'instant. Dites bonjour et proposez un lieu public et une heure de rencontre.",
     "write": "Écrire un message",
     "sending": "Envoi…",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "reportMessage": "Signaler ce message"
   },
   "handoff": {
     "complete": "Remise terminée",
@@ -891,6 +904,163 @@
       "heading": "Votre vérification n'a pas été approuvée",
       "body": "Bonjour {firstName}, nous n'avons pas pu confirmer votre identité. Motif : <strong>{reason}</strong>. Vous pouvez soumettre à nouveau avec des photos plus nettes ou un autre document.",
       "cta": "Réessayer"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "memberSince": "Membre depuis {date}",
+    "verified": "Identité vérifiée",
+    "notVerified": "Identité non vérifiée",
+    "ratingCount": "{count, plural, one {# note} other {# notes}}",
+    "noRatings": "Pas encore de notes",
+    "handoffs": "{count, plural, one {remise terminée} other {remises terminées}}",
+    "reviews": "Ce que les gens ont écrit",
+    "noReviews": "Aucun avis écrit pour l'instant.",
+    "by": "{name}",
+    "byDeleted": "Ancien membre",
+    "stars": "{count, plural, one {# étoile} other {# étoiles}}",
+    "toDashboard": "Aller à votre tableau de bord",
+    "settings": "Paramètres du compte"
+  },
+  "settings": {
+    "title": "Paramètres du compte",
+    "name": "Nom",
+    "email": "E-mail",
+    "country": "Pays",
+    "privacyLink": "Comment nous utilisons vos données",
+    "deleteTitle": "Supprimer votre compte",
+    "deleteBody": "Cela supprime votre nom, e-mail, numéro de téléphone, photo et pièces d'identité, et vous déconnecte partout. Vos annonces et demandes sont fermées, les mises en relation actives annulées et les offres en attente retirées. Les personnes avec qui vous avez discuté conservent les messages de cette conversation, présentés comme venant d'un utilisateur supprimé. Les signalements vous concernant ou faits par vous sont conservés pour la sécurité.",
+    "deleteAdmin": "Les administrateurs ne peuvent pas supprimer leur compte ici. Demandez à un autre administrateur de changer votre rôle d'abord.",
+    "deleteButton": "Supprimer mon compte",
+    "deleteWarning": "Cette action est irréversible. Vous pourrez vous réinscrire plus tard avec le même e-mail, mais sans historique.",
+    "deleteConfirmLabel": "Saisissez votre adresse e-mail ({email}) pour confirmer",
+    "deleteConfirm": "Tout supprimer",
+    "deleting": "Suppression…",
+    "cancel": "Annuler",
+    "deleted": "Votre compte a été supprimé"
+  },
+  "legal": {
+    "updated": "Dernière mise à jour : {date}",
+    "contactLink": "Des questions ? Contactez-nous.",
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "Nyeaka est une plateforme gratuite de dons d'appareils, un projet de Paradigm Initiative. Cette page explique ce que nous collectons, pourquoi, qui peut le voir et comment le supprimer. Nous l'écrivons volontairement en langage simple.",
+      "sections": {
+        "who": {
+          "title": "Qui est responsable",
+          "body": "Nyeaka est gérée par Paradigm Initiative, qui décide de l'usage de vos données personnelles sur la plateforme. Vous pouvez nous joindre via la page de contact."
+        },
+        "collect": {
+          "title": "Ce que nous collectons",
+          "body": "Votre compte : nom, e-mail, mot de passe (conservé uniquement sous forme d'empreinte à sens unique), pays et langue. Éventuellement un numéro de téléphone.\n\nCe que vous faites : annonces, demandes, offres, messages, notes et signalements que vous faites.\n\nPour vérifier votre identité : le type de pièce d'identité, le nom qui y figure, sa date d'expiration s'il y en a une, un code à sens unique créé à partir du numéro du document (jamais le numéro lui-même) et des photos du document et de vous le tenant.\n\nDonnées techniques : vos sessions de connexion, avec l'appareil et l'adresse réseau d'origine, pour garder les comptes en sécurité."
+        },
+        "why": {
+          "title": "Pourquoi nous les utilisons",
+          "body": "Pour faire fonctionner le service : afficher vos annonces, mettre en relation des personnes du même pays et permettre à deux personnes d'organiser une remise.\n\nPour protéger les gens : vérifier l'identité, traiter les signalements et empêcher les abus répétés.\n\nPour respecter nos obligations légales et répondre aux demandes valables des autorités.\n\nNous utilisons vos pièces d'identité uniquement pour vérifier qui vous êtes. Nous n'utilisons aucune de vos données pour la publicité et ne les vendons jamais."
+        },
+        "documents": {
+          "title": "Vos pièces d'identité",
+          "body": "Seul un examinateur de Nyeaka voit les photos de vos documents, via des liens qui cessent de fonctionner après une minute. Chaque consultation est enregistrée. Votre profil n'affiche qu'un badge Vérifié.\n\nLes photos sont supprimées 30 jours après notre décision. Si personne n'examine une demande dans les 30 jours, elle est clôturée et les photos sont supprimées. La localisation et les informations sur l'appareil sont retirées des photos sur votre téléphone avant l'envoi.\n\nSi nous suspendons un compte pour abus, nous conservons 12 mois le code à sens unique du numéro de son document afin que le même document ne serve pas à vérifier un nouveau compte, puis nous le supprimons."
+        },
+        "sharing": {
+          "title": "Qui d'autre voit vos données",
+          "body": "Les autres personnes voient votre prénom et l'initiale de votre nom, votre pays, votre date d'inscription, votre badge Vérifié, vos notes et avis écrits. Votre annonce ou demande montre votre zone générale, jamais votre rue. Votre numéro de téléphone n'est montré à l'autre personne que si vous choisissez tous deux de le partager.\n\nNous faisons appel à des prestataires pour faire fonctionner Nyeaka : hébergement et base de données, stockage de fichiers et envoi d'e-mails. Ils traitent les données pour notre compte et peuvent les conserver hors de votre pays.\n\nNous ne transmettons des données aux autorités que lorsque la loi l'exige."
+        },
+        "retention": {
+          "title": "Combien de temps nous les gardons",
+          "body": "Les données de votre compte restent jusqu'à ce que vous le supprimiez dans les Paramètres. La suppression retire votre nom, e-mail, téléphone, photo, pièces d'identité et accès, et ferme vos annonces. Les messages restent dans les conversations des personnes avec qui vous avez échangé, présentés comme venant d'un utilisateur supprimé. Les signalements vous concernant ou faits par vous sont conservés pour la sécurité.\n\nLes sessions techniques sont supprimées à la déconnexion ou à leur expiration."
+        },
+        "rights": {
+          "title": "Vos droits",
+          "body": "Vous pouvez demander à consulter, corriger ou supprimer vos données, vous opposer à leur utilisation et vous plaindre auprès de l'autorité de protection des données de votre pays (voir ci-dessous). Vous pouvez supprimer votre compte vous-même dans les Paramètres. Pour tout le reste, contactez-nous : nous répondrons sous 30 jours."
+        },
+        "children": {
+          "title": "Enfants",
+          "body": "Nyeaka s'adresse aux personnes de 18 ans ou plus. Si nous apprenons qu'une personne plus jeune a un compte, nous le fermerons."
+        },
+        "changes": {
+          "title": "Modifications",
+          "body": "Si nous modifions cette politique de façon importante, nous vous le dirons dans l'application avant son entrée en vigueur."
+        }
+      },
+      "countriesTitle": "Votre pays",
+      "countriesIntro": "Là où vous vivez, une loi précise protège vos données et une autorité précise peut recevoir votre plainte.",
+      "countries": {
+        "NG": {
+          "law": "la loi nigériane sur la protection des données de 2023 (Nigeria Data Protection Act 2023)",
+          "regulator": "la Commission nigériane de protection des données"
+        },
+        "GH": {
+          "law": "la loi ghanéenne sur la protection des données de 2012 (Loi 843)",
+          "regulator": "la Commission de protection des données"
+        },
+        "KE": {
+          "law": "la loi kényane sur la protection des données de 2019",
+          "regulator": "le Bureau du Commissaire à la protection des données"
+        },
+        "CM": {
+          "law": "la loi camerounaise sur la protection des données personnelles",
+          "regulator": "l'autorité nationale de protection des données"
+        },
+        "SN": {
+          "law": "la loi sénégalaise n° 2008-12 sur la protection des données à caractère personnel",
+          "regulator": "la Commission de protection des données personnelles (CDP)"
+        },
+        "ZM": {
+          "law": "la loi zambienne sur la protection des données de 2021",
+          "regulator": "le Bureau du Commissaire à la protection des données"
+        },
+        "ZW": {
+          "law": "la loi zimbabwéenne sur la cybersécurité et la protection des données de 2021",
+          "regulator": "l'Autorité de cybersécurité et de protection des données (POTRAZ)"
+        }
+      },
+      "countryLine": "{country} : vos données sont protégées par {law}. Vous pouvez vous plaindre auprès de {regulator}."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "intro": "Voici les règles d'utilisation de Nyeaka. En créant un compte, vous les acceptez.",
+      "sections": {
+        "accept": {
+          "title": "Utiliser Nyeaka",
+          "body": "Vous devez avoir 18 ans ou plus et vivre dans un pays où Nyeaka est disponible. Nyeaka est gratuite, et le restera : personne ne peut faire payer un appareil ou une mise en relation."
+        },
+        "account": {
+          "title": "Votre compte et la vérification",
+          "body": "Donnez des informations exactes et gardez vos identifiants secrets. Une identité vérifiée est nécessaire pour publier un appareil, en demander un ou envoyer une offre. Une personne, un compte."
+        },
+        "posts": {
+          "title": "Vos annonces et demandes",
+          "body": "Ne publiez que des appareils que vous possédez et pouvez donner, décrits honnêtement. Effacez vos données personnelles d'un appareil avant de le remettre. Ne demandez qu'un appareil dont vous avez réellement besoin, et jamais pour le revendre."
+        },
+        "handoff": {
+          "title": "Rencontre et remise",
+          "body": "Les remises se font en personne. Retrouvez-vous dans un lieu public et fréquenté, venez accompagné si possible et examinez l'appareil avant de l'accepter. Nyeaka met les gens en relation ; elle n'est pas partie à ce qu'ils conviennent."
+        },
+        "conduct": {
+          "title": "Ce qui est interdit",
+          "body": "La fraude, le harcèlement, le spam, les appareils illégaux ou volés, la vente ou le paiement d'appareils donnés, les faux comptes ou comptes en double, et toute tentative de contourner la vérification."
+        },
+        "role": {
+          "title": "Notre rôle",
+          "body": "Nyeaka met en relation donateurs et personnes qui ont besoin d'appareils. Nous ne possédons, n'inspectons ni ne garantissons aucun appareil, et nous ne sommes pas responsables de ce qui se passe entre les personnes. Rien ici ne limite les droits que vous donne la loi de votre pays."
+        },
+        "suspension": {
+          "title": "Signalements, restriction et suspension",
+          "body": "Toute personne avec qui vous avez eu affaire peut vous signaler ou vous bloquer. Des signalements répétés peuvent restreindre automatiquement votre compte, et nous pouvons suspendre les comptes qui enfreignent ces règles. Une personne suspendue ne peut plus se connecter."
+        },
+        "changes": {
+          "title": "Modifications",
+          "body": "Si nous modifions ces conditions de façon importante, nous vous le dirons dans l'application avant leur application."
+        }
+      }
+    },
+    "contact": {
+      "title": "Nous contacter",
+      "intro": "Pour toute question sur Nyeaka, vos données, un signalement ou votre vérification, écrivez-nous.",
+      "noEmail": "Notre adresse de contact est en cours de mise en place. Revenez bientôt.",
+      "safety": "Si quelqu'un est en danger, contactez d'abord les services d'urgence locaux.",
+      "emailLabel": "E-mail :"
     }
   }
 }

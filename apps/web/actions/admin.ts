@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { getServerSession } from "@/lib/get-session";
 import { setCountryEnabled } from "@/lib/admin";
+import { dismissReport, closeReportedPost, suspendUser, unsuspendUser, liftUserRestriction } from "@/lib/moderation";
 import { approveVerification, rejectVerification, revealVerificationImages } from "@/lib/verification";
 import { emailVerificationDecision } from "@/lib/verification-emails";
 import { ServiceError } from "@/lib/errors";
@@ -60,4 +61,49 @@ export async function rejectVerificationAction(id: string, reason: string): Prom
 /** Signed image URLs for the review page. Each call is logged. */
 export async function viewVerificationImagesAction(id: string) {
   return run("viewVerificationImagesAction", (adminId) => revealVerificationImages(adminId, id));
+}
+
+function afterModeration() {
+  revalidatePath("/admin/reports");
+  revalidatePath("/admin/log");
+  revalidatePath("/admin");
+}
+
+export async function dismissReportAction(id: string, note?: string): Promise<ActionResult> {
+  return run<undefined>("dismissReportAction", async (adminId) => {
+    await dismissReport(adminId, id, note);
+    afterModeration();
+  });
+}
+
+export async function closeReportedPostAction(id: string): Promise<ActionResult> {
+  return run<undefined>("closeReportedPostAction", async (adminId) => {
+    await closeReportedPost(adminId, id);
+    revalidatePath("/listings");
+    revalidatePath("/requests");
+    afterModeration();
+  });
+}
+
+export async function suspendUserAction(userId: string, reason: string): Promise<ActionResult> {
+  return run<undefined>("suspendUserAction", async (adminId) => {
+    await suspendUser(adminId, userId, reason);
+    revalidatePath("/listings");
+    revalidatePath("/requests");
+    afterModeration();
+  });
+}
+
+export async function unsuspendUserAction(userId: string): Promise<ActionResult> {
+  return run<undefined>("unsuspendUserAction", async (adminId) => {
+    await unsuspendUser(adminId, userId);
+    afterModeration();
+  });
+}
+
+export async function liftRestrictionAction(userId: string): Promise<ActionResult> {
+  return run<undefined>("liftRestrictionAction", async (adminId) => {
+    await liftUserRestriction(adminId, userId);
+    afterModeration();
+  });
 }

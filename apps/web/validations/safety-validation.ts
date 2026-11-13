@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ReportReason } from "@/generated/prisma/enums";
 
 export const reportSchema = z.object({
-  targetType: z.enum(["USER", "LISTING", "REQUEST"]),
+  targetType: z.enum(["USER", "LISTING", "REQUEST", "MESSAGE"]),
   targetId: z.string().min(1),
   reason: z.enum(ReportReason, { error: "chooseReason" }),
   details: z

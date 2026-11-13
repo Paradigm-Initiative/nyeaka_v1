@@ -215,3 +215,23 @@ export async function cancelActiveMatchesBetween(tx: Tx, a: string, b: string): 
   }
   return matches.length;
 }
+
+/**
+ * Cancel every active match a person is in (suspension, account deletion), freeing the
+ * other side's listing and request. The person who is leaving is recorded as the canceller.
+ */
+export async function cancelAllActiveMatchesOf(tx: Tx, userId: string): Promise<number> {
+  const matches = await tx.match.findMany({
+    where: { status: "ACTIVE", OR: [{ donorId: userId }, { requesterId: userId }] },
+    select: { id: true, listingId: true, requestId: true },
+  });
+  for (const m of matches) {
+    await tx.match.updateMany({
+      where: { id: m.id, status: "ACTIVE" },
+      data: { status: "CANCELLED", cancelledById: userId, cancelledAt: new Date() },
+    });
+    await tx.listing.updateMany({ where: { id: m.listingId, status: "MATCHED" }, data: { status: "ACTIVE" } });
+    await tx.request.updateMany({ where: { id: m.requestId, status: "MATCHED" }, data: { status: "ACTIVE" } });
+  }
+  return matches.length;
+}

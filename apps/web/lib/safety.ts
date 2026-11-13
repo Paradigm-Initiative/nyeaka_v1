@@ -8,6 +8,10 @@ import { notifyAdmin, sendSafely } from "./notify";
 import { reportEmail, restrictedUserEmail, restrictionAdminEmail } from "./email-templates";
 import { reasonLabel } from "./report-options";
 
+// Mapped to translation keys in lib/error-keys.ts.
+export const BLOCK_NO_DEALINGS = "You can only block someone you have been matched with or exchanged an offer with.";
+export const REPORT_NO_DEALINGS = "You can only report someone you have been matched with or exchanged an offer with.";
+
 /** Different people who must report someone before they are restricted. */
 export const REPORT_THRESHOLD = 3;
 /** Different people who must block someone before they are restricted. */
@@ -22,6 +26,21 @@ export async function sharesMatch(a: string, b: string): Promise<boolean> {
     select: { id: true },
   });
   return m !== null;
+}
+
+/**
+ * True if the two people have a match (so a chat), or have exchanged an offer in either
+ * direction. Reporting and blocking need this: it lets you act on someone who made you an
+ * offer before any match, while still stopping strangers from reporting or blocking people
+ * they never dealt with.
+ */
+export async function hasDealings(a: string, b: string): Promise<boolean> {
+  if (await sharesMatch(a, b)) return true;
+  const o = await prisma.offer.findFirst({
+    where: { OR: [{ donorId: a, request: { requesterId: b } }, { donorId: b, request: { requesterId: a } }] },
+    select: { id: true },
+  });
+  return o !== null;
 }
 
 /** True if either person has blocked the other. */
@@ -88,21 +107,21 @@ export async function evaluateRestriction(userId: string): Promise<string | null
 }
 
 /** Admin action: clear a restriction. Reports stay; dismiss them first if they were unfounded. */
-export async function liftRestriction(userId: string): Promise<void> {
-  await prisma.user.update({ where: { id: userId }, data: { restrictedAt: null, restrictedReason: null } });
+export async function liftRestriction(userId: string, db: Pick<typeof prisma, "user"> = prisma): Promise<void> {
+  await db.user.update({ where: { id: userId }, data: { restrictedAt: null, restrictedReason: null } });
 }
 
 // ---- block ---------------------------------------------------------------------
 
 /**
- * Block someone you have been matched with. In one transaction this records the
+ * Block someone you have been matched with or exchanged an offer with. In one transaction this records the
  * block, declines pending offers between you, and cancels active matches (which
  * frees both posts). The other person is never told. Idempotent.
  */
 export async function blockUser(blockerId: string, blockedId: string): Promise<{ created: boolean }> {
   if (blockerId === blockedId) throw new ServiceError("INVALID", "You can't block yourself.");
-  if (!(await sharesMatch(blockerId, blockedId)))
-    throw new ServiceError("FORBIDDEN", "You can only block someone you have been matched with.");
+  if (!(await hasDealings(blockerId, blockedId)))
+    throw new ServiceError("FORBIDDEN", BLOCK_NO_DEALINGS);
 
   const existing = await prisma.block.findUnique({
     where: { blockerId_blockedId: { blockerId, blockedId } },
@@ -170,6 +189,19 @@ export async function reportUser(reporterId: string, input: ReportInput): Promis
     reportedUserId = l.donorId;
     target.targetListingId = r.targetId;
     targetLabel = `listing "${l.title}"`;
+  } else if (r.targetType === "MESSAGE") {
+    const m = await prisma.message.findUnique({
+      where: { id: r.targetId },
+      select: { senderId: true, conversation: { select: { match: { select: { donorId: true, requesterId: true } } } } },
+    });
+    if (!m) throw new ServiceError("NOT_FOUND", "Message not found");
+    const { donorId, requesterId } = m.conversation.match;
+    // Only someone in the conversation can report one of its messages.
+    if (reporterId !== donorId && reporterId !== requesterId)
+      throw new ServiceError("FORBIDDEN", "You are not part of this conversation");
+    reportedUserId = m.senderId;
+    target.targetMessageId = r.targetId;
+    targetLabel = "a message";
   } else {
     const q = await prisma.request.findUnique({ where: { id: r.targetId }, select: { requesterId: true, title: true } });
     if (!q) throw new ServiceError("NOT_FOUND", "Request not found");
@@ -180,8 +212,8 @@ export async function reportUser(reporterId: string, input: ReportInput): Promis
   target.reportedUserId = reportedUserId;
 
   if (reportedUserId === reporterId) throw new ServiceError("INVALID", "You can't report yourself.");
-  if (!(await sharesMatch(reporterId, reportedUserId)))
-    throw new ServiceError("FORBIDDEN", "You can only report someone you have been matched with.");
+  if (!(await hasDealings(reporterId, reportedUserId)))
+    throw new ServiceError("FORBIDDEN", REPORT_NO_DEALINGS);
 
   const duplicate = await prisma.report.findFirst({
     where: { reporterId, reportedUserId, status: "OPEN" },

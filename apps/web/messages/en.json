@@ -31,7 +31,11 @@
     "tagline": "A free device-donation marketplace for Africa. No fees, no middlemen, no resale.",
     "projectLabel": "A Paradigm Initiative project",
     "projectOf": "A project of",
-    "rights": "© {year} <org>Paradigm Initiative</org>. All rights reserved."
+    "rights": "© {year} <org>Paradigm Initiative</org>. All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact",
+    "legal": "Legal"
   },
   "home": {
     "hero": {
@@ -166,7 +170,8 @@
       "google": "Sign up with Google",
       "apple": "Sign up with Apple",
       "googleSoon": "Sign in with Google is not implemented yet",
-      "appleSoon": "Sign in with Apple is not implemented yet"
+      "appleSoon": "Sign in with Apple is not implemented yet",
+      "agree": "I have read and agree to the <terms>Terms of use</terms> and the <privacy>Privacy policy</privacy>."
     },
     "verifyEmail": {
       "title": "Check your email",
@@ -220,7 +225,9 @@
     "PASSWORD_TOO_LONG": "That password is too long.",
     "INVALID_TOKEN": "This link is invalid or has expired.",
     "TOO_MANY_REQUESTS": "Too many attempts. Please wait a moment and try again.",
-    "COUNTRY_NOT_AVAILABLE": "Nyeaka isn't available in that country yet."
+    "COUNTRY_NOT_AVAILABLE": "Nyeaka isn't available in that country yet.",
+    "ACCOUNT_SUSPENDED": "This account is suspended. Contact support if you think this is a mistake.",
+    "TERMS_NOT_ACCEPTED": "You need to accept the terms and privacy policy to create an account."
   },
   "validation": {
     "emailInvalid": "Enter a valid email address.",
@@ -260,7 +267,8 @@
     "enterDocNumber": "Enter the document number.",
     "invalidDate": "Enter a valid date.",
     "uploadFront": "Add a photo of the front of the document.",
-    "uploadSelfie": "Add a selfie holding the document."
+    "uploadSelfie": "Add a selfie holding the document.",
+    "acceptTerms": "Tick the box to agree to the terms and privacy policy."
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -273,11 +281,11 @@
     "invalid": "That isn't allowed right now.",
     "restricted": "Your account is restricted while we review reports about it, so you can't post or send offers right now.",
     "blockSelf": "You can't block yourself.",
-    "blockNotMatched": "You can only block someone you have been matched with.",
+    "blockNotMatched": "You can only block someone you have been matched with or sent an offer to or received one from.",
     "listingNotFound": "Listing not found.",
     "requestNotFound": "Request not found.",
     "reportSelf": "You can't report yourself.",
-    "reportNotMatched": "You can only report someone you have been matched with.",
+    "reportNotMatched": "You can only report someone you have been matched with or sent an offer to or received one from.",
     "alreadyReported": "You've already reported this person. We're reviewing it.",
     "conversationNotFound": "Conversation not found.",
     "notInConversation": "You are not part of this conversation.",
@@ -336,7 +344,10 @@
     "verifyImages": "Upload all the required photos.",
     "verifyExpired": "That ID has expired. Use one that is still valid.",
     "countryUnavailableShort": "Nyeaka isn't available in your country yet.",
-    "verifyNotAllowed": "You can't upload ID photos right now."
+    "verifyNotAllowed": "You can't upload ID photos right now.",
+    "verifyBlocked": "We can't verify this document. Try a different one or contact support.",
+    "deleteAdmin": "Admins can't delete their account. Ask another admin to change your role first.",
+    "deleteConfirm": "Type your email address to confirm."
   },
   "device": {
     "kind": {
@@ -637,7 +648,8 @@
     "declinedRequester": "This device went to someone else or the donor turned your request down. Your request stays live.",
     "working": "Working…",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "viewProfile": "View {name}'s profile"
   },
   "safety": {
     "block": "Block",
@@ -683,7 +695,8 @@
     "empty": "No messages yet. Say hello and suggest a public place and time to meet.",
     "write": "Write a message",
     "sending": "Sending…",
-    "send": "Send"
+    "send": "Send",
+    "reportMessage": "Report this message"
   },
   "handoff": {
     "complete": "Handoff complete",
@@ -891,6 +904,163 @@
       "heading": "Your verification wasn't approved",
       "body": "Hi {firstName}, we couldn't confirm your identity. Reason: <strong>{reason}</strong>. You can submit again with clearer photos or a different document.",
       "cta": "Try again"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "memberSince": "Member since {date}",
+    "verified": "ID verified",
+    "notVerified": "Not ID verified",
+    "ratingCount": "{count, plural, one {# rating} other {# ratings}}",
+    "noRatings": "No ratings yet",
+    "handoffs": "{count, plural, one {completed handoff} other {completed handoffs}}",
+    "reviews": "What people said",
+    "noReviews": "No written reviews yet.",
+    "by": "{name}",
+    "byDeleted": "Former member",
+    "stars": "{count, plural, one {# star} other {# stars}}",
+    "toDashboard": "Go to your dashboard",
+    "settings": "Account settings"
+  },
+  "settings": {
+    "title": "Account settings",
+    "name": "Name",
+    "email": "Email",
+    "country": "Country",
+    "privacyLink": "How we use your data",
+    "deleteTitle": "Delete your account",
+    "deleteBody": "This removes your name, email, phone number, photo and ID documents, and signs you out everywhere. Your listings and requests close, active matches are cancelled and pending offers are withdrawn. People you chatted with keep the messages in that chat, shown as coming from a deleted user. Reports about or by you are kept for safety.",
+    "deleteAdmin": "Admins can't delete their account here. Ask another admin to change your role first.",
+    "deleteButton": "Delete my account",
+    "deleteWarning": "This can't be undone. You can sign up again later with the same email, but you would start with no history.",
+    "deleteConfirmLabel": "Type your email address ({email}) to confirm",
+    "deleteConfirm": "Delete everything",
+    "deleting": "Deleting…",
+    "cancel": "Cancel",
+    "deleted": "Your account was deleted"
+  },
+  "legal": {
+    "updated": "Last updated {date}",
+    "contactLink": "Questions? Contact us.",
+    "privacy": {
+      "title": "Privacy policy",
+      "intro": "Nyeaka is a free device-donation marketplace, a project of Paradigm Initiative. This page explains what we collect, why, who can see it and how to remove it. We write it in plain language on purpose.",
+      "sections": {
+        "who": {
+          "title": "Who is responsible",
+          "body": "Nyeaka is run by Paradigm Initiative, which decides how your personal data is used on the platform. You can reach us through the contact page."
+        },
+        "collect": {
+          "title": "What we collect",
+          "body": "Your account: name, email, password (stored only as a one-way hash), country and language. Optionally a phone number.\n\nWhat you do: listings, requests, offers, chat messages, ratings and reports you make.\n\nTo verify who you are: the type of ID document, the name on it, its expiry date if it has one, a one-way code made from the document number (never the number itself), and photos of the document and of you holding it.\n\nTechnical data: your sign-in sessions, with the device and network address they came from, so we can keep accounts safe."
+        },
+        "why": {
+          "title": "Why we use it",
+          "body": "To run the service: show your posts, match people in the same country and let two people arrange a handoff.\n\nTo keep people safe: verifying identity, handling reports and stopping repeat abuse.\n\nTo meet legal duties and respond to valid requests from authorities.\n\nWe use your ID documents only to check who you are. We do not use any of your data for advertising and we never sell it."
+        },
+        "documents": {
+          "title": "Your ID documents",
+          "body": "Only a Nyeaka reviewer sees your document photos, through links that stop working after a minute. Each time a reviewer looks, it is recorded. Your profile only ever shows a Verified badge.\n\nThe photos are deleted 30 days after we decide. If nobody reviews a submission within 30 days, it is closed and the photos are deleted. Location and device details are removed from the photos on your phone before they are uploaded.\n\nIf we suspend an account for abuse, we keep the one-way code of its document number for 12 months so the same document can't be used to verify a new account, then we delete it."
+        },
+        "sharing": {
+          "title": "Who else sees your data",
+          "body": "Other people see your first name and last initial, country, member-since date, verified badge, ratings and written reviews. Your listing or request shows your general area, never your street. Your phone number is shown to the other person only when you both choose to share it.\n\nWe use service providers to run Nyeaka: hosting and database, file storage, and email delivery. They process data on our behalf and may store it outside your country.\n\nWe share data with authorities only when the law requires it."
+        },
+        "retention": {
+          "title": "How long we keep it",
+          "body": "Your account data stays until you delete your account in Settings. Deleting removes your name, email, phone, photo, ID documents and sign-in, and closes your posts. Messages stay in the chats of the people you talked to, shown as from a deleted user. Reports about or by you are kept for safety.\n\nTechnical session records are removed when you sign out or they expire."
+        },
+        "rights": {
+          "title": "Your rights",
+          "body": "You can ask to see, correct or delete your data, to object to how we use it, and to complain to the data protection authority in your country (see below). You can delete your account yourself in Settings. For anything else, contact us and we will answer within 30 days."
+        },
+        "children": {
+          "title": "Children",
+          "body": "Nyeaka is for people aged 18 or over. If we learn that someone younger has an account, we will close it."
+        },
+        "changes": {
+          "title": "Changes",
+          "body": "If we change this policy in a way that matters, we will tell you in the app before it takes effect."
+        }
+      },
+      "countriesTitle": "Your country",
+      "countriesIntro": "Where you live, a specific law protects your data and a specific authority can hear your complaint.",
+      "countries": {
+        "NG": {
+          "law": "Nigeria Data Protection Act 2023",
+          "regulator": "the Nigeria Data Protection Commission"
+        },
+        "GH": {
+          "law": "Ghana's Data Protection Act, 2012 (Act 843)",
+          "regulator": "the Data Protection Commission"
+        },
+        "KE": {
+          "law": "Kenya's Data Protection Act, 2019",
+          "regulator": "the Office of the Data Protection Commissioner"
+        },
+        "CM": {
+          "law": "Cameroon's personal data protection law",
+          "regulator": "the national data protection authority"
+        },
+        "SN": {
+          "law": "Senegal's Law No. 2008-12 on the protection of personal data",
+          "regulator": "the Commission de protection des données personnelles (CDP)"
+        },
+        "ZM": {
+          "law": "Zambia's Data Protection Act, 2021",
+          "regulator": "the Office of the Data Protection Commissioner"
+        },
+        "ZW": {
+          "law": "Zimbabwe's Cyber and Data Protection Act, 2021",
+          "regulator": "the Cyber Security and Data Protection Authority (POTRAZ)"
+        }
+      },
+      "countryLine": "{country}: your data is protected by {law}. You can complain to {regulator}."
+    },
+    "terms": {
+      "title": "Terms of use",
+      "intro": "These are the rules for using Nyeaka. By creating an account you agree to them.",
+      "sections": {
+        "accept": {
+          "title": "Using Nyeaka",
+          "body": "You must be 18 or over and live in a country where Nyeaka is available. Nyeaka is free, and always will be: nobody may charge for a device or for introductions."
+        },
+        "account": {
+          "title": "Your account and verification",
+          "body": "Give true information and keep your sign-in private. You need a verified identity to list a device, ask for one or send an offer. One person, one account."
+        },
+        "posts": {
+          "title": "Your listings and requests",
+          "body": "List only devices you own and can give away, described honestly. Wipe your personal data from a device before handing it over. Ask only for a device you genuinely need, and never to resell it."
+        },
+        "handoff": {
+          "title": "Meeting and handing over",
+          "body": "Handoffs happen in person. Meet in a public, busy place, bring a friend if you can, and inspect the device before accepting. Nyeaka introduces people; it is not a party to what they agree."
+        },
+        "conduct": {
+          "title": "What is not allowed",
+          "body": "Fraud, harassment, spam, illegal or stolen devices, selling or charging for donated devices, fake or duplicate accounts, or trying to get around verification."
+        },
+        "role": {
+          "title": "Our role",
+          "body": "Nyeaka connects donors and people who need devices. We do not own, inspect or guarantee any device, and we are not responsible for what happens between people. Nothing here limits rights you have under the law where you live."
+        },
+        "suspension": {
+          "title": "Reports, restriction and suspension",
+          "body": "Anyone you have dealt with can report or block you. Repeated reports can restrict your account automatically, and we can suspend accounts that break these rules. A suspended person can't sign in."
+        },
+        "changes": {
+          "title": "Changes",
+          "body": "If we change these terms in a way that matters, we will tell you in the app before they apply."
+        }
+      }
+    },
+    "contact": {
+      "title": "Contact us",
+      "intro": "For questions about Nyeaka, your data, a report or your verification, write to us.",
+      "noEmail": "Our contact address is being set up. Please check back soon.",
+      "safety": "If someone is in danger, contact your local emergency services first.",
+      "emailLabel": "Email:"
     }
   }
 }

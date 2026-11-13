@@ -46,17 +46,31 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 3. **Set `ADMIN_EMAIL`**, or reports and restriction notices won't reach anyone.
 4. **Send a real email of each kind** with a live `SENDBYTE_KEY`. The browser runs used a fake key, so only that the send was attempted is verified, not delivery or how the emails look in a mail client.
 5. **Try two simultaneous accepts** on a Neon dev branch. The in-memory test database is a single session, so the race can't be reproduced there. The code uses conditional updates inside one transaction, which is the correct pattern, but it has not been exercised in parallel.
+7. **Set `CRON_SECRET`** (random, 32+ characters) and keep the purge job scheduled; see [Scheduled jobs](#scheduled-jobs). Without it the job refuses to run.
 6. **Set the ID verification variables** (new): `S3_PRIVATE_BUCKET` (a private R2 bucket you create; the existing `S3_*` key must be allowed on it, and it needs a CORS rule allowing `PUT` from the site) and `ID_HASH_SECRET` (random, 32+ characters; changing it later breaks duplicate-document matching for old hashes). Neither is read from `.env` by the code until set.
+
+## Accounts, moderation and legal pages
+
+- **Deleting an account** (`/settings`) anonymises the row in place (see `lib/account.ts`): name, email, phone, photo, bio, sign-in, ID submissions and their images go; posts close, active matches cancel, pending offers are withdrawn. Messages stay in the other person's chat as "Deleted user"; reports about or by the person are kept. Admins can't delete themselves. There is no confirmation email.
+- **Suspension** (admin, `/admin/reports`) signs the person out, blocks sign-in, closes their posts, cancels their matches and remembers their ID-document hash for 12 months (`BlockedDocument`) so the same document can't verify a new account. The purge job forgets expired hashes. Suspended people are not emailed.
+- **Reports and blocks** work for anyone you have a match with *or* have exchanged an offer with, and individual chat messages can be reported.
+- **Legal pages** (`/privacy`, `/terms`, `/contact`, linked from the footer and sign-up) are a plain-language draft written from what the app actually does, with a section per enabled country. **They have not had a legal read**: the law names and regulators, the controller wording ("run by Paradigm Initiative") and the retention periods need checking before launch. Set `CONTACT_EMAIL` (falls back to `ADMIN_EMAIL`); without either the contact page says the address is being set up.
+
+## Scheduled jobs
+
+`GET|POST /api/cron/purge` (`app/api/cron/purge/route.ts`) deletes ID images 30 days after a review decision (nulling their keys), and closes submissions nobody reviewed within 30 days (status `FAILED`, so the person can submit again). It requires `Authorization: Bearer $CRON_SECRET`, refuses to run if `CRON_SECRET` is unset, and is safe to run repeatedly: objects are deleted before keys are cleared, so a failed run is retried by the next one.
+
+- **Vercel:** `vercel.json` runs it daily at 03:00 UTC. Vercel sends the bearer header itself when `CRON_SECRET` is set in the project's environment.
+- **Coolify (later):** add a Scheduled Task on the app, with the command `curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/purge` (or the public URL) and a daily cron expression such as `0 3 * * *`. Delete the `vercel.json` entry when leaving Vercel.
+- **Backstop (recommended):** add an R2 lifecycle rule on the private bucket that deletes objects older than 60 days. It also cleans up photos from people who uploaded but never submitted, which the job can't see.
 
 ## Known gaps
 
 ### Not built
 - **ID verification, purge.** Users submit at `/verify` and admins review at `/admin/verifications`, but the job that deletes images 30 days after a decision (Step H) isn't built, so images stay in the private bucket until it is.
 - **No notification for a new chat message.** The chat only refreshes while the page is open. Nobody is emailed or badged when someone writes to them, so a reply can sit unseen. `Message.readAt` is saved but not shown anywhere. This is probably the biggest practical gap.
-- **Admin area is partial.** `/admin` has an overview, ID reviews, countries and an activity log. There is no moderation queue yet: reports are reviewed from the email, and a report's status, a restriction and a user's role are changed in the database only. To make an admin, set `role = 'ADMIN'` on the user in the database.
-- **No profile page.** The user menu links every signed-in user to `/profile`, which is a 404. 
+- **Admin area has no user search or role management.** `/admin` covers ID reviews, reports (dismiss, close a post, lift a restriction, suspend), countries and the activity log. A user's role is still changed in the database: set `role = 'ADMIN'` on the user to make an admin.
 - **Google and Apple sign-up** buttons show a "not implemented" toast.
-- **Rating comments are saved but not shown** anywhere; only the average is.
 - **Declined offers send no email** (the sender sees "Not selected" on the dashboard).
 
 ### Limits of what exists

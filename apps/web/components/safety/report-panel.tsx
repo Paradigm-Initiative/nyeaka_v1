@@ -22,7 +22,7 @@ const ReportPanel = ({
   who,
   label,
 }: {
-  targetType: "USER" | "LISTING" | "REQUEST";
+  targetType: "USER" | "LISTING" | "REQUEST" | "MESSAGE";
   targetId: string;
   /** First name of the person, for the heading. */
   who: string;

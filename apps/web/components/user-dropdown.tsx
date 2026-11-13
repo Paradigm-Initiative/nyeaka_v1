@@ -61,7 +61,7 @@ export function UserDropdown() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/profile">
+          <Link href={`/profile/${user.id}`}>
             <UserIcon className="size-4" /> <span>{t("profile")}</span>
           </Link>
         </DropdownMenuItem>

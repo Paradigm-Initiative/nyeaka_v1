@@ -15,6 +15,7 @@ const DetailLayout = ({
   note,
   specs,
   who,
+  whoHref,
   rating,
   handoffs,
   backHref,
@@ -30,6 +31,8 @@ const DetailLayout = ({
   note: string;
   specs: { label: string; value: string }[];
   who: string;
+  /** The poster's public profile. */
+  whoHref?: string;
   rating: number | null;
   handoffs: number;
   backHref: string;
@@ -109,7 +112,7 @@ const DetailLayout = ({
                 </span>
                 <div className="flex flex-col gap-0.5">
                   <span className="font-heading font-semibold text-heading-5">
-                    {who}
+                    {whoHref ? <Link href={whoHref} className="hover:underline">{who}</Link> : who}
                   </span>
                   <span className="text-muted-foreground text-body-sm">
                     {rating !== null ? `${rating.toFixed(1)} ★` : t("noRatings")} · {t("handoffs", { count: handoffs })}

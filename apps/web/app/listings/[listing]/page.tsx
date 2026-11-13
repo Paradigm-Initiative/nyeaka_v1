@@ -6,7 +6,7 @@ import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
 import { getListingDetail } from "@/lib/queries";
 import { getListingOfferContext } from "@/lib/offer-queries";
-import { sharesMatch } from "@/lib/safety";
+import { hasDealings } from "@/lib/safety";
 import ReportPanel from "@/components/safety/report-panel";
 import { placeLabel } from "@/lib/format";
 import { getFormatter, getTranslations } from "next-intl/server";
@@ -43,7 +43,7 @@ const ListingDetailPage = async ({
       ? await getListingOfferContext(viewerId, item.id, item.donor.id)
       : null;
 
-  const canReport = !!viewerId && !isOwner && (await sharesMatch(viewerId, item.donor.id));
+  const canReport = !!viewerId && !isOwner && (await hasDealings(viewerId, item.donor.id));
 
   const extras = [
     item.spec?.hasCharger && t("charger"),
@@ -65,6 +65,7 @@ const ListingDetailPage = async ({
         { label: t("comesWith"), value: extras.join(", ") || t("nothingExtra") },
       ]}
       who={item.donor.firstName}
+      whoHref={`/profile/${item.donor.id}`}
       rating={reputation.rating}
       handoffs={reputation.handoffs}
       backHref="/listings"

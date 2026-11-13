@@ -9,11 +9,11 @@ import type { ServiceErrorCode } from "./errors";
 export const BY_MESSAGE: Record<string, string> = {
   "Your account is restricted while we review reports about it, so you can't post or send offers right now.": "restricted",
   "You can't block yourself.": "blockSelf",
-  "You can only block someone you have been matched with.": "blockNotMatched",
+  "You can only block someone you have been matched with or exchanged an offer with.": "blockNotMatched",
   "Listing not found": "listingNotFound",
   "Request not found": "requestNotFound",
   "You can't report yourself.": "reportSelf",
-  "You can only report someone you have been matched with.": "reportNotMatched",
+  "You can only report someone you have been matched with or exchanged an offer with.": "reportNotMatched",
   "You've already reported this person. We're reviewing it.": "alreadyReported",
   "Conversation not found": "conversationNotFound",
   "You are not part of this conversation": "notInConversation",
@@ -70,6 +70,9 @@ export const BY_MESSAGE: Record<string, string> = {
   "Upload the required ID photos.": "verifyImages",
   "The ID has expired. Use one that is still valid.": "verifyExpired",
   "Nyeaka isn't available in your country yet.": "countryUnavailableShort",
+  "Admins can't delete their account here. Ask another admin to change your role first.": "deleteAdmin",
+  "Type your email address to confirm.": "deleteConfirm",
+  "We can't verify this document. Try a different one or contact support.": "verifyBlocked",
 };
 
 export const BY_CODE: Record<ServiceErrorCode, string> = {

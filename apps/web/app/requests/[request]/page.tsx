@@ -6,7 +6,7 @@ import DetailLayout from "@/components/detail/detail-layout";
 import ContactForm from "@/components/detail/contact-form";
 import { getRequestDetail } from "@/lib/queries";
 import { getRequestOfferContext } from "@/lib/offer-queries";
-import { sharesMatch } from "@/lib/safety";
+import { hasDealings } from "@/lib/safety";
 import ReportPanel from "@/components/safety/report-panel";
 import { placeLabel } from "@/lib/format";
 import { getFormatter, getTranslations } from "next-intl/server";
@@ -42,7 +42,7 @@ const RequestDetailPage = async ({
     viewerId && !isOwner && state === "ACTIVE"
       ? await getRequestOfferContext(viewerId, item.id)
       : null;
-  const canReport = !!viewerId && !isOwner && (await sharesMatch(viewerId, item.requester.id));
+  const canReport = !!viewerId && !isOwner && (await hasDealings(viewerId, item.requester.id));
 
   return (
     <DetailLayout
@@ -58,6 +58,7 @@ const RequestDetailPage = async ({
         { label: t("pledge"), value: t("pledgeValue") },
       ]}
       who={item.requester.firstName}
+      whoHref={`/profile/${item.requester.id}`}
       rating={reputation.rating}
       handoffs={reputation.handoffs}
       backHref="/requests"

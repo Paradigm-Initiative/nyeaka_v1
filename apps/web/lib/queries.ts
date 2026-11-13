@@ -213,7 +213,7 @@ export interface DashboardOffer {
   requestTitle: string;
   requestDescription: string;
   place: string;
-  other: { firstName: string; idVerificationStatus: VerificationStatus };
+  other: { id: string; firstName: string; idVerificationStatus: VerificationStatus };
 }
 
 /**
@@ -235,7 +235,7 @@ export async function getDashboardOffers(userId: string): Promise<DashboardOffer
       createdAt: true,
       donorId: true,
       initiatedById: true,
-      donor: { select: { firstName: true, idVerificationStatus: true } },
+      donor: { select: { id: true, firstName: true, idVerificationStatus: true } },
       listing: { select: { title: true } },
       request: {
         select: {
@@ -243,7 +243,7 @@ export async function getDashboardOffers(userId: string): Promise<DashboardOffer
           description: true,
           city: true,
           area: true,
-          requester: { select: { firstName: true, idVerificationStatus: true } },
+          requester: { select: { id: true, firstName: true, idVerificationStatus: true } },
         },
       },
     },

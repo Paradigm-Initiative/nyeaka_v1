@@ -31,7 +31,11 @@
     "tagline": "Um mercado gratuito de doação de dispositivos para África. Sem taxas, sem intermediários, sem revenda.",
     "projectLabel": "Um projeto da Paradigm Initiative",
     "projectOf": "Um projeto da",
-    "rights": "© {year} <org>Paradigm Initiative</org>. Todos os direitos reservados."
+    "rights": "© {year} <org>Paradigm Initiative</org>. Todos os direitos reservados.",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "contact": "Contacto",
+    "legal": "Informação legal"
   },
   "home": {
     "hero": {
@@ -166,7 +170,8 @@
       "google": "Registar com o Google",
       "apple": "Registar com a Apple",
       "googleSoon": "O início de sessão com o Google ainda não está disponível",
-      "appleSoon": "O início de sessão com a Apple ainda não está disponível"
+      "appleSoon": "O início de sessão com a Apple ainda não está disponível",
+      "agree": "Li e aceito os <terms>Termos de utilização</terms> e a <privacy>Política de privacidade</privacy>."
     },
     "verifyEmail": {
       "title": "Verifique o seu e-mail",
@@ -220,7 +225,9 @@
     "PASSWORD_TOO_LONG": "Essa palavra-passe é demasiado longa.",
     "INVALID_TOKEN": "Esta ligação é inválida ou expirou.",
     "TOO_MANY_REQUESTS": "Demasiadas tentativas. Aguarde um momento e tente novamente.",
-    "COUNTRY_NOT_AVAILABLE": "A Nyeaka ainda não está disponível nesse país."
+    "COUNTRY_NOT_AVAILABLE": "A Nyeaka ainda não está disponível nesse país.",
+    "ACCOUNT_SUSPENDED": "Esta conta está suspensa. Contacte o suporte se achar que é um engano.",
+    "TERMS_NOT_ACCEPTED": "Tem de aceitar os termos e a política de privacidade para criar uma conta."
   },
   "validation": {
     "emailInvalid": "Introduza um endereço de e-mail válido.",
@@ -260,7 +267,8 @@
     "enterDocNumber": "Introduza o número do documento.",
     "invalidDate": "Introduza uma data válida.",
     "uploadFront": "Adicione uma foto da frente do documento.",
-    "uploadSelfie": "Adicione uma selfie com o documento."
+    "uploadSelfie": "Adicione uma selfie com o documento.",
+    "acceptTerms": "Marque a caixa para aceitar os termos e a política de privacidade."
   },
   "errors": {
     "generic": "Algo correu mal. Tente novamente.",
@@ -273,11 +281,11 @@
     "invalid": "Isso não é permitido neste momento.",
     "restricted": "A sua conta está restringida enquanto analisamos denúncias, por isso não pode publicar nem enviar ofertas de momento.",
     "blockSelf": "Não se pode bloquear a si próprio.",
-    "blockNotMatched": "Só pode bloquear alguém com quem tenha sido emparelhado.",
+    "blockNotMatched": "Só pode bloquear alguém com quem tenha sido emparelhado ou trocado uma oferta.",
     "listingNotFound": "Anúncio não encontrado.",
     "requestNotFound": "Pedido não encontrado.",
     "reportSelf": "Não se pode denunciar a si próprio.",
-    "reportNotMatched": "Só pode denunciar alguém com quem tenha sido emparelhado.",
+    "reportNotMatched": "Só pode denunciar alguém com quem tenha sido emparelhado ou trocado uma oferta.",
     "alreadyReported": "Já denunciou esta pessoa. Estamos a analisar.",
     "conversationNotFound": "Conversa não encontrada.",
     "notInConversation": "Não faz parte desta conversa.",
@@ -336,7 +344,10 @@
     "verifyImages": "Carregue todas as fotos pedidas.",
     "verifyExpired": "Esse documento expirou. Use um que ainda seja válido.",
     "countryUnavailableShort": "O Nyeaka ainda não está disponível no seu país.",
-    "verifyNotAllowed": "Não pode carregar fotos de identificação neste momento."
+    "verifyNotAllowed": "Não pode carregar fotos de identificação neste momento.",
+    "verifyBlocked": "Não conseguimos verificar este documento. Tente outro ou contacte o suporte.",
+    "deleteAdmin": "Os administradores não podem eliminar a conta. Peça a outro administrador que altere primeiro a sua função.",
+    "deleteConfirm": "Escreva o seu endereço de email para confirmar."
   },
   "device": {
     "kind": {
@@ -637,7 +648,8 @@
     "declinedRequester": "Este dispositivo foi para outra pessoa ou o doador recusou o seu pedido. O seu pedido continua ativo.",
     "working": "A processar…",
     "accept": "Aceitar",
-    "decline": "Recusar"
+    "decline": "Recusar",
+    "viewProfile": "Ver o perfil de {name}"
   },
   "safety": {
     "block": "Bloquear",
@@ -683,7 +695,8 @@
     "empty": "Ainda sem mensagens. Diga olá e sugira um local público e uma hora para o encontro.",
     "write": "Escrever uma mensagem",
     "sending": "A enviar…",
-    "send": "Enviar"
+    "send": "Enviar",
+    "reportMessage": "Denunciar esta mensagem"
   },
   "handoff": {
     "complete": "Entrega concluída",
@@ -891,6 +904,163 @@
       "heading": "A sua verificação não foi aprovada",
       "body": "Olá {firstName}, não conseguimos confirmar a sua identidade. Motivo: <strong>{reason}</strong>. Pode enviar novamente com fotos mais nítidas ou outro documento.",
       "cta": "Tentar novamente"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "memberSince": "Membro desde {date}",
+    "verified": "Identidade verificada",
+    "notVerified": "Identidade não verificada",
+    "ratingCount": "{count, plural, one {# avaliação} other {# avaliações}}",
+    "noRatings": "Ainda sem avaliações",
+    "handoffs": "{count, plural, one {entrega concluída} other {entregas concluídas}}",
+    "reviews": "O que as pessoas escreveram",
+    "noReviews": "Ainda sem comentários escritos.",
+    "by": "{name}",
+    "byDeleted": "Antigo membro",
+    "stars": "{count, plural, one {# estrela} other {# estrelas}}",
+    "toDashboard": "Ir para o seu painel",
+    "settings": "Definições da conta"
+  },
+  "settings": {
+    "title": "Definições da conta",
+    "name": "Nome",
+    "email": "Email",
+    "country": "País",
+    "privacyLink": "Como usamos os seus dados",
+    "deleteTitle": "Eliminar a sua conta",
+    "deleteBody": "Isto remove o seu nome, email, número de telefone, foto e documentos de identificação, e termina a sua sessão em todo o lado. Os seus anúncios e pedidos fecham, as correspondências ativas são canceladas e as ofertas pendentes retiradas. As pessoas com quem conversou mantêm as mensagens dessa conversa, apresentadas como vindas de um utilizador eliminado. As denúncias sobre si ou feitas por si são mantidas por segurança.",
+    "deleteAdmin": "Os administradores não podem eliminar a conta aqui. Peça a outro administrador que altere primeiro a sua função.",
+    "deleteButton": "Eliminar a minha conta",
+    "deleteWarning": "Isto não pode ser desfeito. Pode registar-se novamente mais tarde com o mesmo email, mas sem histórico.",
+    "deleteConfirmLabel": "Escreva o seu endereço de email ({email}) para confirmar",
+    "deleteConfirm": "Eliminar tudo",
+    "deleting": "A eliminar…",
+    "cancel": "Cancelar",
+    "deleted": "A sua conta foi eliminada"
+  },
+  "legal": {
+    "updated": "Última atualização: {date}",
+    "contactLink": "Dúvidas? Fale connosco.",
+    "privacy": {
+      "title": "Política de privacidade",
+      "intro": "O Nyeaka é um mercado gratuito de doação de dispositivos, um projeto da Paradigm Initiative. Esta página explica o que recolhemos, porquê, quem pode ver e como remover. Escrevemo-la de propósito em linguagem simples.",
+      "sections": {
+        "who": {
+          "title": "Quem é o responsável",
+          "body": "O Nyeaka é gerido pela Paradigm Initiative, que decide como os seus dados pessoais são usados na plataforma. Pode contactar-nos através da página de contacto."
+        },
+        "collect": {
+          "title": "O que recolhemos",
+          "body": "A sua conta: nome, email, palavra-passe (guardada apenas como impressão digital unidirecional), país e idioma. Opcionalmente, um número de telefone.\n\nO que faz: anúncios, pedidos, ofertas, mensagens, avaliações e denúncias que fizer.\n\nPara verificar quem é: o tipo de documento de identificação, o nome que nele consta, a data de validade se houver, um código unidirecional criado a partir do número do documento (nunca o número em si) e fotos do documento e de si a segurá-lo.\n\nDados técnicos: as suas sessões de início de sessão, com o dispositivo e o endereço de rede de origem, para manter as contas seguras."
+        },
+        "why": {
+          "title": "Porque os usamos",
+          "body": "Para fazer o serviço funcionar: mostrar os seus anúncios, emparelhar pessoas do mesmo país e permitir que duas pessoas combinem uma entrega.\n\nPara manter as pessoas seguras: verificar a identidade, tratar denúncias e impedir abusos repetidos.\n\nPara cumprir obrigações legais e responder a pedidos válidos das autoridades.\n\nUsamos os seus documentos de identificação apenas para verificar quem é. Não usamos os seus dados para publicidade e nunca os vendemos."
+        },
+        "documents": {
+          "title": "Os seus documentos de identificação",
+          "body": "Só um revisor do Nyeaka vê as fotos dos seus documentos, através de ligações que deixam de funcionar após um minuto. Cada consulta fica registada. O seu perfil mostra apenas um selo de Verificado.\n\nAs fotos são apagadas 30 dias depois da nossa decisão. Se ninguém analisar um pedido em 30 dias, é encerrado e as fotos são apagadas. A localização e os dados do dispositivo são removidos das fotos no seu telemóvel antes do envio.\n\nSe suspendermos uma conta por abuso, guardamos durante 12 meses o código unidirecional do número do seu documento para que o mesmo documento não possa verificar uma nova conta, e depois apagamo-lo."
+        },
+        "sharing": {
+          "title": "Quem mais vê os seus dados",
+          "body": "As outras pessoas veem o seu primeiro nome e a inicial do apelido, país, data de adesão, selo de Verificado, avaliações e comentários escritos. O seu anúncio ou pedido mostra a sua zona geral, nunca a sua rua. O seu número de telefone só é mostrado à outra pessoa quando ambos escolhem partilhá-lo.\n\nUsamos prestadores de serviços para o Nyeaka funcionar: alojamento e base de dados, armazenamento de ficheiros e envio de email. Tratam os dados em nosso nome e podem guardá-los fora do seu país.\n\nSó partilhamos dados com autoridades quando a lei o exige."
+        },
+        "retention": {
+          "title": "Quanto tempo os guardamos",
+          "body": "Os dados da sua conta ficam até eliminar a conta nas Definições. Eliminar remove o seu nome, email, telefone, foto, documentos de identificação e acesso, e fecha os seus anúncios. As mensagens ficam nas conversas das pessoas com quem falou, apresentadas como vindas de um utilizador eliminado. As denúncias sobre si ou feitas por si são mantidas por segurança.\n\nOs registos técnicos de sessão são removidos quando termina a sessão ou expiram."
+        },
+        "rights": {
+          "title": "Os seus direitos",
+          "body": "Pode pedir para ver, corrigir ou apagar os seus dados, opor-se ao uso que fazemos deles e queixar-se à autoridade de proteção de dados do seu país (ver abaixo). Pode eliminar a sua conta nas Definições. Para tudo o resto, contacte-nos e responderemos em 30 dias."
+        },
+        "children": {
+          "title": "Crianças",
+          "body": "O Nyeaka destina-se a pessoas com 18 anos ou mais. Se soubermos que alguém mais novo tem uma conta, encerrá-la-emos."
+        },
+        "changes": {
+          "title": "Alterações",
+          "body": "Se alterarmos esta política de forma relevante, avisamos na aplicação antes de entrar em vigor."
+        }
+      },
+      "countriesTitle": "O seu país",
+      "countriesIntro": "Onde vive, uma lei específica protege os seus dados e uma autoridade específica pode receber a sua queixa.",
+      "countries": {
+        "NG": {
+          "law": "a Lei de Proteção de Dados da Nigéria de 2023 (Nigeria Data Protection Act 2023)",
+          "regulator": "a Comissão de Proteção de Dados da Nigéria"
+        },
+        "GH": {
+          "law": "a Lei de Proteção de Dados do Gana de 2012 (Lei 843)",
+          "regulator": "a Comissão de Proteção de Dados"
+        },
+        "KE": {
+          "law": "a Lei de Proteção de Dados do Quénia de 2019",
+          "regulator": "o Gabinete do Comissário para a Proteção de Dados"
+        },
+        "CM": {
+          "law": "a lei dos Camarões sobre a proteção de dados pessoais",
+          "regulator": "a autoridade nacional de proteção de dados"
+        },
+        "SN": {
+          "law": "a Lei n.º 2008-12 do Senegal sobre a proteção de dados pessoais",
+          "regulator": "a Commission de protection des données personnelles (CDP)"
+        },
+        "ZM": {
+          "law": "a Lei de Proteção de Dados da Zâmbia de 2021",
+          "regulator": "o Gabinete do Comissário para a Proteção de Dados"
+        },
+        "ZW": {
+          "law": "a Lei de Cibersegurança e Proteção de Dados do Zimbabué de 2021",
+          "regulator": "a Autoridade de Cibersegurança e Proteção de Dados (POTRAZ)"
+        }
+      },
+      "countryLine": "{country}: os seus dados são protegidos por {law}. Pode queixar-se a {regulator}."
+    },
+    "terms": {
+      "title": "Termos de utilização",
+      "intro": "Estas são as regras para usar o Nyeaka. Ao criar uma conta, aceita-as.",
+      "sections": {
+        "accept": {
+          "title": "Usar o Nyeaka",
+          "body": "Tem de ter 18 anos ou mais e viver num país onde o Nyeaka esteja disponível. O Nyeaka é gratuito, e será sempre: ninguém pode cobrar por um dispositivo ou por apresentações."
+        },
+        "account": {
+          "title": "A sua conta e a verificação",
+          "body": "Dê informações verdadeiras e mantenha o seu acesso privado. É preciso uma identidade verificada para publicar um dispositivo, pedir um ou enviar uma oferta. Uma pessoa, uma conta."
+        },
+        "posts": {
+          "title": "Os seus anúncios e pedidos",
+          "body": "Publique apenas dispositivos que possui e pode doar, descritos com honestidade. Apague os seus dados pessoais de um dispositivo antes de o entregar. Peça apenas um dispositivo de que realmente precise, e nunca para o revender."
+        },
+        "handoff": {
+          "title": "Encontro e entrega",
+          "body": "As entregas fazem-se pessoalmente. Encontrem-se num local público e movimentado, levem um amigo se possível e examinem o dispositivo antes de o aceitar. O Nyeaka apresenta as pessoas; não é parte do que elas combinam."
+        },
+        "conduct": {
+          "title": "O que não é permitido",
+          "body": "Fraude, assédio, spam, dispositivos ilegais ou roubados, venda ou cobrança por dispositivos doados, contas falsas ou duplicadas, ou tentar contornar a verificação."
+        },
+        "role": {
+          "title": "O nosso papel",
+          "body": "O Nyeaka liga doadores e pessoas que precisam de dispositivos. Não possuímos, não inspecionamos nem garantimos nenhum dispositivo, e não somos responsáveis pelo que acontece entre as pessoas. Nada aqui limita os direitos que tem ao abrigo da lei do local onde vive."
+        },
+        "suspension": {
+          "title": "Denúncias, restrição e suspensão",
+          "body": "Qualquer pessoa com quem tenha tido contacto pode denunciá-lo ou bloqueá-lo. Denúncias repetidas podem restringir automaticamente a sua conta, e podemos suspender contas que infrinjam estas regras. Uma pessoa suspensa não pode iniciar sessão."
+        },
+        "changes": {
+          "title": "Alterações",
+          "body": "Se alterarmos estes termos de forma relevante, avisamos na aplicação antes de se aplicarem."
+        }
+      }
+    },
+    "contact": {
+      "title": "Fale connosco",
+      "intro": "Para dúvidas sobre o Nyeaka, os seus dados, uma denúncia ou a sua verificação, escreva-nos.",
+      "noEmail": "O nosso endereço de contacto está a ser configurado. Volte em breve.",
+      "safety": "Se alguém estiver em perigo, contacte primeiro os serviços de emergência locais.",
+      "emailLabel": "Email:"
     }
   }
 }

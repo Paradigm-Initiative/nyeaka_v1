@@ -16,6 +16,7 @@ export const VERIFY_DOC_TYPE = "That document isn't accepted in your country.";
 export const VERIFY_DOC_NUMBER = "Enter a valid ID number.";
 export const VERIFY_IMAGES = "Upload the required ID photos.";
 export const VERIFY_EXPIRED = "The ID has expired. Use one that is still valid.";
+export const VERIFY_BLOCKED = "We can't verify this document. Try a different one or contact support.";
 export const VERIFY_COUNTRY = "Nyeaka isn't available in your country yet.";
 
 /** Images are kept this long after a decision, then deleted (see the purge job). */
@@ -79,6 +80,10 @@ export async function submitVerification(userId: string, input: SubmitVerificati
   }
 
   const docNumberHash = hashDocNumber(user.countryCode, input.documentType, number);
+  // The document of someone who was suspended in the last 12 months (see lib/moderation.ts).
+  // The wording doesn't say why, so it can't be used to probe who was suspended.
+  if (await prisma.blockedDocument.findFirst({ where: { docNumberHash, expiresAt: { gt: new Date() } }, select: { id: true } }))
+    throw new ServiceError("INVALID", VERIFY_BLOCKED);
 
   try {
     return await prisma.$transaction(async (tx) => {

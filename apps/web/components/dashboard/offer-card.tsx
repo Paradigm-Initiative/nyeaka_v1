@@ -4,7 +4,10 @@ import React, { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import Link from "next/link";
 import WithdrawButton from "../offers/withdraw-button";
+import ReportPanel from "../safety/report-panel";
+import BlockButton from "../safety/block-button";
 import { acceptOfferAction, declineOfferAction } from "@/actions/matchings";
 import type { DashboardOffer } from "@/lib/queries";
 import { useFormatter, useTranslations } from "next-intl";
@@ -81,6 +84,19 @@ const OfferCard = ({ offer: o }: { offer: DashboardOffer }) => {
           </Button>
         </div>
       )}
+
+      <div className="flex flex-wrap items-start gap-2">
+        <Link href={`/profile/${o.other.id}`} className="inline-flex items-center min-h-8 font-semibold text-body-sm text-link hover:underline">
+          {t("viewProfile", { name: o.other.firstName })}
+        </Link>
+        {/* Someone who made you an offer can be reported or blocked before any match. */}
+        {o.direction === "received" && (
+          <>
+            <ReportPanel targetType="USER" targetId={o.other.id} who={o.other.firstName} />
+            <BlockButton userId={o.other.id} who={o.other.firstName} />
+          </>
+        )}
+      </div>
 
       {o.status === "PENDING" && o.direction === "sent" && (
         <div>
