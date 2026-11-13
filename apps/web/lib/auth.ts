@@ -5,6 +5,7 @@ import { prisma } from "@/neon-db";
 import { sendEmail } from "@/lib/email";
 import { resetPasswordEmail, verificationEmail } from "@/lib/email-templates";
 import { prepareNewUser } from "@/lib/country-rules";
+import { termsAcceptance } from "@/lib/legal";
 
 // The language saved on the account (see prepareNewUser), for emails sent to this person.
 const localeOf = (user: object) => (user as { locale?: string }).locale;
@@ -30,9 +31,23 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
+      // The sign-up form sends the terms version the person ticked; the hook below checks it and
+      // sets termsAcceptedAt. Both must be real columns: better-auth refuses undeclared ones.
+      termsVersion: { type: "string", required: false },
+      termsAcceptedAt: { type: "date", required: false, input: false },
     },
   },
   databaseHooks: {
+    // A suspended person can't sign in (their sessions are deleted when they are suspended).
+    session: {
+      create: {
+        before: async (session) => {
+          const u = await prisma.user.findUnique({ where: { id: session.userId }, select: { suspendedAt: true, deletedAt: true } });
+          if (u?.suspendedAt || u?.deletedAt)
+            throw new APIError("FORBIDDEN", { message: "This account is suspended.", code: "ACCOUNT_SUSPENDED" });
+        },
+      },
+    },
     user: {
       create: {
         before: async (user) => {
@@ -42,9 +57,17 @@ export const auth = betterAuth({
               message: "Nyeaka isn't available in that country yet.",
               code: prepared.code,
             });
+          // Checked here as well as in the form, so calling the API directly can't skip it.
+          const terms = termsAcceptance((user as { termsVersion?: unknown }).termsVersion);
+          if (!terms)
+            throw new APIError("BAD_REQUEST", {
+              message: "Please accept the terms and privacy policy.",
+              code: "TERMS_NOT_ACCEPTED",
+            });
           return {
             data: {
               ...user,
+              ...terms,
               name: `${user.firstName} ${user.lastName}`.trim(),
               countryCode: prepared.countryCode,
               locale: prepared.locale,

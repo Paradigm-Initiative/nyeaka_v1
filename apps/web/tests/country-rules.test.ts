@@ -177,7 +177,7 @@ describe("new accounts", () => {
   });
 
   it("the sign-up form schema needs a country to be chosen (the server checks it is enabled)", () => {
-    const base = { email: "a@b.co", firstName: "Ada", lastName: "Eze", password: "Str0ng!Passw0rd", confirmPassword: "Str0ng!Passw0rd" };
+    const base = { email: "a@b.co", firstName: "Ada", lastName: "Eze", password: "Str0ng!Passw0rd", confirmPassword: "Str0ng!Passw0rd", acceptedTerms: true };
     expect(signUpSchema.safeParse({ ...base, countryCode: "NG" }).success).toBe(true);
     for (const countryCode of [undefined, "", "N"]) {
       const r = signUpSchema.safeParse({ ...base, countryCode });

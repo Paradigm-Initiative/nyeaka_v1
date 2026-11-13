@@ -11,12 +11,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpSchema, signUpSchema } from "@/validations/auth-validation";
 
 import { signUp } from "@/lib/auth-client";
+import { LEGAL_VERSION } from "@/lib/legal";
 import FieldInput from "@/components/custom/field-input";
 import { AppleIcon, GoogleIcon } from "@/components/custom/brand-icons";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import CountrySelect, { type CountryOption } from "@/components/post/country-select";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { useAuthErrorText, useErrorText } from "@/lib/use-error-text";
 import {
   Card,
@@ -47,6 +50,7 @@ export function SignupForm({ countries }: { countries: CountryOption[] }) {
       countryCode: countries.length === 1 ? countries[0].code : "",
       password: "",
       confirmPassword: "",
+      acceptedTerms: false,
     },
   });
 
@@ -61,6 +65,8 @@ export function SignupForm({ countries }: { countries: CountryOption[] }) {
       lastName,
       countryCode,
       locale,
+      // Only reachable with the box ticked (the form schema). The server checks the version is current.
+      termsVersion: LEGAL_VERSION,
       callbackURL: "/email-verified",
     });
 
@@ -179,6 +185,38 @@ export function SignupForm({ countries }: { countries: CountryOption[] }) {
                 />
               )}
             />
+
+            <div className="flex flex-col gap-1.5">
+              <Controller
+                control={control}
+                name="acceptedTerms"
+                render={({ field }) => (
+                  <Label
+                    htmlFor="acceptedTerms"
+                    className="items-start gap-2.5 font-normal text-body-sm leading-normal"
+                  >
+                    <Checkbox
+                      id="acceptedTerms"
+                      checked={!!field.value}
+                      onCheckedChange={(v) => field.onChange(v === true)}
+                      onBlur={field.onBlur}
+                      aria-invalid={!!errors.acceptedTerms}
+                      className="mt-0.5"
+                    />
+                    <span>
+                      {t.rich("agree", {
+                        // Opened in a new tab so nobody loses what they typed.
+                        terms: (c) => <Link href="/terms" target="_blank" rel="noopener" className="text-link hover:underline">{c}</Link>,
+                        privacy: (c) => <Link href="/privacy" target="_blank" rel="noopener" className="text-link hover:underline">{c}</Link>,
+                      })}
+                    </span>
+                  </Label>
+                )}
+              />
+              {errors.acceptedTerms && (
+                <FieldError className="font-semibold text-xs">{errText(errors.acceptedTerms.message)}</FieldError>
+              )}
+            </div>
 
             {error && (
               <FieldError className="font-semibold text-xs">{error}</FieldError>

@@ -30,6 +30,8 @@ export const signUpSchema = z
     countryCode: z.string({ error: "countryCode" }).length(2, "countryCode"),
     password: passwordRules,
     confirmPassword: z.string(),
+    // Must be ticked. Checked again on the server in the better-auth user.create.before hook.
+    acceptedTerms: z.boolean().refine((v) => v === true, "acceptTerms"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "passwordsMismatch",
