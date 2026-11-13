@@ -144,8 +144,15 @@ describe("switching countries on and off", () => {
 
   it("deleting the admin who enabled a country keeps the country", async () => {
     const admin = await user("root", { role: "ADMIN" });
-    await setCountryEnabled(admin.id, "EG", true);
+    await prisma.enabledCountry.create({ data: { code: "EG", enabledById: admin.id } });
     await prisma.user.delete({ where: { id: admin.id } });
     expect(await prisma.enabledCountry.findUniqueOrThrow({ where: { code: "EG" } })).toMatchObject({ enabledById: null });
+  });
+
+  it("an admin with logged actions can't be hard-deleted, so the audit trail keeps its actor", async () => {
+    const admin = await user("root", { role: "ADMIN" });
+    await setCountryEnabled(admin.id, "EG", true);
+    expect(await prisma.adminAction.count({ where: { actorId: admin.id, action: "country.enable", targetId: "EG" } })).toBe(1);
+    await expect(prisma.user.delete({ where: { id: admin.id } })).rejects.toThrow();
   });
 });

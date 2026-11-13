@@ -1,4 +1,5 @@
 import { prisma } from "@/neon-db";
+import type { Prisma } from "@/generated/prisma/client";
 import { ServiceError } from "./errors";
 import { getCountryConfig } from "./countries";
 import { getEnabledCountryCodes, resetEnabledCountriesCache } from "./enabled-countries";
@@ -17,26 +18,54 @@ export async function isAdmin(userId: string): Promise<boolean> {
   return u?.role === "ADMIN";
 }
 
+/** Anything an admin does that should be traceable goes through here (same transaction as the change). */
+export async function logAdminAction(
+  tx: Pick<typeof prisma, "adminAction">,
+  entry: { actorId: string; action: string; targetType: string; targetId?: string; reason?: string; meta?: Prisma.InputJsonValue },
+) {
+  await tx.adminAction.create({
+    data: {
+      actorId: entry.actorId,
+      action: entry.action,
+      targetType: entry.targetType,
+      targetId: entry.targetId ?? null,
+      reason: entry.reason ?? null,
+      meta: entry.meta,
+    },
+  });
+}
+
 /**
  * Switch a country on or off. Switching off stops new sign-ups there and stops its
  * people posting or sending offers; posts, chats and matches that exist stay visible.
- * At least one country must stay on, or nobody could sign up.
+ * At least one country must stay on, or nobody could sign up. Every real change is logged.
  */
 export async function setCountryEnabled(adminId: string, code: string, enabled: boolean): Promise<string[]> {
   await assertAdmin(adminId);
   const cc = code.trim().toUpperCase();
   if (!getCountryConfig(cc)) throw new ServiceError("INVALID", `Unknown country: ${code}.`);
 
-  if (enabled) {
-    await prisma.enabledCountry.upsert({ where: { code: cc }, update: {}, create: { code: cc, enabledById: adminId } });
-  } else {
-    // One statement, so two admins switching off the last two countries can't both succeed.
-    const removed = await prisma.$executeRaw`
-      DELETE FROM "EnabledCountry"
-      WHERE "code" = ${cc} AND (SELECT count(*) FROM "EnabledCountry") > 1`;
-    if (removed === 0 && (await prisma.enabledCountry.findUnique({ where: { code: cc } })))
-      throw new ServiceError("INVALID", "At least one country must stay enabled.");
-  }
+  await prisma.$transaction(async (tx) => {
+    let changed: boolean;
+    if (enabled) {
+      changed = (await tx.enabledCountry.createMany({ data: [{ code: cc, enabledById: adminId }], skipDuplicates: true })).count > 0;
+    } else {
+      // One statement, so two admins switching off the last two countries can't both succeed.
+      const removed = await tx.$executeRaw`
+        DELETE FROM "EnabledCountry"
+        WHERE "code" = ${cc} AND (SELECT count(*) FROM "EnabledCountry") > 1`;
+      if (removed === 0 && (await tx.enabledCountry.findUnique({ where: { code: cc } })))
+        throw new ServiceError("INVALID", "At least one country must stay enabled.");
+      changed = removed > 0;
+    }
+    if (changed)
+      await logAdminAction(tx, {
+        actorId: adminId,
+        action: enabled ? "country.enable" : "country.disable",
+        targetType: "Country",
+        targetId: cc,
+      });
+  });
   resetEnabledCountriesCache();
   return getEnabledCountryCodes();
 }

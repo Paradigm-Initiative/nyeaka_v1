@@ -51,10 +51,10 @@ Snapshot of branch `november26` (2026-11-11). Written after building and testing
 ## Known gaps
 
 ### Not built
-- **ID verification, admin side.** Users can submit documents at `/verify` and posting, requests and offers are gated on `idVerificationStatus === VERIFIED`, but there is no admin review screen yet (Step G) and no purge job (Step H). Until then a submission can only be decided from code or the database.
+- **ID verification, purge.** Users submit at `/verify` and admins review at `/admin/verifications`, but the job that deletes images 30 days after a decision (Step H) isn't built, so images stay in the private bucket until it is.
 - **No notification for a new chat message.** The chat only refreshes while the page is open. Nobody is emailed or badged when someone writes to them, so a reply can sit unseen. `Message.readAt` is saved but not shown anywhere. This is probably the biggest practical gap.
-- **No admin area.** Reports are reviewed from the email; a report's status, a restriction, a user's role and `idVerified` are changed in the database only. The app never writes a report's status or a user's role.
-- **No profile page.** The user menu links every signed-in user to `/profile`, which is a 404. Admins also see an `/admin` link, which is a 404 too.
+- **Admin area is partial.** `/admin` has an overview, ID reviews, countries and an activity log. There is no moderation queue yet: reports are reviewed from the email, and a report's status, a restriction and a user's role are changed in the database only. To make an admin, set `role = 'ADMIN'` on the user in the database.
+- **No profile page.** The user menu links every signed-in user to `/profile`, which is a 404. 
 - **Google and Apple sign-up** buttons show a "not implemented" toast.
 - **Rating comments are saved but not shown** anywhere; only the average is.
 - **Declined offers send no email** (the sender sees "Not selected" on the dashboard).

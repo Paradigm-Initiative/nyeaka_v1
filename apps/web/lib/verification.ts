@@ -2,9 +2,9 @@ import { createHmac } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/neon-db";
 import { ServiceError } from "./errors";
-import { assertAdmin } from "./admin";
+import { assertAdmin, logAdminAction } from "./admin";
 import { getCountryConfig } from "./countries";
-import { idObjectsExist, isOwnIdKey } from "./storage-private";
+import { idObjectsExist, isOwnIdKey, presignIdView, VIEW_TTL_SECONDS } from "./storage-private";
 import type { SubmitVerificationData } from "@/validations/verification-validation";
 
 // Messages below that users can see are mapped to translation keys in lib/error-keys.ts.
@@ -143,15 +143,13 @@ async function decide(
     if (done.count === 0) throw new ServiceError("INVALID", "This submission has already been decided.");
 
     await tx.user.update({ where: { id: row.userId }, data: { idVerificationStatus: outcome } });
-    await tx.adminAction.create({
-      data: {
-        actorId: adminId,
-        action: outcome === "VERIFIED" ? "id.approve" : "id.reject",
-        targetType: "IdVerification",
-        targetId: verificationId,
-        reason: reason ?? null,
-        meta: { userId: row.userId, countryCode: row.countryCode },
-      },
+    await logAdminAction(tx, {
+      actorId: adminId,
+      action: outcome === "VERIFIED" ? "id.approve" : "id.reject",
+      targetType: "IdVerification",
+      targetId: verificationId,
+      reason,
+      meta: { userId: row.userId, countryCode: row.countryCode },
     });
     return row;
   });
@@ -164,4 +162,36 @@ export async function rejectVerification(adminId: string, verificationId: string
   const trimmed = reason.trim();
   if (trimmed.length < 3) throw new ServiceError("INVALID", "A rejection reason is required.");
   return decide(adminId, verificationId, "FAILED", trimmed.slice(0, 500));
+}
+
+/**
+ * Short-lived signed URLs for the ID images, for an admin who is about to review them.
+ * Every call is logged (who looked at whose documents and when). Not possible once the
+ * images are purged, and never for your own documents.
+ */
+export async function revealVerificationImages(adminId: string, verificationId: string) {
+  await assertAdmin(adminId);
+  const row = await prisma.idVerification.findUnique({
+    where: { id: verificationId },
+    select: { userId: true, frontKey: true, backKey: true, selfieKey: true, imagesPurgedAt: true },
+  });
+  if (!row) throw new ServiceError("NOT_FOUND", "Verification not found.");
+  if (row.userId === adminId) throw new ServiceError("FORBIDDEN", "You can't review your own verification.");
+  if (row.imagesPurgedAt || !row.frontKey || !row.selfieKey)
+    throw new ServiceError("INVALID", "These images have been deleted.");
+
+  // Log first: if signing fails nothing was shown, and if it succeeds the view is on record.
+  await logAdminAction(prisma, {
+    actorId: adminId,
+    action: "id.view_images",
+    targetType: "IdVerification",
+    targetId: verificationId,
+    meta: { userId: row.userId },
+  });
+  const [front, back, selfie] = await Promise.all([
+    presignIdView(row.frontKey),
+    row.backKey ? presignIdView(row.backKey) : Promise.resolve(null),
+    presignIdView(row.selfieKey),
+  ]);
+  return { front, back, selfie, expiresInSeconds: VIEW_TTL_SECONDS };
 }

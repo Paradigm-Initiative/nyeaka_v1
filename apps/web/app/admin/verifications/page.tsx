@@ -1,0 +1,63 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { getServerSession } from "@/lib/get-session";
+import { listPendingVerifications } from "@/lib/admin-queries";
+import { adminDate, ageOf, DOC_LABEL } from "@/lib/admin-format";
+import { countryName } from "@/lib/countries";
+import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = { title: "ID reviews - Nyeaka admin" };
+export const dynamic = "force-dynamic";
+
+export default async function VerificationsPage({ searchParams }: { searchParams: Promise<{ country?: string }> }) {
+  const session = (await getServerSession())!;
+  const { country } = await searchParams;
+  const { countries, rows } = await listPendingVerifications(session.user.id, { country });
+  const active = country?.toUpperCase();
+  const chip = (on: boolean) => cn("px-3 py-1 border rounded-full text-body-sm", on && "bg-pin-green-600 text-white");
+
+  return (
+    <div className="flex flex-col gap-4 max-w-3xl">
+      <h1 className="text-heading-2">ID reviews</h1>
+      <p className="text-muted-foreground text-body-sm">Waiting for a decision, oldest first.</p>
+
+      <div className="flex flex-wrap gap-2">
+        <Link href="/admin/verifications" className={chip(!active)}>All ({countries.reduce((n, c) => n + c.count, 0)})</Link>
+        {countries.map((c) => (
+          <Link key={c.code} href={`/admin/verifications?country=${c.code}`} className={chip(active === c.code)}>
+            {countryName(c.code, "en")} ({c.count})
+          </Link>
+        ))}
+      </div>
+
+      {rows.length === 0 ? (
+        <p className="p-4 border rounded-lg text-muted-foreground">Nothing waiting.</p>
+      ) : (
+        <ul className="divide-y border rounded-lg">
+          {rows.map((r) => (
+            <li key={r.id}>
+              <Link href={`/admin/verifications/${r.id}`} className="flex flex-wrap justify-between items-center gap-2 px-4 py-3 hover:bg-surface-feature">
+                <span className="flex flex-col">
+                  <span className="font-semibold">
+                    {r.user.name}
+                    {r.duplicate && (
+                      <span className="ml-2 bg-destructive/10 px-2 py-0.5 rounded font-semibold text-destructive text-xs">
+                        Document used on another account
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-muted-foreground text-caption">
+                    {countryName(r.countryCode, "en")} · {DOC_LABEL[r.documentType] ?? r.documentType}
+                  </span>
+                </span>
+                <span className="text-muted-foreground text-caption" title={adminDate(r.createdAt)}>
+                  waiting {ageOf(r.createdAt)}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
