@@ -1,4 +1,5 @@
 import { prisma } from "@/neon-db";
+import type { VerificationStatus } from "@/generated/prisma/client";
 import {
   sendMessageSchema,
   type SendMessageInput,
@@ -24,7 +25,7 @@ export interface Thread {
   matchId: string;
   matchStatus: "ACTIVE" | "HANDED_OVER" | "CANCELLED";
   role: "donor" | "requester";
-  other: { id: string; firstName: string; idVerified: boolean };
+  other: { id: string; firstName: string; idVerificationStatus: VerificationStatus };
   /** You blocked them. They are never told they were blocked, so there is no "they blocked you". */
   blockedByMe: boolean;
   /** False when the match is cancelled or either of you has blocked the other. */
@@ -78,8 +79,8 @@ export async function getThread(userId: string, conversationId: string): Promise
           cancelledAt: true,
           updatedAt: true,
           ratings: { where: { raterId: userId }, select: { score: true, comment: true } },
-          donor: { select: { id: true, firstName: true, idVerified: true, phone: true, countryCode: true } },
-          requester: { select: { id: true, firstName: true, idVerified: true, phone: true, countryCode: true } },
+          donor: { select: { id: true, firstName: true, idVerificationStatus: true, phone: true, countryCode: true } },
+          requester: { select: { id: true, firstName: true, idVerificationStatus: true, phone: true, countryCode: true } },
           listing: { select: { title: true, city: true, area: true } },
           request: { select: { title: true } },
         },
@@ -128,7 +129,7 @@ export async function getThread(userId: string, conversationId: string): Promise
     matchId: m.id,
     matchStatus: m.status,
     role: isDonor ? "donor" : "requester",
-    other: { id: other.id, firstName: other.firstName, idVerified: other.idVerified },
+    other: { id: other.id, firstName: other.firstName, idVerificationStatus: other.idVerificationStatus },
     blockedByMe: blocks.some((b) => b.blockerId === userId),
     canSend: m.status !== "CANCELLED" && blocks.length === 0,
     phone: {

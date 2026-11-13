@@ -20,7 +20,7 @@ const future = () => new Date(Date.now() + 30 * 86_400_000);
 
 let n = 0;
 const user = (tag: string) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG" } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, idVerificationStatus: "VERIFIED", countryCode: "NG" } });
 
 /** A donor, a requester and an accepted match (so a real conversation exists). */
 async function matched() {
@@ -92,7 +92,7 @@ describe("sendMessage", () => {
 describe("getThread", () => {
   it("returns chronological messages with a per-viewer 'mine' flag and the other person's details", async () => {
     const { donor, req, conversationId, matchId } = await matched();
-    await prisma.user.update({ where: { id: req.id }, data: { idVerified: true } });
+    await prisma.user.update({ where: { id: req.id }, data: { idVerificationStatus: "VERIFIED" } });
     const base = Date.now() - 60_000;
     for (const [i, [sender, body]] of ([[donor.id, "one"], [req.id, "two"], [donor.id, "three"]] as const).entries())
       await prisma.message.create({ data: { conversationId, senderId: sender, body, createdAt: new Date(base + i * 1000) } });
@@ -100,7 +100,7 @@ describe("getThread", () => {
     const asDonor = await getThread(donor.id, conversationId);
     expect(asDonor).toMatchObject({
       id: conversationId, matchId, matchStatus: "ACTIVE", role: "donor",
-      other: { firstName: "rae", idVerified: true }, listingTitle: "Dell", requestTitle: "Need laptop", place: "Yaba, Lagos",
+      other: { firstName: "rae", idVerificationStatus: "VERIFIED" }, listingTitle: "Dell", requestTitle: "Need laptop", place: "Yaba, Lagos",
     });
     expect(asDonor.messages.map((m) => [m.body, m.mine])).toEqual([["one", true], ["two", false], ["three", true]]);
 

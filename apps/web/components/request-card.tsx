@@ -24,7 +24,7 @@ const RequestCard = ({ request }: { request: RequestCardData }) => {
           </p>
         </CardContent>
         <CardFooter className="justify-between items-center px-0 pt-3 border-t">
-          {requester.idVerified ? (
+          {requester.idVerificationStatus === "VERIFIED" ? (
             <span className="badge badge-orange">{t("verifiedRequester")}</span>
           ) : (
             <span />

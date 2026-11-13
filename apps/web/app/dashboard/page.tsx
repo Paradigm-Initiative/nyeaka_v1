@@ -39,7 +39,7 @@ export default async function DashboardPage() {
   return (
     <DashboardView
       firstName={firstName}
-      idVerified={profile?.idVerified ?? false}
+      idVerificationStatus={profile?.idVerificationStatus ?? "NONE"}
       reputation={reputation}
       listings={listings}
       requests={requests}

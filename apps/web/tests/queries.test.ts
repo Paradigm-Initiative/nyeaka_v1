@@ -20,7 +20,7 @@ const future = () => new Date(Date.now() + 30 * 86_400_000);
 
 let n = 0;
 const user = (tag: string) =>
-  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, countryCode: "NG" } });
+  prisma.user.create({ data: { email: `${tag}${++n}@t.test`, firstName: tag, lastName: "T", name: `${tag} T`, idVerificationStatus: "VERIFIED", countryCode: "NG" } });
 const listing = (donorId: string, title = "HP", extra: Record<string, unknown> = {}) =>
   prisma.listing.create({
     data: {
@@ -148,7 +148,7 @@ describe("getRequestOfferContext (viewer offers a device on a request)", () => {
 describe("getDashboardOffers", () => {
   it("splits received from sent for each role, with the other person's details", async () => {
     const [alex, bo] = [await user("alex"), await user("bo")];
-    await prisma.user.update({ where: { id: bo.id }, data: { idVerified: true } });
+    await prisma.user.update({ where: { id: bo.id }, data: { idVerificationStatus: "VERIFIED" } });
     const aLap = await listing(alex.id, "Alex laptop");
     const aReq = await request(alex.id, "Alex needs tablet");
     const bLap = await listing(bo.id, "Bo laptop");
@@ -164,7 +164,7 @@ describe("getDashboardOffers", () => {
     expect(byId[sentAsDonor.id]).toMatchObject({
       role: "donor", direction: "sent", status: "PENDING", message: "Take it",
       listingTitle: "Alex laptop", requestTitle: "Bo needs laptop",
-      place: "Yaba, Lagos", other: { firstName: "bo", idVerified: true },
+      place: "Yaba, Lagos", other: { firstName: "bo", idVerificationStatus: "VERIFIED" },
     });
     expect(byId[receivedAsDonor.id]).toMatchObject({ role: "donor", direction: "received", other: { firstName: "bo" } });
     expect(byId[receivedAsRequester.id]).toMatchObject({

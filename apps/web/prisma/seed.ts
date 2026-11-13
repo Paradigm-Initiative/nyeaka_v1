@@ -32,7 +32,6 @@ async function main() {
       name: `${u.first} ${u.last}`,
       role: u.role,
       countryCode: u.cc,
-      idVerified: u.idv,
       idVerificationStatus: u.idv ? ("VERIFIED" as const) : ("NONE" as const),
     };
     await prisma.user.upsert({ where: { id: id(u.n) }, update: data, create: { id: id(u.n), ...data } });
@@ -97,7 +96,7 @@ async function main() {
   const report = { reporterId: id("chidi"), reportedUserId: id("amara"), targetType: "LISTING" as const, targetListingId: id("l3"), reason: "MISREPRESENTED_DEVICE" as const, details: "Listed as iPhone 8 but photos show a different model." };
   await prisma.report.upsert({ where: { id: id("rp1") }, update: report, create: { id: id("rp1"), ...report } });
 
-  const idv = { userId: id("amara"), documentType: "NATIONAL_ID" as const, status: "VERIFIED" as const, providerRef: "seed-ref-001", submittedAt: new Date("2026-10-01"), reviewedAt: new Date("2026-10-02") };
+  const idv = { userId: id("amara"), documentType: "NATIONAL_ID" as const, status: "VERIFIED" as const, countryCode: "NG", fullNameOnId: "Amara Osei", imagesPurgedAt: new Date("2026-10-02"), decidedAt: new Date("2026-10-02") };
   await prisma.idVerification.upsert({ where: { id: id("idv1") }, update: idv, create: { id: id("idv1"), ...idv } });
 }
 

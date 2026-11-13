@@ -30,7 +30,7 @@ const ListingCard = ({ listing }: { listing: ListingCardData }) => {
           </p>
         </CardContent>
         <CardFooter className="justify-between items-center px-0 pt-3 border-t">
-          {donor.idVerified ? (
+          {donor.idVerificationStatus === "VERIFIED" ? (
             <span className="badge badge-green">{t("verifiedDonor")}</span>
           ) : (
             <span />

@@ -92,7 +92,7 @@ const ChatThread = ({ thread }: { thread: Thread }) => {
               {t("title", { name: thread.other.firstName, title: thread.listingTitle })}
             </span>
             <span className="text-muted-foreground text-body-sm">
-              {thread.other.idVerified ? `${t("verified")} · ` : ""}
+              {thread.other.idVerificationStatus === "VERIFIED" ? `${t("verified")} · ` : ""}
               {t("meta", { place: thread.place, request: thread.requestTitle })}
             </span>
           </div>

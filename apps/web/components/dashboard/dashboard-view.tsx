@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import type { VerificationStatus } from "@/generated/prisma/client";
 import type { DashboardMatch, DashboardOffer, getMyListings, getMyRequests, getReputation } from "@/lib/queries";
 import type { getBlockedUsers } from "@/lib/safety";
 import type { RatingPrompt } from "@/lib/ratings";
@@ -24,7 +25,7 @@ const STATE_BADGE: Record<PostState, string> = {
 
 type Props = {
   firstName: string;
-  idVerified: boolean;
+  idVerificationStatus: VerificationStatus;
   reputation: Awaited<ReturnType<typeof getReputation>>;
   listings: Awaited<ReturnType<typeof getMyListings>>;
   requests: Awaited<ReturnType<typeof getMyRequests>>;
@@ -35,8 +36,9 @@ type Props = {
   toRate: RatingPrompt[];
 };
 
-const DashboardView = ({ firstName, idVerified, reputation, listings, requests, offers, matches, blocked, restricted, toRate }: Props) => {
+const DashboardView = ({ firstName, idVerificationStatus, reputation, listings, requests, offers, matches, blocked, restricted, toRate }: Props) => {
   const t = useTranslations("dashboard");
+  const verified = idVerificationStatus === "VERIFIED";
   const tDevice = useTranslations("device");
   const format = useFormatter();
   const [role, setRole] = useState<"donor" | "requester">("donor");
@@ -108,11 +110,15 @@ const DashboardView = ({ firstName, idVerified, reputation, listings, requests, 
           </span>
         </div>
         <div className="flex flex-col gap-1 p-4 border rounded-lg">
-          <span className={cn("text-heading-3", idVerified && "text-pin-green-600")}>
-            {idVerified ? t("verified") : t("notVerified")}
+          <span className={cn("text-heading-3", verified && "text-pin-green-600")}>
+            {verified ? t("verified") : t("notVerified")}
           </span>
           <span className="text-muted-foreground text-body-sm">
-            {idVerified ? t("idConfirmed") : <Link href="/verify" className="text-link hover:underline">{t("verifyIdentity")}</Link>}
+            {verified ? t("idConfirmed") : (
+              <Link href="/verify" className="text-link hover:underline">
+                {idVerificationStatus === "PENDING" ? t("idPending") : idVerificationStatus === "FAILED" ? t("idFailed") : t("verifyIdentity")}
+              </Link>
+            )}
           </span>
         </div>
       </div>

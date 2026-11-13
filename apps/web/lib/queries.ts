@@ -1,5 +1,5 @@
 import { prisma } from "@/neon-db";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, VerificationStatus } from "@/generated/prisma/client";
 import { PAGE_SIZE, type BrowseFilters } from "./browse-params";
 import { postState } from "./lifecycle";
 import { placeLabel } from "./format";
@@ -34,7 +34,7 @@ const listingCardSelect = {
   area: true,
   photos: true,
   createdAt: true,
-  donor: { select: { idVerified: true } },
+  donor: { select: { idVerificationStatus: true } },
 } satisfies Prisma.ListingSelect;
 
 const requestCardSelect = {
@@ -45,7 +45,7 @@ const requestCardSelect = {
   city: true,
   area: true,
   createdAt: true,
-  requester: { select: { idVerified: true } },
+  requester: { select: { idVerificationStatus: true } },
 } satisfies Prisma.RequestSelect;
 
 export type ListingCardData = Prisma.ListingGetPayload<{ select: typeof listingCardSelect }>;
@@ -213,7 +213,7 @@ export interface DashboardOffer {
   requestTitle: string;
   requestDescription: string;
   place: string;
-  other: { firstName: string; idVerified: boolean };
+  other: { firstName: string; idVerificationStatus: VerificationStatus };
 }
 
 /**
@@ -235,7 +235,7 @@ export async function getDashboardOffers(userId: string): Promise<DashboardOffer
       createdAt: true,
       donorId: true,
       initiatedById: true,
-      donor: { select: { firstName: true, idVerified: true } },
+      donor: { select: { firstName: true, idVerificationStatus: true } },
       listing: { select: { title: true } },
       request: {
         select: {
@@ -243,7 +243,7 @@ export async function getDashboardOffers(userId: string): Promise<DashboardOffer
           description: true,
           city: true,
           area: true,
-          requester: { select: { firstName: true, idVerified: true } },
+          requester: { select: { firstName: true, idVerificationStatus: true } },
         },
       },
     },
@@ -318,7 +318,7 @@ export async function getActiveMatches(userId: string): Promise<DashboardMatch[]
 export function getUserProfile(userId: string) {
   return prisma.user.findUnique({
     where: { id: userId },
-    select: { countryCode: true, idVerified: true, restrictedAt: true },
+    select: { countryCode: true, idVerificationStatus: true, restrictedAt: true },
   });
 }
 

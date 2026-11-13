@@ -55,7 +55,7 @@ const OfferCard = ({ offer: o }: { offer: DashboardOffer }) => {
           </div>
         </div>
         <div className="flex gap-2">
-          {o.other.idVerified && <span className="badge badge-green">{t("verified")}</span>}
+          {o.other.idVerificationStatus === "VERIFIED" && <span className="badge badge-green">{t("verified")}</span>}
           {o.status === "DECLINED" && <span className="badge badge-orange">{t("notSelected")}</span>}
           {o.status === "PENDING" && o.direction === "sent" && <span className="badge badge-orange">{t("waiting")}</span>}
         </div>

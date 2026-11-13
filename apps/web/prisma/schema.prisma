@@ -20,7 +20,6 @@ enum Role {
 enum VerificationStatus {
   NONE
   PENDING
-  SUBMITTED
   VERIFIED
   FAILED
 }
@@ -88,6 +87,7 @@ enum IdDocumentType {
   PASSPORT
   DRIVERS_LICENSE
   VOTERS_CARD
+  RESIDENCE_PERMIT
 }
 
 enum OperatingSystem {
@@ -116,7 +116,6 @@ model User {
   locale               String             @default("en")
   role                 Role               @default(GUEST)
   bio                  String?
-  idVerified           Boolean            @default(false)
   idVerificationStatus VerificationStatus @default(NONE)
   // Set automatically when enough different people report or block this user
   // (see lib/safety.ts). Restricted users can't post or send offers; an admin lifts it.
@@ -144,6 +143,8 @@ model User {
   blocksMade       Block[]          @relation("BlockBlocker")
   blocksReceived   Block[]          @relation("BlockBlocked")
   idVerifications  IdVerification[]
+  idReviews        IdVerification[] @relation("IdReviewer")
+  adminActions     AdminAction[]
   offersAsDonor    Offer[]          @relation("OfferDonor")
   offersInitiated  Offer[]          @relation("OfferInitiator")
   countriesEnabled EnabledCountry[]
@@ -450,21 +451,55 @@ model Block {
   @@index([blockedId])
 }
 
+// One manual-review submission. user.idVerificationStatus is the source of truth for
+// gating; this row is the evidence. A partial unique index (see the verification_schema
+// migration) allows only one PENDING row per user. Images live in the private R2 bucket
+// and are purged 30 days after the decision, which nulls the keys.
 model IdVerification {
   id              String             @id @default(uuid(7))
   userId          String
   user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  countryCode     String
   documentType    IdDocumentType
-  providerRef     String? // reference at the verification provider; no ID images are stored here
+  fullNameOnId    String
+  docExpiry       DateTime?
+  // HMAC of the document number; the number itself is never stored.
+  docNumberHash   String?
+  frontKey        String?
+  backKey         String?
+  selfieKey       String?
   status          VerificationStatus @default(PENDING)
   rejectionReason String?
-  submittedAt     DateTime?
-  reviewedAt      DateTime?
+  reviewedById    String?
+  reviewedBy      User?              @relation("IdReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  decidedAt       DateTime?
+  imagesPurgeAt   DateTime?
+  imagesPurgedAt  DateTime?
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 
   @@index([userId])
   @@index([status])
+  @@index([docNumberHash])
+  @@index([imagesPurgeAt])
+}
+
+// Audit log of admin activity: ID decisions, ID image views, country changes.
+// `action` is free text (e.g. "id.approve") so new actions need no migration.
+model AdminAction {
+  id         String   @id @default(uuid(7))
+  actorId    String
+  actor      User     @relation(fields: [actorId], references: [id])
+  action     String
+  targetType String
+  targetId   String?
+  reason     String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorId])
+  @@index([targetType, targetId])
 }
 
 // The countries Nyeaka is switched on in. Only enabled ones are stored (not every
