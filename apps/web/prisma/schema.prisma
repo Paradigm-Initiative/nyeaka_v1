@@ -121,6 +121,16 @@ model User {
   // (see lib/safety.ts). Restricted users can't post or send offers; an admin lifts it.
   restrictedAt         DateTime?
   restrictedReason     String?
+  // Accepted at sign-up: when, and which version of the terms and privacy text (lib/legal.ts).
+  // Null for accounts created before acceptance was recorded.
+  termsAcceptedAt      DateTime?
+  termsVersion         String?
+  // An admin suspended this person (they can't sign in). See lib/moderation.ts.
+  suspendedAt          DateTime?
+  suspendedReason      String?
+  // Set when the person deleted their account. The row is anonymised in place, not
+  // removed, so matches, messages and the audit log keep working. See lib/account.ts.
+  deletedAt            DateTime?
   createdAt            DateTime           @default(now())
   lastLogin            DateTime?
   updatedAt            DateTime           @updatedAt
@@ -510,4 +520,16 @@ model EnabledCountry {
   enabledAt   DateTime @default(now())
   enabledById String?
   enabledBy   User?    @relation(fields: [enabledById], references: [id], onDelete: SetNull)
+}
+
+// ID-document hashes of suspended people, kept 12 months so the same document can't verify
+// a new account. A one-way hash and the country only; expired rows are purged by the cron job.
+model BlockedDocument {
+  id            String   @id @default(uuid(7))
+  docNumberHash String   @unique
+  countryCode   String
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime
+
+  @@index([expiresAt])
 }
