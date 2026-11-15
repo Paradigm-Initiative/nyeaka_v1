@@ -19,8 +19,13 @@ async function main() {
     { n: "zanele", first: "Zanele", last: "Dlamini", role: "BOTH", cc: "NG", idv: false },
   ] as const;
 
-  // Matching is same-country only and only NG is enabled, so every seed user is in NG
-  // (otherwise the seeded offers between users could not be made).
+  // Mirror the countries the migration enables. Admins change this at /admin/countries.
+  for (const code of ["NG", "GH", "KE", "CM", "SN", "ZM", "ZW"]) {
+    await prisma.enabledCountry.upsert({ where: { code }, update: {}, create: { code } });
+  }
+
+  // Matching is same-country only, so the sample users, listings and requests all sit in NG
+  // (otherwise the seeded offers between them could not be made). This is sample data, not a limit.
   const CITY = { NG: "Lagos" } as const;
 
   for (const u of users) {
