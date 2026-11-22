@@ -72,6 +72,7 @@ Create `.env`. Names only here; never commit values.
 | `ALLOW_SEED` | Set to `true` only to run the seed script. |
 | `CRON_SECRET` | Required in production. The scheduled-job routes answer only to `Authorization: Bearer $CRON_SECRET` (503 if unset, 401 if wrong). |
 | `REVIEW_ALERT_EMAILS` | Comma-separated extra addresses (for example a manager) for the ID review alert and weekly summary. Every admin is emailed as well. If there is nobody to email, a warning is logged and nothing is marked as sent. |
+| `REVIEWER_GUIDE_URL` | Optional. A link shown on the ID review screen. `{country}` in it becomes the case's country code, for example `https://docs.example.org/id-guide/{country}`. |
 | `STAFF_EMAIL_DOMAINS` | Comma-separated email domains staff may be invited from (for example `pin.org`). Exact match. If unset, staff invites are switched off. |
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_COUNTRY` | Only for `pnpm admin:first`: the first admin's address and an optional two-letter country code (default `NG`). Does nothing once an admin exists, so it is safe in production. |
 

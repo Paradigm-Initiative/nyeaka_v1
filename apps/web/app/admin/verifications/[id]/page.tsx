@@ -10,6 +10,7 @@ import { isRejectionCode, REJECTION_LABEL } from "@/lib/rejection-reasons";
 import ReviewPanel from "@/components/admin/review-panel";
 import OverturnPanel from "@/components/admin/overturn-panel";
 import { getStaffRole } from "@/lib/admin";
+import { reviewerGuideUrl } from "@/lib/reviewer-guide";
 import ClaimGate from "@/components/admin/claim-gate";
 
 export const metadata: Metadata = { title: "Review ID - Nyeaka admin" };
@@ -24,6 +25,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   });
 
   const isAdminRole = (await getStaffRole(session.user.id)) === "ADMIN";
+  const guide = reviewerGuideUrl(v.countryCode);
   const decided = v.status === "VERIFIED" || v.status === "FAILED";
 
   const flag = (ok: boolean, good: string, bad: string) => (
@@ -89,6 +91,11 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         <ul className="pl-5 text-body-sm list-disc">
           {v.checklist.map((c) => <li key={c}>{c}</li>)}
         </ul>
+        {guide && (
+          <a href={guide} target="_blank" rel="noopener noreferrer" className="text-link text-body-sm hover:underline">
+            Open the full reviewer guide for {countryName(v.countryCode, "en")}
+          </a>
+        )}
       </section>
 
       {v.firstDecisionBy && v.status === "PENDING" && (
