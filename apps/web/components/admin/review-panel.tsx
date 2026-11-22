@@ -22,12 +22,14 @@ export default function ReviewPanel({
   isOwn,
   imagesDeleted,
   hasBack,
+  needsSecond,
 }: {
   id: string;
   status: string;
   isOwn: boolean;
   imagesDeleted: boolean;
   hasBack: boolean;
+  needsSecond: boolean;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -47,7 +49,8 @@ export default function ReviewPanel({
     start(async () => {
       const res = approve ? await approveVerificationAction(id) : await rejectVerificationAction(id, code, note);
       if (!res.ok) return void toast.error(res.error);
-      toast.success(approve ? "Approved. The person has been emailed." : "Rejected. The person has been emailed.");
+      if (!res.data.final) toast.success("First decision recorded. A different reviewer will finish this case.");
+      else toast.success(approve ? "Approved. The person has been emailed." : "Rejected. The person has been emailed.");
       setUrls(null);
       router.refresh();
     });
@@ -107,14 +110,14 @@ export default function ReviewPanel({
               <Textarea id="note" value={note} maxLength={500} onChange={(e) => setNote(e.target.value)} />
               <div className="flex gap-2">
                 <Button variant="destructive" disabled={pending || !code} onClick={() => decide(false)}>
-                  {pending ? "Rejecting…" : "Reject"}
+                  {pending ? "Saving…" : needsSecond ? "Reject (first decision)" : "Reject"}
                 </Button>
                 <Button variant="ghost" disabled={pending} onClick={() => setRejecting(false)}>Cancel</Button>
               </div>
             </>
           ) : (
             <div className="flex gap-2">
-              <Button disabled={pending} onClick={() => decide(true)}>{pending ? "Approving…" : "Approve"}</Button>
+              <Button disabled={pending} onClick={() => decide(true)}>{pending ? "Saving…" : needsSecond ? "Approve (first decision)" : "Approve"}</Button>
               <Button variant="outline" disabled={pending} onClick={() => setRejecting(true)}>Reject…</Button>
             </div>
           )}

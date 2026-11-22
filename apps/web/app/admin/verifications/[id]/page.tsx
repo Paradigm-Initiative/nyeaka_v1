@@ -8,6 +8,7 @@ import { adminDate, DOC_LABEL } from "@/lib/admin-format";
 import { countryName } from "@/lib/countries";
 import { isRejectionCode, REJECTION_LABEL } from "@/lib/rejection-reasons";
 import ReviewPanel from "@/components/admin/review-panel";
+import ClaimGate from "@/components/admin/claim-gate";
 
 export const metadata: Metadata = { title: "Review ID - Nyeaka admin" };
 export const dynamic = "force-dynamic";
@@ -84,13 +85,38 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         </ul>
       </section>
 
+      {v.firstDecisionBy && v.status === "PENDING" && (
+        <p className="bg-surface-feature p-3 border rounded-lg text-body-sm">
+          <strong>{v.firstDecisionBy.name}</strong> gave a first decision ({v.firstOutcome === "VERIFIED" ? "approve" : `reject${v.firstRejectionCode && isRejectionCode(v.firstRejectionCode) ? `: ${REJECTION_LABEL[v.firstRejectionCode]}` : ""}`}) because this document number is on another account. Your decision is final.
+        </p>
+      )}
+      {v.needsSecondReviewer && (
+        <p className="bg-destructive/10 p-3 border border-destructive rounded-lg text-body-sm">
+          This document number is on another account, so two different reviewers must decide. What you choose is recorded as the first decision, and the case stays in the queue for someone else. The person isn&apos;t told yet.
+        </p>
+      )}
+      <ClaimGate
+        id={v.id}
+        shouldClaim={v.status === "PENDING" && !v.isOwn && !v.recused && !v.claim.byOther}
+        mine={v.claim.mine}
+        expires={v.claim.expiresAt ? new Intl.DateTimeFormat("en-GB", { timeStyle: "short", timeZone: "UTC" }).format(v.claim.expiresAt) + " UTC" : null}
+      />
+      {v.status === "PENDING" && v.claim.byOther ? (
+        <p role="status" className="p-4 border rounded-lg">
+          {v.claim.byName ?? "Another reviewer"} is reviewing this case. It frees up if they release it or are inactive for 15 minutes.
+        </p>
+      ) : v.status === "PENDING" && v.recused ? (
+        <p role="status" className="p-4 border rounded-lg">You gave the first decision on this case. A different reviewer must finish it.</p>
+      ) : (
       <ReviewPanel
+        needsSecond={v.needsSecondReviewer}
         id={v.id}
         status={v.status}
         isOwn={v.isOwn}
         imagesDeleted={!!v.imagesPurgedAt}
         hasBack={v.hasBack}
       />
+      )}
     </div>
   );
 }

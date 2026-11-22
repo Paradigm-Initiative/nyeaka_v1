@@ -2,6 +2,7 @@ import { createHmac } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/neon-db";
 import { ServiceError } from "./errors";
+import { claimFreeFor, claimVerification, OWN_CASE, SECOND_REVIEWER, whyBlocked } from "./verification-claims";
 import { isRejectionCode, NOTE_MAX, type RejectionCode } from "./rejection-reasons";
 import { assertStaff, logAdminAction } from "./admin";
 import { getCountryConfig } from "./countries";
@@ -117,7 +118,7 @@ export async function submitVerification(userId: string, input: SubmitVerificati
   }
 }
 
-type Decision = { userId: string; countryCode: string };
+type Decision = { userId: string; countryCode: string; /** false: only a first decision was recorded; a second reviewer must finish the case. */ final: boolean };
 
 async function decide(
   adminId: string,
@@ -129,25 +130,53 @@ async function decide(
   return prisma.$transaction(async (tx) => {
     const row = await tx.idVerification.findUnique({
       where: { id: verificationId },
-      select: { userId: true, countryCode: true },
+      select: { userId: true, countryCode: true, docNumberHash: true, firstDecisionById: true, firstOutcome: true },
     });
     if (!row) throw new ServiceError("NOT_FOUND", "Verification not found.");
-    if (row.userId === adminId) throw new ServiceError("FORBIDDEN", "You can't review your own verification.");
+    if (row.userId === adminId) throw new ServiceError("FORBIDDEN", OWN_CASE);
+    if (row.firstDecisionById === adminId) throw new ServiceError("FORBIDDEN", SECOND_REVIEWER);
 
     const now = new Date();
-    // Only a PENDING row can be decided, and only once, even if two admins click together.
+    // Only a PENDING row can be decided, only once, and only by someone who holds the claim or
+    // finds it free or lapsed, even if two reviewers click together.
+    const open = { id: verificationId, status: "PENDING" as const, ...claimFreeFor(adminId, now) };
+
+    // A document number seen on another account needs two different reviewers: the first
+    // decision is recorded and the case stays PENDING for someone else to finish.
+    const matches = row.docNumberHash && !row.firstDecisionById
+      ? await tx.idVerification.count({ where: { docNumberHash: row.docNumberHash, userId: { not: row.userId } } })
+      : 0;
+    if (matches > 0) {
+      const first = await tx.idVerification.updateMany({
+        where: { ...open, firstDecisionById: null },
+        data: {
+          firstDecisionById: adminId, firstDecisionAt: now, firstOutcome: outcome,
+          firstRejectionCode: rejection?.code ?? null, claimedById: null, claimedAt: null,
+        },
+      });
+      if (first.count === 0) throw await whyBlocked(adminId, verificationId, now);
+      await logAdminAction(tx, {
+        actorId: adminId, action: "id.first_decision", targetType: "IdVerification", targetId: verificationId,
+        reason: rejection?.code,
+        meta: { userId: row.userId, countryCode: row.countryCode, outcome, ...(rejection?.note ? { note: rejection.note } : {}) },
+      });
+      return { userId: row.userId, countryCode: row.countryCode, final: false };
+    }
+
     const done = await tx.idVerification.updateMany({
-      where: { id: verificationId, status: "PENDING" },
+      where: open,
       data: {
         status: outcome,
         rejectionCode: rejection?.code ?? null,
         rejectionReason: rejection?.note ?? null,
         reviewedById: adminId,
         decidedAt: now,
+        claimedById: null,
+        claimedAt: null,
         imagesPurgeAt: new Date(now.getTime() + IMAGE_RETENTION_DAYS * DAY_MS),
       },
     });
-    if (done.count === 0) throw new ServiceError("INVALID", "This submission has already been decided.");
+    if (done.count === 0) throw await whyBlocked(adminId, verificationId, now);
 
     await tx.user.update({ where: { id: row.userId }, data: { idVerificationStatus: outcome } });
     await logAdminAction(tx, {
@@ -156,9 +185,13 @@ async function decide(
       targetType: "IdVerification",
       targetId: verificationId,
       reason: rejection?.code,
-      meta: { userId: row.userId, countryCode: row.countryCode, ...(rejection?.note ? { note: rejection.note } : {}) },
+      meta: {
+        userId: row.userId, countryCode: row.countryCode,
+        ...(rejection?.note ? { note: rejection.note } : {}),
+        ...(row.firstDecisionById ? { firstReviewerId: row.firstDecisionById, firstOutcome: row.firstOutcome } : {}),
+      },
     });
-    return row;
+    return { userId: row.userId, countryCode: row.countryCode, final: true };
   });
 }
 
@@ -184,10 +217,13 @@ export async function revealVerificationImages(adminId: string, verificationId: 
   await assertStaff(adminId);
   const row = await prisma.idVerification.findUnique({
     where: { id: verificationId },
-    select: { userId: true, frontKey: true, backKey: true, selfieKey: true, imagesPurgedAt: true },
+    select: { userId: true, status: true, frontKey: true, backKey: true, selfieKey: true, imagesPurgedAt: true },
   });
   if (!row) throw new ServiceError("NOT_FOUND", "Verification not found.");
-  if (row.userId === adminId) throw new ServiceError("FORBIDDEN", "You can't review your own verification.");
+  if (row.userId === adminId) throw new ServiceError("FORBIDDEN", OWN_CASE);
+  // Looking at the images of a case someone else is reviewing is refused; for a open case it
+  // counts as activity and keeps (or takes) the claim. Decided cases can still be viewed.
+  if (row.status === "PENDING") await claimVerification(adminId, verificationId);
   if (row.imagesPurgedAt || !row.frontKey || !row.selfieKey)
     throw new ServiceError("INVALID", "These images have been deleted.");
 

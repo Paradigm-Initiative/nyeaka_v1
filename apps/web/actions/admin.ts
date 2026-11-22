@@ -11,6 +11,7 @@ import { sendSafely } from "@/lib/notify";
 import { prisma } from "@/neon-db";
 import { dismissReport, closeReportedPost, suspendUser, unsuspendUser, liftUserRestriction } from "@/lib/moderation";
 import { approveVerification, rejectVerification, revealVerificationImages } from "@/lib/verification";
+import { claimVerification, releaseVerification } from "@/lib/verification-claims";
 import { emailVerificationDecision } from "@/lib/verification-emails";
 import { ServiceError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/action-result";
@@ -39,27 +40,47 @@ export async function setCountryEnabledAction(code: string, enabled: boolean): P
   });
 }
 
-function afterDecision(id: string) {
+function afterDecision(id: string, final: boolean) {
   revalidatePath("/admin");
   revalidatePath("/admin/verifications");
   revalidatePath(`/admin/verifications/${id}`);
   revalidatePath("/admin/log");
+  if (!final) return; // only a first decision: nothing changes for the applicant yet
   revalidatePath("/dashboard");
   // After the response, so a mail problem can't undo or slow the decision.
   after(() => emailVerificationDecision(id));
 }
 
-export async function approveVerificationAction(id: string): Promise<ActionResult> {
-  return run<undefined>("approveVerificationAction", async (adminId) => {
-    await approveVerification(adminId, id);
-    afterDecision(id);
+/** `final: false` means a matching document needs a second reviewer; nothing was sent to the applicant. */
+export async function approveVerificationAction(id: string): Promise<ActionResult<{ final: boolean }>> {
+  return run<{ final: boolean }>("approveVerificationAction", async (adminId) => {
+    const d = await approveVerification(adminId, id);
+    afterDecision(id, d.final);
+    return { final: d.final };
   });
 }
 
-export async function rejectVerificationAction(id: string, code: string, note?: string): Promise<ActionResult> {
-  return run<undefined>("rejectVerificationAction", async (adminId) => {
-    await rejectVerification(adminId, id, code, note);
-    afterDecision(id);
+export async function rejectVerificationAction(id: string, code: string, note?: string): Promise<ActionResult<{ final: boolean }>> {
+  return run<{ final: boolean }>("rejectVerificationAction", async (adminId) => {
+    const d = await rejectVerification(adminId, id, code, note);
+    afterDecision(id, d.final);
+    return { final: d.final };
+  });
+}
+
+/** Opening a case claims it (15 minutes, renewed by activity). */
+export async function claimVerificationAction(id: string): Promise<ActionResult> {
+  return run<undefined>("claimVerificationAction", async (adminId) => {
+    await claimVerification(adminId, id);
+    revalidatePath("/admin/verifications");
+  });
+}
+
+export async function releaseVerificationAction(id: string): Promise<ActionResult> {
+  return run<undefined>("releaseVerificationAction", async (adminId) => {
+    await releaseVerification(adminId, id);
+    revalidatePath("/admin/verifications");
+    revalidatePath(`/admin/verifications/${id}`);
   });
 }
 

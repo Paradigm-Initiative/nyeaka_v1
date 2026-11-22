@@ -2,6 +2,7 @@ import { prisma } from "@/neon-db";
 import { assertStaff, assertAdminOnly } from "./admin";
 import { getCountryConfig } from "./countries";
 import { ServiceError } from "./errors";
+import { claimState } from "./verification-claims";
 
 // Read side of the admin area. English only. Every function asserts the caller's staff tier
 // itself (reviewers: ID queue and reports; the log is admin-only); the layout's 404 is not the only guard. None of these sign image URLs
@@ -38,6 +39,8 @@ export async function listPendingVerifications(adminId: string, opts: { country?
       take: PAGE_SIZE,
       select: {
         id: true, countryCode: true, documentType: true, createdAt: true, docNumberHash: true, userId: true,
+        claimedById: true, claimedAt: true, claimedBy: { select: { name: true } },
+        firstDecisionById: true, firstOutcome: true, firstDecisionBy: { select: { name: true } },
         user: { select: { name: true } },
       },
     }),
@@ -50,10 +53,22 @@ export async function listPendingVerifications(adminId: string, opts: { country?
     : [];
   return {
     countries: byCountry.map((c) => ({ code: c.countryCode, count: c._count._all })),
-    rows: rows.map((r) => ({
-      ...r,
-      duplicate: !!r.docNumberHash && others.some((o) => o.docNumberHash === r.docNumberHash && o.userId !== r.userId),
-    })),
+    rows: rows.map((r) => {
+      const { docNumberHash: _h, claimedById: _c, claimedAt: _a, claimedBy: _b, ...rest } = r;
+      void [_h, _c, _a, _b];
+      const claim = claimState(r, adminId);
+      return {
+        ...rest,
+        duplicate: !!r.docNumberHash && others.some((o) => o.docNumberHash === r.docNumberHash && o.userId !== r.userId),
+        // Someone else has it open (their claim lapses after 15 minutes without activity).
+        lockedBy: claim.byOther ? (claim.byName ?? "Another reviewer") : null,
+        claimedByMe: claim.mine,
+        // You gave the first decision; a different reviewer must finish it.
+        awaitingSecond: !!r.firstDecisionById,
+        recused: r.firstDecisionById === adminId,
+        isOwn: r.userId === adminId,
+      };
+    }),
   };
 }
 
@@ -68,6 +83,8 @@ export async function getVerificationForReview(adminId: string, id: string) {
       id: true, userId: true, countryCode: true, documentType: true, fullNameOnId: true, docExpiry: true, docNumberHash: true,
       status: true, rejectionCode: true, rejectionReason: true, decidedAt: true, imagesPurgeAt: true, imagesPurgedAt: true, createdAt: true,
       backKey: true,
+      claimedById: true, claimedAt: true, claimedBy: { select: { name: true } },
+      firstDecisionById: true, firstDecisionAt: true, firstOutcome: true, firstRejectionCode: true, firstDecisionBy: { select: { name: true } },
       reviewedBy: { select: { name: true } },
       user: { select: { name: true, email: true, countryCode: true, createdAt: true } },
     },
@@ -84,10 +101,15 @@ export async function getVerificationForReview(adminId: string, id: string) {
     : [];
 
   // Neither the hash nor the object keys are needed by the page, so they don't leave here.
-  const { docNumberHash: _hash, backKey, ...safe } = row;
-  void _hash;
+  const { docNumberHash: _hash, backKey, claimedById: _cb, claimedAt: _ca, claimedBy: _cn, ...safe } = row;
+  void [_hash, _cb, _ca, _cn];
+  const claim = claimState(row, adminId);
   return {
     ...safe,
+    claim: { byOther: claim.byOther, mine: claim.mine, byName: claim.byName, expiresAt: claim.expiresAt },
+    // A matching document number needs two reviewers: the first records a decision, a different one finishes.
+    needsSecondReviewer: row.status === "PENDING" && !row.firstDecisionById && duplicates.length > 0,
+    recused: row.firstDecisionById === adminId,
     hasBack: !!backKey,
     nameMatches: norm(row.fullNameOnId) === norm(row.user.name),
     countryMatches: row.countryCode === row.user.countryCode,

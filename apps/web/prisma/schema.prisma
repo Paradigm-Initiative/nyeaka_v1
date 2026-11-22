@@ -166,6 +166,8 @@ model User {
   blocksReceived   Block[]          @relation("BlockBlocked")
   idVerifications  IdVerification[]
   idReviews        IdVerification[] @relation("IdReviewer")
+  idClaims         IdVerification[] @relation("IdClaimer")
+  idFirstDecisions IdVerification[] @relation("IdFirstReviewer")
   adminActions     AdminAction[]
   offersAsDonor    Offer[]          @relation("OfferDonor")
   offersInitiated  Offer[]          @relation("OfferInitiator")
@@ -478,30 +480,42 @@ model Block {
 // migration) allows only one PENDING row per user. Images live in the private R2 bucket
 // and are purged 30 days after the decision, which nulls the keys.
 model IdVerification {
-  id              String             @id @default(uuid(7))
-  userId          String
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  countryCode     String
-  documentType    IdDocumentType
-  fullNameOnId    String
-  docExpiry       DateTime?
+  id                 String              @id @default(uuid(7))
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  countryCode        String
+  documentType       IdDocumentType
+  fullNameOnId       String
+  docExpiry          DateTime?
   // HMAC of the document number; the number itself is never stored.
-  docNumberHash   String?
-  frontKey        String?
-  backKey         String?
-  selfieKey       String?
-  status          VerificationStatus @default(PENDING)
+  docNumberHash      String?
+  frontKey           String?
+  backKey            String?
+  selfieKey          String?
+  status             VerificationStatus  @default(PENDING)
   // A preset from lib/rejection-reasons.ts; the applicant sees its translated text.
-  rejectionCode   String?
+  rejectionCode      String?
   // Optional internal reviewer note (never sent to the applicant), or the purge job's text.
-  rejectionReason String?
-  reviewedById    String?
-  reviewedBy      User?              @relation("IdReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
-  decidedAt       DateTime?
-  imagesPurgeAt   DateTime?
-  imagesPurgedAt  DateTime?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  rejectionReason    String?
+  reviewedById       String?
+  reviewedBy         User?               @relation("IdReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  decidedAt          DateTime?
+  // Whoever opened the case holds it; the claim lapses after 15 minutes without activity
+  // (checked when read, no job). See lib/verification-claims.ts.
+  claimedById        String?
+  claimedBy          User?               @relation("IdClaimer", fields: [claimedById], references: [id], onDelete: SetNull)
+  claimedAt          DateTime?
+  // The document number matches another account's submission, so one reviewer isn't enough:
+  // the first decision is recorded here and the case stays PENDING for a different reviewer.
+  firstDecisionById  String?
+  firstDecisionBy    User?               @relation("IdFirstReviewer", fields: [firstDecisionById], references: [id], onDelete: SetNull)
+  firstDecisionAt    DateTime?
+  firstOutcome       VerificationStatus?
+  firstRejectionCode String?
+  imagesPurgeAt      DateTime?
+  imagesPurgedAt     DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@index([userId])
   @@index([status])

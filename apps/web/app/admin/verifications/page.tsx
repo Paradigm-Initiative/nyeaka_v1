@@ -34,9 +34,11 @@ export default async function VerificationsPage({ searchParams }: { searchParams
         <p className="p-4 border rounded-lg text-muted-foreground">Nothing waiting.</p>
       ) : (
         <ul className="divide-y border rounded-lg">
-          {rows.map((r) => (
-            <li key={r.id}>
-              <Link href={`/admin/verifications/${r.id}`} className="flex flex-wrap justify-between items-center gap-2 px-4 py-3 hover:bg-surface-feature">
+          {rows.map((r) => {
+            // Someone else has it open, you made its first decision, or it's your own: shown, not openable.
+            const note = r.lockedBy ? `Being reviewed by ${r.lockedBy}` : r.recused ? "You gave the first decision; another reviewer must finish" : r.isOwn ? "Your own submission" : null;
+            const body = (
+              <>
                 <span className="flex flex-col">
                   <span className="font-semibold">
                     {r.user.name}
@@ -45,17 +47,33 @@ export default async function VerificationsPage({ searchParams }: { searchParams
                         Document used on another account
                       </span>
                     )}
+                    {r.awaitingSecond && !r.recused && (
+                      <span className="ml-2 bg-surface-feature px-2 py-0.5 border rounded font-semibold text-xs">
+                        Needs a second reviewer ({r.firstDecisionBy?.name ?? "someone"} leans {r.firstOutcome === "VERIFIED" ? "approve" : "reject"})
+                      </span>
+                    )}
+                    {r.claimedByMe && <span className="ml-2 font-semibold text-pin-green-600 text-xs">Yours</span>}
                   </span>
                   <span className="text-muted-foreground text-caption">
                     {countryName(r.countryCode, "en")} · {DOC_LABEL[r.documentType] ?? r.documentType}
+                    {note ? ` · ${note}` : ""}
                   </span>
                 </span>
                 <span className="text-muted-foreground text-caption" title={adminDate(r.createdAt)}>
                   waiting {ageOf(r.createdAt)}
                 </span>
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+            return (
+              <li key={r.id}>
+                {note ? (
+                  <div aria-disabled="true" className="flex flex-wrap justify-between items-center gap-2 opacity-60 px-4 py-3">{body}</div>
+                ) : (
+                  <Link href={`/admin/verifications/${r.id}`} className="flex flex-wrap justify-between items-center gap-2 px-4 py-3 hover:bg-surface-feature">{body}</Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
