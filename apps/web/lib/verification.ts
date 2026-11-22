@@ -2,7 +2,7 @@ import { createHmac } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/neon-db";
 import { ServiceError } from "./errors";
-import { assertAdmin, logAdminAction } from "./admin";
+import { assertStaff, logAdminAction } from "./admin";
 import { getCountryConfig } from "./countries";
 import { idObjectsExist, isOwnIdKey, presignIdView, VIEW_TTL_SECONDS } from "./storage-private";
 import type { SubmitVerificationData } from "@/validations/verification-validation";
@@ -124,7 +124,7 @@ async function decide(
   outcome: "VERIFIED" | "FAILED",
   reason?: string,
 ): Promise<Decision> {
-  await assertAdmin(adminId);
+  await assertStaff(adminId);
   return prisma.$transaction(async (tx) => {
     const row = await tx.idVerification.findUnique({
       where: { id: verificationId },
@@ -175,7 +175,7 @@ export async function rejectVerification(adminId: string, verificationId: string
  * images are purged, and never for your own documents.
  */
 export async function revealVerificationImages(adminId: string, verificationId: string) {
-  await assertAdmin(adminId);
+  await assertStaff(adminId);
   const row = await prisma.idVerification.findUnique({
     where: { id: verificationId },
     select: { userId: true, frontKey: true, backKey: true, selfieKey: true, imagesPurgedAt: true },

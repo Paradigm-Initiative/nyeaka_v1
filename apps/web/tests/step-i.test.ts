@@ -146,7 +146,7 @@ describe("public profile", () => {
 
 describe("moderation queue", () => {
   async function reported() {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const d = await user("donor");
     const r = await user("req");
     const { l, c } = await matched(d, r);
@@ -159,7 +159,7 @@ describe("moderation queue", () => {
     const q = await listOpenReports(admin.id);
     expect(q.rows.map((x) => x.id)).toEqual([rep.id]);
     expect(q.rows[0].reportedUser.id).toBe(d.id);
-    await rejects(listOpenReports(d.id), "FORBIDDEN", "Admins only.");
+    await rejects(listOpenReports(d.id), "FORBIDDEN", "Staff only.");
   });
 
   it("dismiss marks the report dismissed and logs it; it can't be handled twice", async () => {
@@ -195,7 +195,7 @@ describe("suspension", () => {
     }));
 
   it("signs them out, closes posts, frees the other side, remembers the document for 12 months and logs it", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const bad = await user("bad", { idVerificationStatus: "NONE" });
     const good = await user("good");
     const { l: badListing, q: goodRequest } = await matched(bad, good);
@@ -225,11 +225,11 @@ describe("suspension", () => {
   });
 
   it("refuses admins, yourself and double suspension; unsuspend releases the hash", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
-    const other = await user("other", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
+    const other = await user("other", { staffRole: "ADMIN" });
     const u = await user("u", { idVerificationStatus: "NONE" });
     await rejects(suspendUser(admin.id, admin.id, "x y z"), "FORBIDDEN", "You can't suspend yourself.");
-    await rejects(suspendUser(admin.id, other.id, "x y z"), "FORBIDDEN", "Admins can't be suspended. Change their role first.");
+    await rejects(suspendUser(admin.id, other.id, "x y z"), "FORBIDDEN", "Staff can't be suspended. Remove their staff access first.");
     await rejects(suspendUser(u.id, admin.id, "x y z"), "FORBIDDEN", "Admins only.");
     await rejects(suspendUser(admin.id, u.id, " "), "INVALID", "A reason is required.");
     await sub(u, "99999999999");
@@ -242,7 +242,7 @@ describe("suspension", () => {
   });
 
   it("the purge job forgets the hash after 12 months", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const u = await user("u", { idVerificationStatus: "NONE" });
     await sub(u, "55555555555");
     await suspendUser(admin.id, u.id, "abuse");
@@ -302,8 +302,8 @@ describe("account deletion", () => {
   });
 
   it("refuses admins and people already deleted", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
-    await rejects(deleteAccount(admin.id, admin.email), "FORBIDDEN", "Admins can't delete their account here. Ask another admin to change your role first.");
+    const admin = await user("admin", { staffRole: "ADMIN" });
+    await rejects(deleteAccount(admin.id, admin.email), "FORBIDDEN", "Staff can't delete their account here. Ask an admin to remove your staff access first.");
     const u = await user("u");
     await deleteAccount(u.id, u.email);
     await rejects(deleteAccount(u.id, u.email), "NOT_FOUND");

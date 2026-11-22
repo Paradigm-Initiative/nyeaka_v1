@@ -155,7 +155,7 @@ describe("submitVerification", () => {
 
 describe("approve and reject", () => {
   const setup = async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const u = await user("ada");
     const { id } = await submitVerification(u.id, submission(u.id));
     return { admin, u, id };
@@ -194,8 +194,8 @@ describe("approve and reject", () => {
 
   it("only admins can decide, and nobody can review their own", async () => {
     const { u, id } = await setup();
-    await rejects(approveVerification(u.id, id), "FORBIDDEN", "Admins only.");
-    const admin = await user("selfadmin", { role: "ADMIN" });
+    await rejects(approveVerification(u.id, id), "FORBIDDEN", "Staff only.");
+    const admin = await user("selfadmin", { staffRole: "ADMIN" });
     const mine = await submitVerification(admin.id, submission(admin.id));
     await rejects(approveVerification(admin.id, mine.id), "FORBIDDEN", "You can't review your own verification.");
   });

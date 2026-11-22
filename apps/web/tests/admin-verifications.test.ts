@@ -62,7 +62,7 @@ afterAll(() => testDb.stop());
 
 describe("pending queue", () => {
   it("lists oldest first, filters by country, and counts per country", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const a = await user("ada");
     const b = await user("kofi", { countryCode: "GH" });
     const c = await user("bola");
@@ -81,7 +81,7 @@ describe("pending queue", () => {
   });
 
   it("flags a document number already used on another account", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const a = await user("ada");
     const b = await user("bola");
     const c = await user("chi");
@@ -95,7 +95,7 @@ describe("pending queue", () => {
 
   it("is admin only", async () => {
     const u = await user("ada");
-    await rejects(listPendingVerifications(u.id), "FORBIDDEN", "Admins only.");
+    await rejects(listPendingVerifications(u.id), "FORBIDDEN", "Staff only.");
     await rejects(getAdminOverview(u.id), "FORBIDDEN");
     await rejects(listAdminActions(u.id), "FORBIDDEN");
   });
@@ -103,7 +103,7 @@ describe("pending queue", () => {
 
 describe("review page data", () => {
   it("returns the country checklist, check flags and duplicates", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const a = await user("ada");
     const b = await user("bola");
     const ra = await submit(a, "55555555555", { fullNameOnId: "Someone Else" });
@@ -122,7 +122,7 @@ describe("review page data", () => {
 
 describe("viewing images", () => {
   it("signs URLs and logs each view", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const a = await user("ada");
     const r = await submit(a);
     const out = await revealVerificationImages(admin.id, r.id);
@@ -134,10 +134,10 @@ describe("viewing images", () => {
   });
 
   it("refuses non-admins, your own documents, and purged images", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const a = await user("ada");
     const r = await submit(a);
-    await rejects(revealVerificationImages(a.id, r.id), "FORBIDDEN", "Admins only.");
+    await rejects(revealVerificationImages(a.id, r.id), "FORBIDDEN", "Staff only.");
     const mine = await submit(admin, "66666666666");
     await rejects(revealVerificationImages(admin.id, mine.id), "FORBIDDEN", "You can't review your own verification.");
     await prisma.idVerification.update({ where: { id: r.id }, data: { frontKey: null, backKey: null, selfieKey: null, imagesPurgedAt: new Date() } });
@@ -148,7 +148,7 @@ describe("viewing images", () => {
 
 describe("activity log", () => {
   it("records decisions and country toggles, newest first, with filtering", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     const a = await user("ada");
     const r = await submit(a);
     await approveVerification(admin.id, r.id);
@@ -168,7 +168,7 @@ describe("activity log", () => {
   });
 
   it("a refused change leaves no log entry", async () => {
-    const admin = await user("admin", { role: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN" });
     await prisma.$executeRawUnsafe('DELETE FROM "EnabledCountry" WHERE "code" <> \'NG\'');
     await rejects(setCountryEnabled(admin.id, "NG", false), "INVALID", "At least one country must stay enabled.");
     expect(await prisma.adminAction.count()).toBe(0);

@@ -65,7 +65,7 @@ export function UserDropdown() {
             <UserIcon className="size-4" /> <span>{t("profile")}</span>
           </Link>
         </DropdownMenuItem>
-        {user.role === "ADMIN" && <AdminItem label={t("admin")} />}
+        {user.staffRole && <AdminItem label={t("admin")} />}
         <SignOutItem />
       </DropdownMenuContent>
     </DropdownMenu>

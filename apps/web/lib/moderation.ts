@@ -1,6 +1,6 @@
 import { prisma } from "@/neon-db";
 import { ServiceError } from "./errors";
-import { assertAdmin, logAdminAction } from "./admin";
+import { assertStaff, assertAdminOnly, logAdminAction } from "./admin";
 import { liftRestriction } from "./safety";
 import { cancelAllActiveMatchesOf } from "./matches";
 
@@ -13,7 +13,7 @@ export const HASH_RETENTION_MONTHS = 12;
 const PAGE_SIZE = 50;
 
 export async function listOpenReports(adminId: string, page = 1) {
-  await assertAdmin(adminId);
+  await assertStaff(adminId);
   const where = { status: "OPEN" as const };
   const [total, rows] = await Promise.all([
     prisma.report.count({ where }),
@@ -25,7 +25,7 @@ export async function listOpenReports(adminId: string, page = 1) {
       select: {
         id: true, targetType: true, reason: true, details: true, createdAt: true,
         reporter: { select: { name: true } },
-        reportedUser: { select: { id: true, name: true, role: true, restrictedAt: true, suspendedAt: true, deletedAt: true } },
+        reportedUser: { select: { id: true, name: true, staffRole: true, restrictedAt: true, suspendedAt: true, deletedAt: true } },
         targetListing: { select: { id: true, title: true, status: true } },
         targetRequest: { select: { id: true, title: true, status: true } },
         targetMessage: { select: { body: true } },
@@ -58,7 +58,7 @@ async function openReport(reportId: string) {
 
 /** The report was unfounded. Dismissed reports stop counting towards a restriction. */
 export async function dismissReport(adminId: string, reportId: string, note?: string) {
-  await assertAdmin(adminId);
+  await assertStaff(adminId);
   const r = await openReport(reportId);
   await prisma.$transaction(async (tx) => {
     const done = await tx.report.updateMany({ where: { id: reportId, status: "OPEN" }, data: { status: "DISMISSED" } });
@@ -72,7 +72,7 @@ export async function dismissReport(adminId: string, reportId: string, note?: st
 
 /** Take the reported listing or request down (it can be renewed by its owner only if they are not suspended). */
 export async function closeReportedPost(adminId: string, reportId: string) {
-  await assertAdmin(adminId);
+  await assertStaff(adminId);
   const r = await openReport(reportId);
   if (!r.targetListingId && !r.targetRequestId)
     throw new ServiceError("INVALID", "This report is not about a listing or request.");
@@ -95,13 +95,13 @@ export async function closeReportedPost(adminId: string, reportId: string) {
  * verify a new account, and every open report against them is marked actioned.
  */
 export async function suspendUser(adminId: string, userId: string, reason: string) {
-  await assertAdmin(adminId);
+  await assertAdminOnly(adminId);
   const why = reason.trim();
   if (why.length < 3) throw new ServiceError("INVALID", "A reason is required.");
   if (userId === adminId) throw new ServiceError("FORBIDDEN", "You can't suspend yourself.");
-  const u = await prisma.user.findUnique({ where: { id: userId }, select: { role: true, suspendedAt: true, deletedAt: true } });
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { staffRole: true, suspendedAt: true, deletedAt: true } });
   if (!u || u.deletedAt) throw new ServiceError("NOT_FOUND", "User not found.");
-  if (u.role === "ADMIN") throw new ServiceError("FORBIDDEN", "Admins can't be suspended. Change their role first.");
+  if (u.staffRole) throw new ServiceError("FORBIDDEN", "Staff can't be suspended. Remove their staff access first.");
   if (u.suspendedAt) throw new ServiceError("INVALID", "This person is already suspended.");
 
   const now = new Date();
@@ -126,7 +126,7 @@ export async function suspendUser(adminId: string, userId: string, reason: strin
 
 /** Lift a suspension. The retained document hashes are released too. */
 export async function unsuspendUser(adminId: string, userId: string) {
-  await assertAdmin(adminId);
+  await assertAdminOnly(adminId);
   const u = await prisma.user.findUnique({ where: { id: userId }, select: { suspendedAt: true } });
   if (!u?.suspendedAt) throw new ServiceError("INVALID", "This person is not suspended.");
   await prisma.$transaction(async (tx) => {
@@ -139,7 +139,7 @@ export async function unsuspendUser(adminId: string, userId: string) {
 
 /** Clear an automatic restriction (reports stay; dismiss unfounded ones first). */
 export async function liftUserRestriction(adminId: string, userId: string) {
-  await assertAdmin(adminId);
+  await assertAdminOnly(adminId);
   await prisma.$transaction(async (tx) => {
     await liftRestriction(userId, tx);
     await logAdminAction(tx, { actorId: adminId, action: "user.lift_restriction", targetType: "User", targetId: userId });

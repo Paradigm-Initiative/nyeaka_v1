@@ -14,7 +14,13 @@ enum Role {
   DONOR
   BOTH
   GUEST
+}
+
+// Staff access is separate from the everyday Role, so a reviewer can also be a donor or
+// requester. Null for everyone else. Only lib/staff.ts changes it, never a public route.
+enum StaffRole {
   ADMIN
+  REVIEWER
 }
 
 enum VerificationStatus {
@@ -115,6 +121,7 @@ model User {
   // The language the person chose (en, fr, pt...). Used for emails sent to them.
   locale               String             @default("en")
   role                 Role               @default(GUEST)
+  staffRole            StaffRole?
   bio                  String?
   idVerificationStatus VerificationStatus @default(NONE)
   // Set automatically when enough different people report or block this user

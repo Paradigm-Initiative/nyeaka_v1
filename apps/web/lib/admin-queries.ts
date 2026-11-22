@@ -1,32 +1,34 @@
 import { prisma } from "@/neon-db";
-import { assertAdmin } from "./admin";
+import { assertStaff, assertAdminOnly } from "./admin";
 import { getCountryConfig } from "./countries";
 import { ServiceError } from "./errors";
 
-// Read side of the admin area. English only. Every function asserts the caller is an
-// admin itself; the layout's 404 is not the only guard. None of these sign image URLs
+// Read side of the admin area. English only. Every function asserts the caller's staff tier
+// itself (reviewers: ID queue and reports; the log is admin-only); the layout's 404 is not the only guard. None of these sign image URLs
 // (that is revealVerificationImages in lib/verification.ts, which logs each view).
 
 export const PAGE_SIZE = 50;
 
 export async function getAdminOverview(adminId: string) {
-  await assertAdmin(adminId);
+  const staffRole = await assertStaff(adminId);
+  const isAdminRole = staffRole === "ADMIN";
   const [pending, oldest, enabledCountries, recent] = await Promise.all([
     prisma.idVerification.count({ where: { status: "PENDING" } }),
     prisma.idVerification.findFirst({ where: { status: "PENDING" }, orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
     prisma.enabledCountry.count(),
-    prisma.adminAction.findMany({
+    // The activity log is admin-only, so reviewers get none of it here either.
+    !isAdminRole ? Promise.resolve([]) : prisma.adminAction.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
       select: { id: true, action: true, targetType: true, targetId: true, createdAt: true, actor: { select: { name: true } } },
     }),
   ]);
-  return { pending, oldestPendingAt: oldest?.createdAt ?? null, enabledCountries, recent };
+  return { staffRole, pending, oldestPendingAt: oldest?.createdAt ?? null, enabledCountries, recent };
 }
 
 /** Pending ID submissions, oldest first so nobody waits behind newer ones. */
 export async function listPendingVerifications(adminId: string, opts: { country?: string } = {}) {
-  await assertAdmin(adminId);
+  await assertStaff(adminId);
   const country = opts.country?.toUpperCase();
   const [byCountry, rows] = await Promise.all([
     prisma.idVerification.groupBy({ by: ["countryCode"], where: { status: "PENDING" }, _count: { _all: true }, orderBy: { countryCode: "asc" } }),
@@ -59,7 +61,7 @@ const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 
 /** Everything a reviewer needs except the images themselves. */
 export async function getVerificationForReview(adminId: string, id: string) {
-  await assertAdmin(adminId);
+  await assertStaff(adminId);
   const row = await prisma.idVerification.findUnique({
     where: { id },
     select: {
@@ -97,7 +99,7 @@ export async function getVerificationForReview(adminId: string, id: string) {
 
 /** The audit log, newest first. */
 export async function listAdminActions(adminId: string, opts: { page?: number; action?: string } = {}) {
-  await assertAdmin(adminId);
+  await assertAdminOnly(adminId);
   const page = Math.max(1, opts.page ?? 1);
   const where = opts.action ? { action: opts.action } : {};
   const [total, rows, actions] = await Promise.all([

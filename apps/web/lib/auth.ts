@@ -35,6 +35,9 @@ export const auth = betterAuth({
       // sets termsAcceptedAt. Both must be real columns: better-auth refuses undeclared ones.
       termsVersion: { type: "string", required: false },
       termsAcceptedAt: { type: "date", required: false, input: false },
+      // Read-only in the session (shows the Admin link). input:false means no sign-up or
+      // update-user call can set it; only lib/staff.ts and the first-admin script write it.
+      staffRole: { type: "string", required: false, input: false },
     },
   },
   databaseHooks: {

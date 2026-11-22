@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getServerSession } from "@/lib/get-session";
+import { isAdmin } from "@/lib/admin";
 import { getCountries } from "@/lib/countries";
 import { getEnabledCountryCodes } from "@/lib/enabled-countries";
 import CountryToggle from "@/components/admin/country-toggle";
@@ -7,6 +10,9 @@ export const metadata: Metadata = { title: "Countries - Nyeaka admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminCountriesPage() {
+  // Admin only: reviewers get a 404 here, as for any page they have no link to.
+  const session = await getServerSession();
+  if (!session || !(await isAdmin(session.user.id))) notFound();
   const enabled = await getEnabledCountryCodes();
   const countries = getCountries("en");
   const on = countries.filter((c) => enabled.includes(c.code));

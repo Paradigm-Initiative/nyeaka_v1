@@ -5,7 +5,7 @@ import { deleteIdObjects } from "./storage-private";
 import { HASH_RETENTION_MONTHS, retainDocumentHashes } from "./moderation";
 
 // Mapped to translation keys in lib/error-keys.ts.
-export const DELETE_ADMIN = "Admins can't delete their account here. Ask another admin to change your role first.";
+export const DELETE_ADMIN = "Staff can't delete their account here. Ask an admin to remove your staff access first.";
 export const DELETE_CONFIRM = "Type your email address to confirm.";
 
 /**
@@ -24,10 +24,10 @@ export const DELETE_CONFIRM = "Type your email address to confirm.";
 export async function deleteAccount(userId: string, confirmEmail: string): Promise<void> {
   const u = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, role: true, deletedAt: true, suspendedAt: true },
+    select: { email: true, staffRole: true, deletedAt: true, suspendedAt: true },
   });
   if (!u || u.deletedAt) throw new ServiceError("NOT_FOUND", "User not found");
-  if (u.role === "ADMIN") throw new ServiceError("FORBIDDEN", DELETE_ADMIN);
+  if (u.staffRole) throw new ServiceError("FORBIDDEN", DELETE_ADMIN);
   if (confirmEmail.trim().toLowerCase() !== u.email.toLowerCase()) throw new ServiceError("INVALID", DELETE_CONFIRM);
 
   const submissions = await prisma.idVerification.findMany({

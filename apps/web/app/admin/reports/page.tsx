@@ -58,7 +58,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
                   hasPost={!!post}
                   restricted={!!r.reportedUser.restrictedAt}
                   suspended={!!r.reportedUser.suspendedAt || !!r.reportedUser.deletedAt}
-                  isAdmin={r.reportedUser.role === "ADMIN"}
+                  isAdmin={!!r.reportedUser.staffRole}
                 />
               </li>
             );

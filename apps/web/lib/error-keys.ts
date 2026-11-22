@@ -70,7 +70,7 @@ export const BY_MESSAGE: Record<string, string> = {
   "Upload the required ID photos.": "verifyImages",
   "The ID has expired. Use one that is still valid.": "verifyExpired",
   "Nyeaka isn't available in your country yet.": "countryUnavailableShort",
-  "Admins can't delete their account here. Ask another admin to change your role first.": "deleteAdmin",
+  "Staff can't delete their account here. Ask an admin to remove your staff access first.": "deleteAdmin",
   "Type your email address to confirm.": "deleteConfirm",
   "We can't verify this document. Try a different one or contact support.": "verifyBlocked",
 };

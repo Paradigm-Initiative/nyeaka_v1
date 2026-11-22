@@ -7,7 +7,7 @@ import { getSessionCookie } from "better-auth/cookies";
 //
 // /admin: without a session cookie it is a plain 404 (the area's existence isn't
 // revealed). With one, the admin layout checks the role, and every admin server
-// action checks it again (lib/admin.ts: assertAdmin).
+// action checks it again (lib/admin.ts: assertStaff / assertAdminOnly).
 export function proxy(request: NextRequest) {
   const hasSession = !!getSessionCookie(request);
   if (request.nextUrl.pathname.startsWith("/admin")) {

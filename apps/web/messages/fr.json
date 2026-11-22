@@ -346,7 +346,7 @@
     "countryUnavailableShort": "Nyeaka n'est pas encore disponible dans votre pays.",
     "verifyNotAllowed": "Vous ne pouvez pas téléverser de photos d'identité pour le moment.",
     "verifyBlocked": "Nous ne pouvons pas vérifier ce document. Essayez-en un autre ou contactez l'assistance.",
-    "deleteAdmin": "Les administrateurs ne peuvent pas supprimer leur compte. Demandez à un autre administrateur de changer votre rôle d'abord.",
+    "deleteAdmin": "Le personnel ne peut pas supprimer son compte. Demandez à un administrateur de retirer d'abord votre accès.",
     "deleteConfirm": "Saisissez votre adresse e-mail pour confirmer."
   },
   "device": {
@@ -930,7 +930,7 @@
     "privacyLink": "Comment nous utilisons vos données",
     "deleteTitle": "Supprimer votre compte",
     "deleteBody": "Cela supprime votre nom, e-mail, numéro de téléphone, photo et pièces d'identité, et vous déconnecte partout. Vos annonces et demandes sont fermées, les mises en relation actives annulées et les offres en attente retirées. Les personnes avec qui vous avez discuté conservent les messages de cette conversation, présentés comme venant d'un utilisateur supprimé. Les signalements vous concernant ou faits par vous sont conservés pour la sécurité.",
-    "deleteAdmin": "Les administrateurs ne peuvent pas supprimer leur compte ici. Demandez à un autre administrateur de changer votre rôle d'abord.",
+    "deleteAdmin": "Le personnel ne peut pas supprimer son compte ici. Demandez à un administrateur de retirer d'abord votre accès.",
     "deleteButton": "Supprimer mon compte",
     "deleteWarning": "Cette action est irréversible. Vous pourrez vous réinscrire plus tard avec le même e-mail, mais sans historique.",
     "deleteConfirmLabel": "Saisissez votre adresse e-mail ({email}) pour confirmer",

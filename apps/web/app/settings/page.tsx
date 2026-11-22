@@ -18,7 +18,7 @@ export default async function SettingsPage() {
   const [t, locale, user] = await Promise.all([
     getTranslations("settings"),
     getLocale(),
-    prisma.user.findUnique({ where: { id: session.user.id }, select: { email: true, name: true, countryCode: true, role: true } }),
+    prisma.user.findUnique({ where: { id: session.user.id }, select: { email: true, name: true, countryCode: true, staffRole: true } }),
   ]);
   if (!user) redirect("/sign-in?callbackUrl=/settings");
 
@@ -37,7 +37,7 @@ export default async function SettingsPage() {
       <section className="flex flex-col gap-3 pt-6 border-t">
         <h2 className="text-heading-4">{t("deleteTitle")}</h2>
         <p className="text-muted-foreground text-body-sm">{t("deleteBody")}</p>
-        {user.role === "ADMIN" ? (
+        {user.staffRole ? (
           <p className="text-body-sm">{t("deleteAdmin")}</p>
         ) : (
           <DeleteAccount email={user.email} />

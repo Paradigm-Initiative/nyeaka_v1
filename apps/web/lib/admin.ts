@@ -7,15 +7,32 @@ import { getEnabledCountryCodes, resetEnabledCountriesCache } from "./enabled-co
 // Admin screens and services are English only for now (see CLAUDE.md), so these
 // messages are plain English and are shown to the admin as they are.
 
-/** Throws unless the user is an admin. Call at the top of every admin action. */
-export async function assertAdmin(userId: string): Promise<void> {
-  const u = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-  if (u?.role !== "ADMIN") throw new ServiceError("FORBIDDEN", "Admins only.");
+export type StaffRole = "ADMIN" | "REVIEWER";
+
+export async function getStaffRole(userId: string): Promise<StaffRole | null> {
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { staffRole: true, suspendedAt: true, deletedAt: true } });
+  if (!u || u.suspendedAt || u.deletedAt) return null;
+  return u.staffRole;
+}
+
+/** Throws unless the user is staff (admin or reviewer). For the ID queue and reports. */
+export async function assertStaff(userId: string): Promise<StaffRole> {
+  const role = await getStaffRole(userId);
+  if (!role) throw new ServiceError("FORBIDDEN", "Staff only.");
+  return role;
+}
+
+/** Throws unless the user is an admin. For countries, suspension, the log and staff management. */
+export async function assertAdminOnly(userId: string): Promise<void> {
+  if ((await getStaffRole(userId)) !== "ADMIN") throw new ServiceError("FORBIDDEN", "Admins only.");
+}
+
+export async function isStaff(userId: string): Promise<boolean> {
+  return (await getStaffRole(userId)) !== null;
 }
 
 export async function isAdmin(userId: string): Promise<boolean> {
-  const u = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-  return u?.role === "ADMIN";
+  return (await getStaffRole(userId)) === "ADMIN";
 }
 
 /** Anything an admin does that should be traceable goes through here (same transaction as the change). */
@@ -41,7 +58,7 @@ export async function logAdminAction(
  * At least one country must stay on, or nobody could sign up. Every real change is logged.
  */
 export async function setCountryEnabled(adminId: string, code: string, enabled: boolean): Promise<string[]> {
-  await assertAdmin(adminId);
+  await assertAdminOnly(adminId);
   const cc = code.trim().toUpperCase();
   if (!getCountryConfig(cc)) throw new ServiceError("INVALID", `Unknown country: ${code}.`);
 

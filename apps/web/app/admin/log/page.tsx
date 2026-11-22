@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { isAdmin } from "@/lib/admin";
 import Link from "next/link";
 import { getServerSession } from "@/lib/get-session";
 import { listAdminActions } from "@/lib/admin-queries";
@@ -9,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLogPage({ searchParams }: { searchParams: Promise<{ page?: string; action?: string }> }) {
   const session = (await getServerSession())!;
+  if (!(await isAdmin(session.user.id))) notFound(); // admin only
   const sp = await searchParams;
   const { rows, page, pages, total, actions } = await listAdminActions(session.user.id, {
     page: Number(sp.page) || 1,

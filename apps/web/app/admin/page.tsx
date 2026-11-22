@@ -20,11 +20,14 @@ export default async function AdminHome() {
             ID reviews waiting{o.oldestPendingAt ? ` · oldest ${ageOf(o.oldestPendingAt)}` : ""}
           </span>
         </Link>
-        <Link href="/admin/countries" className="p-4 border rounded-lg hover:bg-surface-feature">
-          <span className="block text-heading-2">{o.enabledCountries}</span>
-          <span className="text-muted-foreground text-body-sm">Countries enabled</span>
-        </Link>
+        {o.staffRole === "ADMIN" && (
+          <Link href="/admin/countries" className="p-4 border rounded-lg hover:bg-surface-feature">
+            <span className="block text-heading-2">{o.enabledCountries}</span>
+            <span className="text-muted-foreground text-body-sm">Countries enabled</span>
+          </Link>
+        )}
       </div>
+      {o.staffRole === "ADMIN" && (
       <section className="flex flex-col gap-2">
         <h2 className="text-heading-3">Recent activity</h2>
         {o.recent.length === 0 ? (
@@ -46,6 +49,7 @@ export default async function AdminHome() {
           Full activity log
         </Link>
       </section>
+      )}
     </div>
   );
 }
