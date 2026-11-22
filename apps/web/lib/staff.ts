@@ -23,7 +23,11 @@ export async function setStaffRole(adminId: string, userId: string, role: StaffR
     const losesAdmin = target.staffRole === "ADMIN" && role !== "ADMIN";
     if (losesAdmin && admins.length <= 1) throw new ServiceError("FORBIDDEN", LAST_ADMIN);
     await tx.user.update({ where: { id: userId }, data: { staffRole: role } });
-    if (role === null) await tx.session.deleteMany({ where: { userId } });
+    if (role === null) {
+      await tx.session.deleteMany({ where: { userId } });
+      // Their open cases go back to the queue now instead of staying locked until the claim lapses.
+      await tx.idVerification.updateMany({ where: { claimedById: userId }, data: { claimedById: null, claimedAt: null } });
+    }
     await logAdminAction(tx, {
       actorId: adminId, action: "staff.set_role", targetType: "User", targetId: userId,
       meta: { from: target.staffRole, to: role },

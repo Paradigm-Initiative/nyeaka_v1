@@ -18,6 +18,7 @@ vi.mock("@/lib/storage-private", async (orig) => ({
 import { prisma as _prisma } from "@/neon-db";
 import { submitVerification, approveVerification, rejectVerification, revealVerificationImages } from "@/lib/verification";
 import { CLAIM_TTL_MS, claimVerification, releaseVerification, SECOND_REVIEWER } from "@/lib/verification-claims";
+import { setStaffRole } from "@/lib/staff";
 import { getVerificationForReview, listPendingVerifications } from "@/lib/admin-queries";
 import { submitVerificationSchema } from "@/validations/verification-validation";
 
@@ -127,6 +128,15 @@ describe("claiming", () => {
 
     const mine = await submit(r1, "22222222222");
     await rejects(claimVerification(r1.id, mine.id), "FORBIDDEN", "You can't review your own verification.");
+  });
+
+  it("removing a reviewer frees the cases they hold straight away", async () => {
+    const [admin, r1, r2, applicant] = [await user("adm", { staffRole: "ADMIN", twoFactorEnabled: true }), await reviewer("r1"), await reviewer("r2"), await user("ada")];
+    const v = await submit(applicant, "11111111111");
+    await claimVerification(r1.id, v.id);
+    await setStaffRole(admin.id, r1.id, null);
+    expect(await row(v.id)).toMatchObject({ claimedById: null, claimedAt: null });
+    await claimVerification(r2.id, v.id); // free for someone else without waiting 15 minutes
   });
 
   it("a decided case can't be claimed, and non-staff can't claim", async () => {
