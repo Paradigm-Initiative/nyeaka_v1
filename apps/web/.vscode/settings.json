@@ -1,4 +1,10 @@
 {
     "WillLuke.nextjs.addTypesOnSave": true,
-    "WillLuke.nextjs.hasPrompted": true
+    "WillLuke.nextjs.hasPrompted": true,
+    "i18n-ally.localesPaths": [
+        "i18n",
+        "messages",
+        "components/messages",
+        "app/messages"
+    ]
 }
