@@ -168,6 +168,7 @@ model User {
   idReviews        IdVerification[] @relation("IdReviewer")
   idClaims         IdVerification[] @relation("IdClaimer")
   idFirstDecisions IdVerification[] @relation("IdFirstReviewer")
+  idOverturns      IdVerification[] @relation("IdOverturner")
   adminActions     AdminAction[]
   offersAsDonor    Offer[]          @relation("OfferDonor")
   offersInitiated  Offer[]          @relation("OfferInitiator")
@@ -512,6 +513,13 @@ model IdVerification {
   firstDecisionAt    DateTime?
   firstOutcome       VerificationStatus?
   firstRejectionCode String?
+  // The latest overturn of a decision (lib/verification-audit.ts): who, when, why. The case goes
+  // back to PENDING, and overturnedAt is when it was reopened (waiting time and the
+  // not-reviewed-in-time sweep count from it).
+  overturnedAt       DateTime?
+  overturnedById     String?
+  overturnedBy       User?               @relation("IdOverturner", fields: [overturnedById], references: [id], onDelete: SetNull)
+  overturnNote       String?
   imagesPurgeAt      DateTime?
   imagesPurgedAt     DateTime?
   createdAt          DateTime            @default(now())

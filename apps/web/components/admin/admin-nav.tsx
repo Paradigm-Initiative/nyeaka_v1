@@ -7,6 +7,7 @@ const LINKS: { href: string; label: string; adminOnly?: boolean }[] = [
   { href: "/admin/verifications", label: "ID reviews" },
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/countries", label: "Countries", adminOnly: true },
+  { href: "/admin/decisions", label: "Decisions", adminOnly: true },
   { href: "/admin/staff", label: "Staff", adminOnly: true },
   { href: "/admin/log", label: "Activity log", adminOnly: true },
 ];

@@ -52,6 +52,9 @@ export default async function VerificationsPage({ searchParams }: { searchParams
                         Needs a second reviewer ({r.firstDecisionBy?.name ?? "someone"} leans {r.firstOutcome === "VERIFIED" ? "approve" : "reject"})
                       </span>
                     )}
+                    {r.reopened && (
+                      <span className="ml-2 bg-surface-feature px-2 py-0.5 border rounded font-semibold text-xs">Reopened</span>
+                    )}
                     {r.claimedByMe && <span className="ml-2 font-semibold text-pin-green-600 text-xs">Yours</span>}
                   </span>
                   <span className="text-muted-foreground text-caption">
@@ -59,8 +62,8 @@ export default async function VerificationsPage({ searchParams }: { searchParams
                     {note ? ` · ${note}` : ""}
                   </span>
                 </span>
-                <span className="text-muted-foreground text-caption" title={adminDate(r.createdAt)}>
-                  waiting {ageOf(r.createdAt)}
+                <span className="text-muted-foreground text-caption" title={adminDate(r.waitingSince)}>
+                  waiting {ageOf(r.waitingSince)}
                 </span>
               </>
             );

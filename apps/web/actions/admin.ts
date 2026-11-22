@@ -11,6 +11,7 @@ import { sendSafely } from "@/lib/notify";
 import { prisma } from "@/neon-db";
 import { dismissReport, closeReportedPost, suspendUser, unsuspendUser, liftUserRestriction } from "@/lib/moderation";
 import { approveVerification, rejectVerification, revealVerificationImages } from "@/lib/verification";
+import { overturnVerification } from "@/lib/verification-audit";
 import { claimVerification, releaseVerification } from "@/lib/verification-claims";
 import { emailVerificationDecision } from "@/lib/verification-emails";
 import { ServiceError } from "@/lib/errors";
@@ -176,5 +177,20 @@ export async function resetTwoFactorAction(userId: string): Promise<ActionResult
   return run<undefined>("resetTwoFactorAction", async (adminId) => {
     await resetTwoFactor(adminId, userId);
     afterStaffChange();
+  });
+}
+
+/** Admin only: send a decided case back to the queue (or, if its images are gone, back to "not verified"). */
+export async function overturnVerificationAction(id: string, note: string): Promise<ActionResult<{ reopened: boolean }>> {
+  return run<{ reopened: boolean }>("overturnVerificationAction", async (adminId) => {
+    const r = await overturnVerification(adminId, id, note);
+    revalidatePath("/admin");
+    revalidatePath("/admin/verifications");
+    revalidatePath(`/admin/verifications/${id}`);
+    revalidatePath("/admin/decisions");
+    revalidatePath("/admin/log");
+    revalidatePath("/dashboard");
+    revalidatePath("/verify");
+    return r;
   });
 }

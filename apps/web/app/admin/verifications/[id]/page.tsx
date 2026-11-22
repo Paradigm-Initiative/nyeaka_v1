@@ -8,6 +8,8 @@ import { adminDate, DOC_LABEL } from "@/lib/admin-format";
 import { countryName } from "@/lib/countries";
 import { isRejectionCode, REJECTION_LABEL } from "@/lib/rejection-reasons";
 import ReviewPanel from "@/components/admin/review-panel";
+import OverturnPanel from "@/components/admin/overturn-panel";
+import { getStaffRole } from "@/lib/admin";
 import ClaimGate from "@/components/admin/claim-gate";
 
 export const metadata: Metadata = { title: "Review ID - Nyeaka admin" };
@@ -20,6 +22,9 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
     if (e instanceof ServiceError && e.code === "NOT_FOUND") notFound();
     throw e;
   });
+
+  const isAdminRole = (await getStaffRole(session.user.id)) === "ADMIN";
+  const decided = v.status === "VERIFIED" || v.status === "FAILED";
 
   const flag = (ok: boolean, good: string, bad: string) => (
     <li className={ok ? "text-muted-foreground" : "font-semibold text-destructive"}>{ok ? `✓ ${good}` : `⚠ ${bad}`}</li>
@@ -42,6 +47,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         {v.decidedAt && (<><dt className="text-muted-foreground">Decided</dt><dd>{adminDate(v.decidedAt)}{v.reviewedBy ? ` by ${v.reviewedBy.name}` : ""}</dd></>)}
         {v.rejectionCode && (<><dt className="text-muted-foreground">Reason</dt><dd>{isRejectionCode(v.rejectionCode) ? REJECTION_LABEL[v.rejectionCode] : v.rejectionCode}</dd></>)}
         {v.rejectionReason && (<><dt className="text-muted-foreground">{v.rejectionCode ? "Reviewer note" : "Reason"}</dt><dd>{v.rejectionReason}</dd></>)}
+        {v.overturnedAt && (<><dt className="text-muted-foreground">Overturned</dt><dd>{adminDate(v.overturnedAt)}{v.overturnedBy ? ` by ${v.overturnedBy.name}` : ""}{v.overturnNote ? `: ${v.overturnNote}` : ""}</dd></>)}
         {v.imagesPurgeAt && !v.imagesPurgedAt && (<><dt className="text-muted-foreground">Images deleted</dt><dd>{adminDate(v.imagesPurgeAt)} (scheduled)</dd></>)}
         {v.imagesPurgedAt && (<><dt className="text-muted-foreground">Images deleted</dt><dd>{adminDate(v.imagesPurgedAt)}</dd></>)}
       </dl>
@@ -117,6 +123,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         hasBack={v.hasBack}
       />
       )}
+      {isAdminRole && decided && !v.isOwn && v.reviewedBy && <OverturnPanel id={v.id} imagesPurged={!!v.imagesPurgedAt} />}
     </div>
   );
 }

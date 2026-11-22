@@ -19,7 +19,8 @@ async function closeAbandoned(now: Date): Promise<number> {
   const cutoff = new Date(now.getTime() - IMAGE_RETENTION_DAYS * DAY_MS);
   return prisma.$transaction(async (tx) => {
     const stale = await tx.idVerification.findMany({
-      where: { status: "PENDING", createdAt: { lt: cutoff } },
+      // A reopened (overturned) case counts from when it was reopened, not from its first submission.
+      where: { status: "PENDING", OR: [{ overturnedAt: null, createdAt: { lt: cutoff } }, { overturnedAt: { lt: cutoff } }] },
       select: { id: true, userId: true },
     });
     if (!stale.length) return 0;

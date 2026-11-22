@@ -39,6 +39,7 @@ export async function listPendingVerifications(adminId: string, opts: { country?
       take: PAGE_SIZE,
       select: {
         id: true, countryCode: true, documentType: true, createdAt: true, docNumberHash: true, userId: true,
+        overturnedAt: true,
         claimedById: true, claimedAt: true, claimedBy: { select: { name: true } },
         firstDecisionById: true, firstOutcome: true, firstDecisionBy: { select: { name: true } },
         user: { select: { name: true } },
@@ -61,6 +62,8 @@ export async function listPendingVerifications(adminId: string, opts: { country?
         ...rest,
         duplicate: !!r.docNumberHash && others.some((o) => o.docNumberHash === r.docNumberHash && o.userId !== r.userId),
         // Someone else has it open (their claim lapses after 15 minutes without activity).
+        reopened: !!r.overturnedAt,
+        waitingSince: r.overturnedAt ?? r.createdAt,
         lockedBy: claim.byOther ? (claim.byName ?? "Another reviewer") : null,
         claimedByMe: claim.mine,
         // You gave the first decision; a different reviewer must finish it.
@@ -83,6 +86,7 @@ export async function getVerificationForReview(adminId: string, id: string) {
       id: true, userId: true, countryCode: true, documentType: true, fullNameOnId: true, docExpiry: true, docNumberHash: true,
       status: true, rejectionCode: true, rejectionReason: true, decidedAt: true, imagesPurgeAt: true, imagesPurgedAt: true, createdAt: true,
       backKey: true,
+      overturnedAt: true, overturnNote: true, overturnedBy: { select: { name: true } },
       claimedById: true, claimedAt: true, claimedBy: { select: { name: true } },
       firstDecisionById: true, firstDecisionAt: true, firstOutcome: true, firstRejectionCode: true, firstDecisionBy: { select: { name: true } },
       reviewedBy: { select: { name: true } },
