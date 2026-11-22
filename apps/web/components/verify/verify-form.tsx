@@ -1,5 +1,6 @@
 "use client";
 
+import { isRejectionCode } from "@/lib/rejection-reasons";
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,9 +30,10 @@ type Props = {
   docTypes: DocType[];
   defaultName: string;
   rejectionReason: string | null;
+  rejectionCode: string | null;
 };
 
-const VerifyForm = ({ purpose, status, countryName, docTypes, defaultName, rejectionReason }: Props) => {
+const VerifyForm = ({ purpose, status, countryName, docTypes, defaultName, rejectionReason, rejectionCode }: Props) => {
   const t = useTranslations("verify");
   const errText = useErrorText();
   const router = useRouter();
@@ -164,9 +166,9 @@ const VerifyForm = ({ purpose, status, countryName, docTypes, defaultName, rejec
       <p className="text-muted-foreground text-body-lg text-pretty">
         {status === "FAILED" ? t("failedBody") : reason}
       </p>
-      {status === "FAILED" && rejectionReason && (
+      {status === "FAILED" && (rejectionCode || rejectionReason) && (
         <p role="status" className="bg-surface-feature p-3 rounded-lg font-semibold text-body-sm">
-          {t("failedReason", { reason: rejectionReason })}
+          {t("failedReason", { reason: isRejectionCode(rejectionCode) ? t(`rejectReasons.${rejectionCode}`) : (rejectionReason ?? "") })}
         </p>
       )}
 

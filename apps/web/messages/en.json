@@ -779,7 +779,14 @@
     "toDashboard": "Go to your dashboard",
     "failedTitle": "We couldn't verify you",
     "failedReason": "Reason: {reason}",
-    "failedBody": "You can submit again with clearer photos or a different document."
+    "failedBody": "You can submit again with clearer photos or a different document.",
+    "rejectReasons": {
+      "BLURRY": "the photos were too blurry or dark to read. Please retake them in good light, with the whole document in frame",
+      "EXPIRED": "the document has expired. Please submit a document that is still valid",
+      "NAME_MISMATCH": "the name on the document doesn't match the name on your Nyeaka account. Please enter your name exactly as it appears on the document, or update your account",
+      "UNSUPPORTED_DOC": "we can't accept that type of document. Please choose one of the document types offered for your country",
+      "SELFIE_MISMATCH": "the selfie doesn't clearly match the photo on the document. Please retake it facing the camera, with your face fully visible"
+    }
   },
   "cityExamples": {
     "DZ": "Algiers",
@@ -903,7 +910,14 @@
       "subject": "We couldn't verify your identity",
       "heading": "Your verification wasn't approved",
       "body": "Hi {firstName}, we couldn't confirm your identity. Reason: <strong>{reason}</strong>. You can submit again with clearer photos or a different document.",
-      "cta": "Try again"
+      "cta": "Try again",
+      "reasons": {
+        "BLURRY": "the photos were too blurry or dark to read. Please retake them in good light, with the whole document in frame",
+        "EXPIRED": "the document has expired. Please submit a document that is still valid",
+        "NAME_MISMATCH": "the name on the document doesn't match the name on your Nyeaka account. Please enter your name exactly as it appears on the document, or update your account",
+        "UNSUPPORTED_DOC": "we can't accept that type of document. Please choose one of the document types offered for your country",
+        "SELFIE_MISMATCH": "the selfie doesn't clearly match the photo on the document. Please retake it facing the camera, with your face fully visible"
+      }
     }
   },
   "profile": {

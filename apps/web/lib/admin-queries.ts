@@ -66,7 +66,7 @@ export async function getVerificationForReview(adminId: string, id: string) {
     where: { id },
     select: {
       id: true, userId: true, countryCode: true, documentType: true, fullNameOnId: true, docExpiry: true, docNumberHash: true,
-      status: true, rejectionReason: true, decidedAt: true, imagesPurgeAt: true, imagesPurgedAt: true, createdAt: true,
+      status: true, rejectionCode: true, rejectionReason: true, decidedAt: true, imagesPurgeAt: true, imagesPurgedAt: true, createdAt: true,
       backKey: true,
       reviewedBy: { select: { name: true } },
       user: { select: { name: true, email: true, countryCode: true, createdAt: true } },

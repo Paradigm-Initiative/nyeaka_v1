@@ -779,7 +779,14 @@
     "toDashboard": "Ir para o seu painel",
     "failedTitle": "Não conseguimos verificá-lo",
     "failedReason": "Motivo: {reason}",
-    "failedBody": "Pode enviar novamente com fotos mais nítidas ou outro documento."
+    "failedBody": "Pode enviar novamente com fotos mais nítidas ou outro documento.",
+    "rejectReasons": {
+      "BLURRY": "as fotografias estavam demasiado desfocadas ou escuras para serem lidas. Volte a tirá-las com boa luz, com o documento inteiro visível",
+      "EXPIRED": "o documento expirou. Envie um documento ainda válido",
+      "NAME_MISMATCH": "o nome no documento não corresponde ao nome da sua conta Nyeaka. Indique o seu nome exatamente como no documento ou atualize a sua conta",
+      "UNSUPPORTED_DOC": "não podemos aceitar esse tipo de documento. Escolha um dos tipos de documento disponíveis para o seu país",
+      "SELFIE_MISMATCH": "a selfie não corresponde claramente à fotografia do documento. Volte a tirá-la de frente para a câmara, com o rosto bem visível"
+    }
   },
   "cityExamples": {
     "DZ": "Argel",
@@ -903,7 +910,14 @@
       "subject": "Não conseguimos verificar a sua identidade",
       "heading": "A sua verificação não foi aprovada",
       "body": "Olá {firstName}, não conseguimos confirmar a sua identidade. Motivo: <strong>{reason}</strong>. Pode enviar novamente com fotos mais nítidas ou outro documento.",
-      "cta": "Tentar novamente"
+      "cta": "Tentar novamente",
+      "reasons": {
+        "BLURRY": "as fotografias estavam demasiado desfocadas ou escuras para serem lidas. Volte a tirá-las com boa luz, com o documento inteiro visível",
+        "EXPIRED": "o documento expirou. Envie um documento ainda válido",
+        "NAME_MISMATCH": "o nome no documento não corresponde ao nome da sua conta Nyeaka. Indique o seu nome exatamente como no documento ou atualize a sua conta",
+        "UNSUPPORTED_DOC": "não podemos aceitar esse tipo de documento. Escolha um dos tipos de documento disponíveis para o seu país",
+        "SELFIE_MISMATCH": "a selfie não corresponde claramente à fotografia do documento. Volte a tirá-la de frente para a câmara, com o rosto bem visível"
+      }
     }
   },
   "profile": {

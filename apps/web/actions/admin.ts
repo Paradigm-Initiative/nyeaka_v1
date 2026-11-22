@@ -51,9 +51,9 @@ export async function approveVerificationAction(id: string): Promise<ActionResul
   });
 }
 
-export async function rejectVerificationAction(id: string, reason: string): Promise<ActionResult> {
+export async function rejectVerificationAction(id: string, code: string, note?: string): Promise<ActionResult> {
   return run<undefined>("rejectVerificationAction", async (adminId) => {
-    await rejectVerification(adminId, id, reason);
+    await rejectVerification(adminId, id, code, note);
     afterDecision(id);
   });
 }

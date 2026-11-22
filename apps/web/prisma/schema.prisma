@@ -486,6 +486,9 @@ model IdVerification {
   backKey         String?
   selfieKey       String?
   status          VerificationStatus @default(PENDING)
+  // A preset from lib/rejection-reasons.ts; the applicant sees its translated text.
+  rejectionCode   String?
+  // Optional internal reviewer note (never sent to the applicant), or the purge job's text.
   rejectionReason String?
   reviewedById    String?
   reviewedBy      User?              @relation("IdReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)

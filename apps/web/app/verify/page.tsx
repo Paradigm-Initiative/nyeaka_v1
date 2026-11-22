@@ -24,7 +24,7 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
         countryCode: true,
         idVerificationStatus: true,
         name: true,
-        idVerifications: { orderBy: { createdAt: "desc" }, take: 1, select: { rejectionReason: true } },
+        idVerifications: { orderBy: { createdAt: "desc" }, take: 1, select: { rejectionCode: true, rejectionReason: true } },
       },
     }),
   ]);
@@ -40,7 +40,14 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
         countryName={countryName(user.countryCode, locale)}
         docTypes={config?.idDocTypes ?? ["PASSPORT"]}
         defaultName={user.name}
-        rejectionReason={user.idVerificationStatus === "FAILED" ? (user.idVerifications[0]?.rejectionReason ?? null) : null}
+        rejectionCode={user.idVerificationStatus === "FAILED" ? (user.idVerifications[0]?.rejectionCode ?? null) : null}
+        rejectionReason={
+          // The reviewer's note is internal. Only rows from before presets existed, and the purge
+          // job's "not reviewed in time" text, have no code and show their own text.
+          user.idVerificationStatus === "FAILED" && !user.idVerifications[0]?.rejectionCode
+            ? (user.idVerifications[0]?.rejectionReason ?? null)
+            : null
+        }
       />
     </div>
   );

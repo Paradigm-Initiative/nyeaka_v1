@@ -1,3 +1,4 @@
+import { isRejectionCode } from "./rejection-reasons";
 import { emailTranslator } from "./email-i18n";
 
 /** Escape user-supplied text before it goes into an HTML email. */
@@ -243,14 +244,18 @@ export function verificationApprovedEmail(d: { firstName: string; url: string; l
   };
 }
 
-/** `reason` is the admin's own text, written in English; it is escaped and shown as is. */
-export function verificationRejectedEmail(d: { firstName: string; reason: string; url: string; locale?: string }) {
+/**
+ * `code` picks the pre-written reason in the applicant's language. Rows decided before
+ * presets existed have no code; their free-text `reason` is escaped and shown as it was.
+ */
+export function verificationRejectedEmail(d: { firstName: string; code?: string | null; reason?: string; url: string; locale?: string }) {
   const { t, html } = emailTranslator(d.locale);
+  const reason = isRejectionCode(d.code) ? t(`verificationRejected.reasons.${d.code}`) : esc(d.reason ?? "");
   return {
     subject: t("verificationRejected.subject"),
     html: layout(
       t("verificationRejected.heading"),
-      html("verificationRejected.body", { firstName: esc(d.firstName), reason: esc(d.reason) }),
+      html("verificationRejected.body", { firstName: esc(d.firstName), reason }),
       { label: t("verificationRejected.cta"), url: d.url },
       d.locale,
     ),

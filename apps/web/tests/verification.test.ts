@@ -173,22 +173,32 @@ describe("approve and reject", () => {
     expect(log).toMatchObject({ actorId: admin.id, action: "id.approve", targetType: "IdVerification" });
   });
 
-  it("reject needs a reason, marks the user FAILED and lets them submit again", async () => {
+  it("reject needs a preset code, marks the user FAILED and lets them submit again", async () => {
     const { admin, u, id } = await setup();
     await rejects(rejectVerification(admin.id, id, "  "), "INVALID", "A rejection reason is required.");
-    await rejectVerification(admin.id, id, "Photo is blurry");
+    await rejects(rejectVerification(admin.id, id, "Photo is blurry"), "INVALID", "A rejection reason is required.");
+    expect((await prisma.idVerification.findUniqueOrThrow({ where: { id } })).status).toBe("PENDING");
+    await rejectVerification(admin.id, id, "BLURRY");
     const row = await prisma.idVerification.findUniqueOrThrow({ where: { id } });
-    expect(row).toMatchObject({ status: "FAILED", rejectionReason: "Photo is blurry" });
+    expect(row).toMatchObject({ status: "FAILED", rejectionCode: "BLURRY", rejectionReason: null });
+    expect(await prisma.adminAction.findFirstOrThrow({ where: { targetId: id, action: "id.reject" } })).toMatchObject({ reason: "BLURRY" });
     expect(row.imagesPurgeAt).not.toBeNull();
     expect((await prisma.user.findUniqueOrThrow({ where: { id: u.id } })).idVerificationStatus).toBe("FAILED");
     await submitVerification(u.id, submission(u.id)); // a fresh PENDING row is allowed again
     expect(await prisma.idVerification.count({ where: { userId: u.id } })).toBe(2);
   });
 
+  it("an optional note is kept for reviewers and trimmed to 500 characters", async () => {
+    const { admin, id } = await setup();
+    await rejectVerification(admin.id, id, "NAME_MISMATCH", `  ${"x".repeat(600)}  `);
+    const row = await prisma.idVerification.findUniqueOrThrow({ where: { id } });
+    expect(row.rejectionReason).toBe("x".repeat(500));
+  });
+
   it("a submission can be decided only once", async () => {
     const { admin, id } = await setup();
     await approveVerification(admin.id, id);
-    await rejects(rejectVerification(admin.id, id, "late"), "INVALID", "This submission has already been decided.");
+    await rejects(rejectVerification(admin.id, id, "EXPIRED"), "INVALID", "This submission has already been decided.");
     await rejects(approveVerification(admin.id, id), "INVALID", "This submission has already been decided.");
   });
 

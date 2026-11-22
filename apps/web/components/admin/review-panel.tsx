@@ -2,10 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import ZoomableImage from "./zoomable-image";
+import { REJECTION_CODES, REJECTION_LABEL, type RejectionCode } from "@/lib/rejection-reasons";
 import {
   approveVerificationAction,
   rejectVerificationAction,
@@ -32,7 +33,8 @@ export default function ReviewPanel({
   const [pending, start] = useTransition();
   const [urls, setUrls] = useState<Urls | null>(null);
   const [rejecting, setRejecting] = useState(false);
-  const [reason, setReason] = useState("");
+  const [code, setCode] = useState<RejectionCode | "">("");
+  const [note, setNote] = useState("");
 
   const show = () =>
     start(async () => {
@@ -43,7 +45,7 @@ export default function ReviewPanel({
 
   const decide = (approve: boolean) =>
     start(async () => {
-      const res = approve ? await approveVerificationAction(id) : await rejectVerificationAction(id, reason);
+      const res = approve ? await approveVerificationAction(id) : await rejectVerificationAction(id, code, note);
       if (!res.ok) return void toast.error(res.error);
       toast.success(approve ? "Approved. The person has been emailed." : "Rejected. The person has been emailed.");
       setUrls(null);
@@ -54,7 +56,7 @@ export default function ReviewPanel({
 
   const img = (src: string, label: string) => (
     <figure key={label} className="flex flex-col flex-1 gap-1 min-w-48">
-      <Image src={src} alt={label} width={600} height={400} unoptimized className="rounded-sm w-full h-auto" />
+      <ZoomableImage src={src} label={label} />
       <figcaption className="text-muted-foreground text-caption">{label}</figcaption>
     </figure>
   );
@@ -88,12 +90,23 @@ export default function ReviewPanel({
         <div className="flex flex-col gap-3 pt-2 border-t">
           {rejecting ? (
             <>
-              <label htmlFor="reason" className="font-semibold text-body-sm">
-                Reason (sent to the person, so keep it clear and kind)
+              <fieldset className="flex flex-col gap-1">
+                <legend className="mb-1 font-semibold text-body-sm">
+                  Reason (the person is emailed the pre-written text for it, in their language)
+                </legend>
+                {REJECTION_CODES.map((c) => (
+                  <label key={c} className="flex items-center gap-2 text-body-sm">
+                    <input type="radio" name="reject-code" value={c} checked={code === c} onChange={() => setCode(c)} />
+                    {REJECTION_LABEL[c]}
+                  </label>
+                ))}
+              </fieldset>
+              <label htmlFor="note" className="font-semibold text-body-sm">
+                Note for other reviewers (optional, never sent to the person)
               </label>
-              <Textarea id="reason" value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} />
+              <Textarea id="note" value={note} maxLength={500} onChange={(e) => setNote(e.target.value)} />
               <div className="flex gap-2">
-                <Button variant="destructive" disabled={pending || reason.trim().length < 3} onClick={() => decide(false)}>
+                <Button variant="destructive" disabled={pending || !code} onClick={() => decide(false)}>
                   {pending ? "Rejecting…" : "Reject"}
                 </Button>
                 <Button variant="ghost" disabled={pending} onClick={() => setRejecting(false)}>Cancel</Button>

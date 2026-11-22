@@ -13,6 +13,7 @@ export async function emailVerificationDecision(verificationId: string): Promise
       where: { id: verificationId },
       select: {
         status: true,
+        rejectionCode: true,
         rejectionReason: true,
         user: { select: { email: true, firstName: true, locale: true } },
       },
@@ -30,6 +31,7 @@ export async function emailVerificationDecision(verificationId: string): Promise
         user.email,
         verificationRejectedEmail({
           firstName: user.firstName,
+          code: v.rejectionCode,
           reason: v.rejectionReason ?? "",
           url: appUrl("/verify"),
           locale: user.locale,

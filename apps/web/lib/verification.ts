@@ -2,6 +2,7 @@ import { createHmac } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/neon-db";
 import { ServiceError } from "./errors";
+import { isRejectionCode, NOTE_MAX, type RejectionCode } from "./rejection-reasons";
 import { assertStaff, logAdminAction } from "./admin";
 import { getCountryConfig } from "./countries";
 import { idObjectsExist, isOwnIdKey, presignIdView, VIEW_TTL_SECONDS } from "./storage-private";
@@ -122,7 +123,7 @@ async function decide(
   adminId: string,
   verificationId: string,
   outcome: "VERIFIED" | "FAILED",
-  reason?: string,
+  rejection?: { code: RejectionCode; note?: string },
 ): Promise<Decision> {
   await assertStaff(adminId);
   return prisma.$transaction(async (tx) => {
@@ -139,7 +140,8 @@ async function decide(
       where: { id: verificationId, status: "PENDING" },
       data: {
         status: outcome,
-        rejectionReason: outcome === "FAILED" ? reason : null,
+        rejectionCode: rejection?.code ?? null,
+        rejectionReason: rejection?.note ?? null,
         reviewedById: adminId,
         decidedAt: now,
         imagesPurgeAt: new Date(now.getTime() + IMAGE_RETENTION_DAYS * DAY_MS),
@@ -153,8 +155,8 @@ async function decide(
       action: outcome === "VERIFIED" ? "id.approve" : "id.reject",
       targetType: "IdVerification",
       targetId: verificationId,
-      reason,
-      meta: { userId: row.userId, countryCode: row.countryCode },
+      reason: rejection?.code,
+      meta: { userId: row.userId, countryCode: row.countryCode, ...(rejection?.note ? { note: rejection.note } : {}) },
     });
     return row;
   });
@@ -163,10 +165,14 @@ async function decide(
 export const approveVerification = (adminId: string, verificationId: string) =>
   decide(adminId, verificationId, "VERIFIED");
 
-export async function rejectVerification(adminId: string, verificationId: string, reason: string) {
-  const trimmed = reason.trim();
-  if (trimmed.length < 3) throw new ServiceError("INVALID", "A rejection reason is required.");
-  return decide(adminId, verificationId, "FAILED", trimmed.slice(0, 500));
+/**
+ * Reject with a preset reason (the applicant is told the pre-written text for that code).
+ * The optional note is for other reviewers only and is never emailed.
+ */
+export async function rejectVerification(adminId: string, verificationId: string, code: string, note?: string) {
+  if (!isRejectionCode(code)) throw new ServiceError("INVALID", "A rejection reason is required.");
+  const trimmed = note?.trim().slice(0, NOTE_MAX);
+  return decide(adminId, verificationId, "FAILED", { code, note: trimmed || undefined });
 }
 
 /**

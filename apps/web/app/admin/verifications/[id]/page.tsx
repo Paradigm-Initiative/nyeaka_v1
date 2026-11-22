@@ -6,6 +6,7 @@ import { getVerificationForReview } from "@/lib/admin-queries";
 import { ServiceError } from "@/lib/errors";
 import { adminDate, DOC_LABEL } from "@/lib/admin-format";
 import { countryName } from "@/lib/countries";
+import { isRejectionCode, REJECTION_LABEL } from "@/lib/rejection-reasons";
 import ReviewPanel from "@/components/admin/review-panel";
 
 export const metadata: Metadata = { title: "Review ID - Nyeaka admin" };
@@ -38,10 +39,22 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         <dt className="text-muted-foreground">Expiry</dt><dd>{v.docExpiry ? adminDate(v.docExpiry).replace(/, \d\d:\d\d UTC/, "") : "Not given"}</dd>
         <dt className="text-muted-foreground">Submitted</dt><dd>{adminDate(v.createdAt)}</dd>
         {v.decidedAt && (<><dt className="text-muted-foreground">Decided</dt><dd>{adminDate(v.decidedAt)}{v.reviewedBy ? ` by ${v.reviewedBy.name}` : ""}</dd></>)}
-        {v.rejectionReason && (<><dt className="text-muted-foreground">Reason</dt><dd>{v.rejectionReason}</dd></>)}
+        {v.rejectionCode && (<><dt className="text-muted-foreground">Reason</dt><dd>{isRejectionCode(v.rejectionCode) ? REJECTION_LABEL[v.rejectionCode] : v.rejectionCode}</dd></>)}
+        {v.rejectionReason && (<><dt className="text-muted-foreground">{v.rejectionCode ? "Reviewer note" : "Reason"}</dt><dd>{v.rejectionReason}</dd></>)}
         {v.imagesPurgeAt && !v.imagesPurgedAt && (<><dt className="text-muted-foreground">Images deleted</dt><dd>{adminDate(v.imagesPurgeAt)} (scheduled)</dd></>)}
         {v.imagesPurgedAt && (<><dt className="text-muted-foreground">Images deleted</dt><dd>{adminDate(v.imagesPurgedAt)}</dd></>)}
       </dl>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-heading-4">Name check</h2>
+        <div className={`gap-px grid grid-cols-2 border rounded-lg overflow-hidden text-body-sm ${v.nameMatches ? "" : "border-destructive"}`}>
+          <div className="bg-surface-feature p-3"><span className="block text-muted-foreground text-caption">Name on the ID</span><strong>{v.fullNameOnId}</strong></div>
+          <div className="bg-surface-feature p-3"><span className="block text-muted-foreground text-caption">Account name</span><strong>{v.user.name}</strong></div>
+        </div>
+        <p className={v.nameMatches ? "text-muted-foreground text-body-sm" : "font-semibold text-destructive text-body-sm"}>
+          {v.nameMatches ? "✓ Names match (ignoring case, spaces and punctuation)" : "⚠ Names differ. Check the document itself before deciding."}
+        </p>
+      </section>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-heading-4">Automatic checks</h2>

@@ -779,7 +779,14 @@
     "toDashboard": "Aller à votre tableau de bord",
     "failedTitle": "Nous n'avons pas pu vous vérifier",
     "failedReason": "Motif : {reason}",
-    "failedBody": "Vous pouvez soumettre à nouveau avec des photos plus nettes ou un autre document."
+    "failedBody": "Vous pouvez soumettre à nouveau avec des photos plus nettes ou un autre document.",
+    "rejectReasons": {
+      "BLURRY": "les photos étaient trop floues ou trop sombres pour être lues. Merci de les reprendre avec une bonne lumière, en cadrant tout le document",
+      "EXPIRED": "le document est expiré. Merci d'envoyer un document encore valide",
+      "NAME_MISMATCH": "le nom sur le document ne correspond pas à celui de votre compte Nyeaka. Merci de saisir votre nom exactement comme sur le document, ou de mettre à jour votre compte",
+      "UNSUPPORTED_DOC": "nous ne pouvons pas accepter ce type de document. Merci de choisir l'un des types de documents proposés pour votre pays",
+      "SELFIE_MISMATCH": "le selfie ne correspond pas clairement à la photo du document. Merci de le reprendre face à l'appareil, le visage bien visible"
+    }
   },
   "cityExamples": {
     "DZ": "Alger",
@@ -903,7 +910,14 @@
       "subject": "Nous n'avons pas pu vérifier votre identité",
       "heading": "Votre vérification n'a pas été approuvée",
       "body": "Bonjour {firstName}, nous n'avons pas pu confirmer votre identité. Motif : <strong>{reason}</strong>. Vous pouvez soumettre à nouveau avec des photos plus nettes ou un autre document.",
-      "cta": "Réessayer"
+      "cta": "Réessayer",
+      "reasons": {
+        "BLURRY": "les photos étaient trop floues ou trop sombres pour être lues. Merci de les reprendre avec une bonne lumière, en cadrant tout le document",
+        "EXPIRED": "le document est expiré. Merci d'envoyer un document encore valide",
+        "NAME_MISMATCH": "le nom sur le document ne correspond pas à celui de votre compte Nyeaka. Merci de saisir votre nom exactement comme sur le document, ou de mettre à jour votre compte",
+        "UNSUPPORTED_DOC": "nous ne pouvons pas accepter ce type de document. Merci de choisir l'un des types de documents proposés pour votre pays",
+        "SELFIE_MISMATCH": "le selfie ne correspond pas clairement à la photo du document. Merci de le reprendre face à l'appareil, le visage bien visible"
+      }
     }
   },
   "profile": {
