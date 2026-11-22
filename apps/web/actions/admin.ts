@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { getServerSession } from "@/lib/get-session";
-import { setCountryEnabled } from "@/lib/admin";
+import { setCountryEnabled, type StaffRole } from "@/lib/admin";
+import { setStaffRole, resetTwoFactor } from "@/lib/staff";
+import { inviteStaff, revokeInvite, INVITE_TTL_HOURS } from "@/lib/staff-invites";
+import { staffInviteEmail } from "@/lib/email-templates";
+import { sendSafely } from "@/lib/notify";
+import { prisma } from "@/neon-db";
 import { dismissReport, closeReportedPost, suspendUser, unsuspendUser, liftUserRestriction } from "@/lib/moderation";
 import { approveVerification, rejectVerification, revealVerificationImages } from "@/lib/verification";
 import { emailVerificationDecision } from "@/lib/verification-emails";
@@ -105,5 +110,50 @@ export async function liftRestrictionAction(userId: string): Promise<ActionResul
   return run<undefined>("liftRestrictionAction", async (adminId) => {
     await liftUserRestriction(adminId, userId);
     afterModeration();
+  });
+}
+
+function afterStaffChange() {
+  revalidatePath("/admin/staff");
+  revalidatePath("/admin/log");
+}
+
+/**
+ * Invite someone to the staff. The link is emailed; if the email can't be sent the link is
+ * returned so the admin can pass it on themselves (it is shown once and not stored).
+ */
+export async function inviteStaffAction(email: string, role: StaffRole): Promise<ActionResult<{ emailed: boolean; url: string | null }>> {
+  return run<{ emailed: boolean; url: string | null }>("inviteStaffAction", async (adminId) => {
+    const inv = await inviteStaff(adminId, email, role);
+    const inviter = await prisma.user.findUniqueOrThrow({ where: { id: adminId }, select: { name: true } });
+    const emailed = await sendSafely(
+      inv.email,
+      staffInviteEmail({ role: inv.role, inviterName: inviter.name, url: inv.url, hours: INVITE_TTL_HOURS }),
+      "staff invite",
+    );
+    afterStaffChange();
+    return { emailed, url: emailed ? null : inv.url };
+  });
+}
+
+export async function revokeInviteAction(id: string): Promise<ActionResult> {
+  return run<undefined>("revokeInviteAction", async (adminId) => {
+    await revokeInvite(adminId, id);
+    afterStaffChange();
+  });
+}
+
+/** role = null removes staff access and ends their sessions straight away. */
+export async function setStaffRoleAction(userId: string, role: StaffRole | null): Promise<ActionResult> {
+  return run<undefined>("setStaffRoleAction", async (adminId) => {
+    await setStaffRole(adminId, userId, role);
+    afterStaffChange();
+  });
+}
+
+export async function resetTwoFactorAction(userId: string): Promise<ActionResult> {
+  return run<undefined>("resetTwoFactorAction", async (adminId) => {
+    await resetTwoFactor(adminId, userId);
+    afterStaffChange();
   });
 }

@@ -9,26 +9,46 @@ import { getEnabledCountryCodes, resetEnabledCountriesCache } from "./enabled-co
 
 export type StaffRole = "ADMIN" | "REVIEWER";
 
-export async function getStaffRole(userId: string): Promise<StaffRole | null> {
-  const u = await prisma.user.findUnique({ where: { id: userId }, select: { staffRole: true, suspendedAt: true, deletedAt: true } });
+async function loadStaff(userId: string) {
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { staffRole: true, twoFactorEnabled: true, suspendedAt: true, deletedAt: true },
+  });
   if (!u || u.suspendedAt || u.deletedAt) return null;
-  return u.staffRole;
+  return u;
 }
 
-/** Throws unless the user is staff (admin or reviewer). For the ID queue and reports. */
+/** The person's staff role, whether or not they have set up two-factor yet. */
+export async function getStaffRole(userId: string): Promise<StaffRole | null> {
+  return (await loadStaff(userId))?.staffRole ?? null;
+}
+
+/** Role plus whether two-factor is on. The layout uses it to send staff to enrolment. */
+export async function getStaffAccess(userId: string): Promise<{ role: StaffRole; twoFactor: boolean } | null> {
+  const u = await loadStaff(userId);
+  return u?.staffRole ? { role: u.staffRole, twoFactor: !!u.twoFactorEnabled } : null;
+}
+
+export const TWO_FACTOR_REQUIRED = "Set up two-factor sign-in before using the admin area.";
+
+/** Staff role, and two-factor must be on: the same rule the layout applies, repeated in every action. */
+async function requireStaff(userId: string): Promise<StaffRole> {
+  const a = await getStaffAccess(userId);
+  if (!a) throw new ServiceError("FORBIDDEN", "Staff only.");
+  if (!a.twoFactor) throw new ServiceError("FORBIDDEN", TWO_FACTOR_REQUIRED);
+  return a.role;
+}
+
+/** Throws unless the user is staff (admin or reviewer) with two-factor on. For the ID queue and reports. */
 export async function assertStaff(userId: string): Promise<StaffRole> {
-  const role = await getStaffRole(userId);
-  if (!role) throw new ServiceError("FORBIDDEN", "Staff only.");
-  return role;
+  return requireStaff(userId);
 }
 
-/** Throws unless the user is an admin. For countries, suspension, the log and staff management. */
+/** Throws unless the user is an admin with two-factor on. For countries, suspension, the log and staff management. */
 export async function assertAdminOnly(userId: string): Promise<void> {
-  if ((await getStaffRole(userId)) !== "ADMIN") throw new ServiceError("FORBIDDEN", "Admins only.");
-}
-
-export async function isStaff(userId: string): Promise<boolean> {
-  return (await getStaffRole(userId)) !== null;
+  const a = await getStaffAccess(userId);
+  if (a?.role !== "ADMIN") throw new ServiceError("FORBIDDEN", "Admins only.");
+  if (!a.twoFactor) throw new ServiceError("FORBIDDEN", TWO_FACTOR_REQUIRED);
 }
 
 export async function isAdmin(userId: string): Promise<boolean> {

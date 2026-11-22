@@ -146,7 +146,7 @@ describe("public profile", () => {
 
 describe("moderation queue", () => {
   async function reported() {
-    const admin = await user("admin", { staffRole: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN", twoFactorEnabled: true });
     const d = await user("donor");
     const r = await user("req");
     const { l, c } = await matched(d, r);
@@ -195,7 +195,7 @@ describe("suspension", () => {
     }));
 
   it("signs them out, closes posts, frees the other side, remembers the document for 12 months and logs it", async () => {
-    const admin = await user("admin", { staffRole: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN", twoFactorEnabled: true });
     const bad = await user("bad", { idVerificationStatus: "NONE" });
     const good = await user("good");
     const { l: badListing, q: goodRequest } = await matched(bad, good);
@@ -225,8 +225,8 @@ describe("suspension", () => {
   });
 
   it("refuses admins, yourself and double suspension; unsuspend releases the hash", async () => {
-    const admin = await user("admin", { staffRole: "ADMIN" });
-    const other = await user("other", { staffRole: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN", twoFactorEnabled: true });
+    const other = await user("other", { staffRole: "ADMIN", twoFactorEnabled: true });
     const u = await user("u", { idVerificationStatus: "NONE" });
     await rejects(suspendUser(admin.id, admin.id, "x y z"), "FORBIDDEN", "You can't suspend yourself.");
     await rejects(suspendUser(admin.id, other.id, "x y z"), "FORBIDDEN", "Staff can't be suspended. Remove their staff access first.");
@@ -242,7 +242,7 @@ describe("suspension", () => {
   });
 
   it("the purge job forgets the hash after 12 months", async () => {
-    const admin = await user("admin", { staffRole: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN", twoFactorEnabled: true });
     const u = await user("u", { idVerificationStatus: "NONE" });
     await sub(u, "55555555555");
     await suspendUser(admin.id, u.id, "abuse");
@@ -302,7 +302,7 @@ describe("account deletion", () => {
   });
 
   it("refuses admins and people already deleted", async () => {
-    const admin = await user("admin", { staffRole: "ADMIN" });
+    const admin = await user("admin", { staffRole: "ADMIN", twoFactorEnabled: true });
     await rejects(deleteAccount(admin.id, admin.email), "FORBIDDEN", "Staff can't delete their account here. Ask an admin to remove your staff access first.");
     const u = await user("u");
     await deleteAccount(u.id, u.email);

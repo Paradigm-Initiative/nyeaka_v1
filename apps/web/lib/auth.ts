@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { twoFactor } from "better-auth/plugins";
 import { APIError } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/neon-db";
@@ -40,6 +41,9 @@ export const auth = betterAuth({
       staffRole: { type: "string", required: false, input: false },
     },
   },
+  // Authenticator-app codes (TOTP) with backup codes. Anyone who turns it on is challenged at
+  // sign-in; staff must turn it on before /admin opens (lib/admin.ts).
+  plugins: [twoFactor({ issuer: "Nyeaka" })],
   databaseHooks: {
     // A suspended person can't sign in (their sessions are deleted when they are suspended).
     session: {

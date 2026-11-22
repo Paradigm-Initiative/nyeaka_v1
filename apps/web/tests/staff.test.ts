@@ -39,7 +39,7 @@ afterAll(() => testDb.stop());
 
 describe("staff tiers", () => {
   it("staff keep their everyday role, and an ordinary member is neither tier", async () => {
-    const reviewer = await user("rev", { staffRole: "REVIEWER", role: "DONOR" });
+    const reviewer = await user("rev", { staffRole: "REVIEWER", twoFactorEnabled: true, role: "DONOR" });
     const member = await user("mem");
     expect(reviewer.role).toBe("DONOR");
     expect(await getStaffRole(reviewer.id)).toBe("REVIEWER");
@@ -49,8 +49,8 @@ describe("staff tiers", () => {
   });
 
   it("a reviewer passes assertStaff but not assertAdminOnly", async () => {
-    const reviewer = await user("rev", { staffRole: "REVIEWER" });
-    const admin = await user("adm", { staffRole: "ADMIN" });
+    const reviewer = await user("rev", { staffRole: "REVIEWER", twoFactorEnabled: true });
+    const admin = await user("adm", { staffRole: "ADMIN", twoFactorEnabled: true });
     expect(await assertStaff(reviewer.id)).toBe("REVIEWER");
     expect(await assertStaff(admin.id)).toBe("ADMIN");
     await rejects(assertAdminOnly(reviewer.id), "FORBIDDEN");
@@ -58,12 +58,12 @@ describe("staff tiers", () => {
   });
 
   it("a suspended staff member has no access", async () => {
-    const reviewer = await user("rev", { staffRole: "REVIEWER", suspendedAt: new Date() });
+    const reviewer = await user("rev", { staffRole: "REVIEWER", twoFactorEnabled: true, suspendedAt: new Date() });
     await rejects(assertStaff(reviewer.id), "FORBIDDEN");
   });
 
   it("reviewers can read the ID queue overview and reports, but not the log, countries or suspension", async () => {
-    const reviewer = await user("rev", { staffRole: "REVIEWER" });
+    const reviewer = await user("rev", { staffRole: "REVIEWER", twoFactorEnabled: true });
     const target = await user("tgt");
     const overview = await getAdminOverview(reviewer.id);
     expect(overview.staffRole).toBe("REVIEWER");
@@ -78,8 +78,8 @@ describe("staff tiers", () => {
   });
 
   it("staff can't be suspended or delete their own account", async () => {
-    const admin = await user("adm", { staffRole: "ADMIN" });
-    const reviewer = await user("rev", { staffRole: "REVIEWER" });
+    const admin = await user("adm", { staffRole: "ADMIN", twoFactorEnabled: true });
+    const reviewer = await user("rev", { staffRole: "REVIEWER", twoFactorEnabled: true });
     await rejects(suspendUser(admin.id, reviewer.id, "testing this"), "FORBIDDEN");
     await rejects(deleteAccount(reviewer.id, reviewer.email), "FORBIDDEN");
   });
@@ -87,7 +87,7 @@ describe("staff tiers", () => {
 
 describe("changing staff roles", () => {
   it("an admin can add a reviewer and it is logged", async () => {
-    const admin = await user("adm", { staffRole: "ADMIN" });
+    const admin = await user("adm", { staffRole: "ADMIN", twoFactorEnabled: true });
     const person = await user("per");
     await setStaffRole(admin.id, person.id, "REVIEWER");
     expect(await getStaffRole(person.id)).toBe("REVIEWER");
@@ -96,8 +96,8 @@ describe("changing staff roles", () => {
   });
 
   it("removing staff access ends their sessions", async () => {
-    const admin = await user("adm", { staffRole: "ADMIN" });
-    const reviewer = await user("rev", { staffRole: "REVIEWER" });
+    const admin = await user("adm", { staffRole: "ADMIN", twoFactorEnabled: true });
+    const reviewer = await user("rev", { staffRole: "REVIEWER", twoFactorEnabled: true });
     await prisma.session.create({ data: { id: "sess-1", userId: reviewer.id, token: "tok", expiresAt: new Date(Date.now() + 1e6) } });
     await setStaffRole(admin.id, reviewer.id, null);
     expect(await getStaffRole(reviewer.id)).toBeNull();
@@ -105,20 +105,20 @@ describe("changing staff roles", () => {
   });
 
   it("the last admin can't be demoted or removed, even by themselves", async () => {
-    const admin = await user("adm", { staffRole: "ADMIN" });
+    const admin = await user("adm", { staffRole: "ADMIN", twoFactorEnabled: true });
     await rejects(setStaffRole(admin.id, admin.id, null), "FORBIDDEN", LAST_ADMIN);
     await rejects(setStaffRole(admin.id, admin.id, "REVIEWER"), "FORBIDDEN", LAST_ADMIN);
     expect(await getStaffRole(admin.id)).toBe("ADMIN");
   });
 
   it("with two admins one can step down, but then the other is the last", async () => {
-    const [a, b] = [await user("a", { staffRole: "ADMIN" }), await user("b", { staffRole: "ADMIN" })];
+    const [a, b] = [await user("a", { staffRole: "ADMIN", twoFactorEnabled: true }), await user("b", { staffRole: "ADMIN", twoFactorEnabled: true })];
     await setStaffRole(a.id, b.id, "REVIEWER");
     await rejects(setStaffRole(a.id, a.id, null), "FORBIDDEN", LAST_ADMIN);
   });
 
   it("two admins demoting each other at once leaves one admin", async () => {
-    const [a, b] = [await user("a", { staffRole: "ADMIN" }), await user("b", { staffRole: "ADMIN" })];
+    const [a, b] = [await user("a", { staffRole: "ADMIN", twoFactorEnabled: true }), await user("b", { staffRole: "ADMIN", twoFactorEnabled: true })];
     const results = await Promise.allSettled([setStaffRole(a.id, b.id, null), setStaffRole(b.id, a.id, null)]);
     expect(await prisma.user.count({ where: { staffRole: "ADMIN" } })).toBeGreaterThanOrEqual(1);
     expect(results.some((r) => r.status === "fulfilled")).toBe(true);
@@ -149,7 +149,7 @@ describe("first admin", () => {
   });
 
   it("does nothing once any admin exists, so it is safe to run on every deploy", async () => {
-    await user("adm", { staffRole: "ADMIN" });
+    await user("adm", { staffRole: "ADMIN", twoFactorEnabled: true });
     const send = vi.fn(async () => {});
     expect(await createFirstAdmin("other@example.org", { sendSetPasswordLink: send })).toEqual({ created: false, reason: "admin-exists" });
     expect(send).not.toHaveBeenCalled();

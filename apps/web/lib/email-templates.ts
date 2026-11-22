@@ -89,6 +89,20 @@ ${esc(d.reported.name)} now has ${d.openReports} report${d.openReports === 1 ? "
   };
 }
 
+/** To an invitee: join the Nyeaka staff. Admin emails are English only. */
+export function staffInviteEmail(d: { role: string; inviterName: string; url: string; hours: number }) {
+  const role = d.role === "ADMIN" ? "an admin" : "a reviewer";
+  return {
+    subject: "You're invited to join the Nyeaka staff",
+    html: layout(
+      "Join the Nyeaka staff",
+      `${esc(d.inviterName)} invited you to join Nyeaka as ${role}. Choose a password to set up your account. This link works once and expires in ${d.hours} hours. You will also set up two-factor sign-in with an authenticator app.`,
+      { label: "Accept the invite", url: d.url },
+      "en",
+    ),
+  };
+}
+
 /** To the admin: an account was restricted automatically. */
 export function restrictionAdminEmail(d: { user: Person; reason: string }) {
   return {

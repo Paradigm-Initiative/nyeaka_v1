@@ -30,3 +30,36 @@ export async function setStaffRole(adminId: string, userId: string, role: StaffR
     });
   });
 }
+
+export type StaffMember = {
+  id: string; name: string; email: string; staffRole: StaffRole; twoFactorEnabled: boolean; lastLogin: Date | null;
+};
+
+/** Everyone with a staff role, admins first. */
+export async function listStaff(adminId: string): Promise<StaffMember[]> {
+  await assertAdminOnly(adminId);
+  const rows = await prisma.user.findMany({
+    where: { staffRole: { not: null }, deletedAt: null },
+    orderBy: [{ staffRole: "asc" }, { name: "asc" }],
+    select: { id: true, name: true, email: true, staffRole: true, twoFactorEnabled: true, lastLogin: true },
+  });
+  return rows.map((r) => ({ ...r, staffRole: r.staffRole!, twoFactorEnabled: !!r.twoFactorEnabled }));
+}
+
+/**
+ * Lockout recovery: another admin clears someone's two-factor (lost phone and backup codes).
+ * Their sessions end, and at next sign-in they are held at the setup page until they enrol
+ * again. You can't reset your own, so one person can't quietly drop their own second factor.
+ */
+export async function resetTwoFactor(adminId: string, userId: string) {
+  await assertAdminOnly(adminId);
+  if (userId === adminId) throw new ServiceError("FORBIDDEN", "Ask another admin to reset your two-factor.");
+  await prisma.$transaction(async (tx) => {
+    const target = await tx.user.findUnique({ where: { id: userId }, select: { staffRole: true, deletedAt: true } });
+    if (!target || target.deletedAt || !target.staffRole) throw new ServiceError("NOT_FOUND", "Staff member not found.");
+    await tx.twoFactor.deleteMany({ where: { userId } });
+    await tx.user.update({ where: { id: userId }, data: { twoFactorEnabled: false } });
+    await tx.session.deleteMany({ where: { userId } });
+    await logAdminAction(tx, { actorId: adminId, action: "staff.reset_two_factor", targetType: "User", targetId: userId });
+  });
+}

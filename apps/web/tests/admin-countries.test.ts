@@ -63,7 +63,7 @@ describe("the enabled list", () => {
 
 describe("admin access", () => {
   it("only an admin passes assertAdminOnly", async () => {
-    const [admin, member] = [await user("root", { staffRole: "ADMIN" }), await user("mem", { role: "BOTH" })];
+    const [admin, member] = [await user("root", { staffRole: "ADMIN", twoFactorEnabled: true }), await user("mem", { role: "BOTH" })];
     await assertAdminOnly(admin.id);
     expect(await isAdmin(admin.id)).toBe(true);
     expect(await isAdmin(member.id)).toBe(false);
@@ -82,7 +82,7 @@ describe("admin access", () => {
 
 describe("switching countries on and off", () => {
   it("an admin enables a country, records who, and it takes effect straight away", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     const eg = await user("eg", { countryCode: "EG" });
     await rejects(requirePostingCountry(eg.id), "INVALID");
     expect(await prepareNewUser({ countryCode: "EG" })).toMatchObject({ ok: false });
@@ -95,7 +95,7 @@ describe("switching countries on and off", () => {
   });
 
   it("enabling twice is harmless and keeps the first record", async () => {
-    const [a1, a2] = [await user("a1", { staffRole: "ADMIN" }), await user("a2", { staffRole: "ADMIN" })];
+    const [a1, a2] = [await user("a1", { staffRole: "ADMIN", twoFactorEnabled: true }), await user("a2", { staffRole: "ADMIN", twoFactorEnabled: true })];
     await setCountryEnabled(a1.id, "EG", true);
     await setCountryEnabled(a2.id, "EG", true);
     expect(await prisma.enabledCountry.count({ where: { code: "EG" } })).toBe(1);
@@ -103,7 +103,7 @@ describe("switching countries on and off", () => {
   });
 
   it("disabling stops posting and sign-up there", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     const gh = await user("gh", { countryCode: "GH" });
     expect(await requirePostingCountry(gh.id)).toBe("GH");
 
@@ -114,19 +114,19 @@ describe("switching countries on and off", () => {
   });
 
   it("disabling a country that isn't on does nothing", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     expect(await setCountryEnabled(admin.id, "EG", false)).toEqual(SEEDED);
   });
 
   it("refuses an unknown code, and malformed ones", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     for (const bad of ["GB", "XX", "", "Nigeria", "N"])
       await rejects(setCountryEnabled(admin.id, bad, true), "INVALID");
     expect(await getEnabledCountryCodes()).toEqual(SEEDED);
   });
 
   it("at least one country must stay enabled", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     for (const c of SEEDED.slice(1)) await setCountryEnabled(admin.id, c, false);
     expect(await getEnabledCountryCodes()).toEqual([SEEDED[0]]);
     await rejects(setCountryEnabled(admin.id, SEEDED[0], false), "INVALID", "At least one country must stay enabled.");
@@ -134,7 +134,7 @@ describe("switching countries on and off", () => {
   });
 
   it("switching off the last two at the same time leaves one", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     for (const c of SEEDED.slice(2)) await setCountryEnabled(admin.id, c, false);
     const [x, y] = SEEDED.slice(0, 2);
     const results = await Promise.allSettled([setCountryEnabled(admin.id, x, false), setCountryEnabled(admin.id, y, false)]);
@@ -143,14 +143,14 @@ describe("switching countries on and off", () => {
   });
 
   it("deleting the admin who enabled a country keeps the country", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     await prisma.enabledCountry.create({ data: { code: "EG", enabledById: admin.id } });
     await prisma.user.delete({ where: { id: admin.id } });
     expect(await prisma.enabledCountry.findUniqueOrThrow({ where: { code: "EG" } })).toMatchObject({ enabledById: null });
   });
 
   it("an admin with logged actions can't be hard-deleted, so the audit trail keeps its actor", async () => {
-    const admin = await user("root", { staffRole: "ADMIN" });
+    const admin = await user("root", { staffRole: "ADMIN", twoFactorEnabled: true });
     await setCountryEnabled(admin.id, "EG", true);
     expect(await prisma.adminAction.count({ where: { actorId: admin.id, action: "country.enable", targetId: "EG" } })).toBe(1);
     await expect(prisma.user.delete({ where: { id: admin.id } })).rejects.toThrow();

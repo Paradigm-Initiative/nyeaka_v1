@@ -122,6 +122,8 @@ model User {
   locale               String             @default("en")
   role                 Role               @default(GUEST)
   staffRole            StaffRole?
+  // better-auth two-factor plugin. Staff must have it on before /admin opens (lib/admin.ts).
+  twoFactorEnabled     Boolean?           @default(false)
   bio                  String?
   idVerificationStatus VerificationStatus @default(NONE)
   // Set automatically when enough different people report or block this user
@@ -141,6 +143,9 @@ model User {
   createdAt            DateTime           @default(now())
   lastLogin            DateTime?
   updatedAt            DateTime           @updatedAt
+
+  twoFactor        TwoFactor[]
+  staffInvitesSent StaffInvite[] @relation("StaffInviteBy")
 
   requests Request[]
   listings Listing[]
@@ -324,23 +329,23 @@ model Verification {
 }
 
 model Offer {
-  id        String      @id @default(uuid(7))
-  listingId String
-  listing   Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  requestId String
-  request   Request     @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  id            String      @id @default(uuid(7))
+  listingId     String
+  listing       Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  requestId     String
+  request       Request     @relation(fields: [requestId], references: [id], onDelete: Cascade)
   // Denormalised from listing.donorId so "one PENDING offer per donor and request"
   // can be a partial unique index (see the offer_donor_and_match_handoff migration).
   donorId       String
-  donor         User   @relation("OfferDonor", fields: [donorId], references: [id])
+  donor         User        @relation("OfferDonor", fields: [donorId], references: [id])
   // Who sent the offer: the donor (offering a device) or the requester (asking for one).
   // The other party is the one who can accept or decline.
   initiatedById String
-  initiatedBy   User   @relation("OfferInitiator", fields: [initiatedById], references: [id])
-  message   String?
-  status    OfferStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  initiatedBy   User        @relation("OfferInitiator", fields: [initiatedById], references: [id])
+  message       String?
+  status        OfferStatus @default(PENDING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   match Match?
 
@@ -352,31 +357,31 @@ model Offer {
 }
 
 model Match {
-  id           String      @id @default(uuid(7))
-  offerId      String      @unique
-  offer        Offer       @relation(fields: [offerId], references: [id], onDelete: Cascade)
-  donorId      String
-  donor        User        @relation("MatchDonor", fields: [donorId], references: [id])
-  requesterId  String
-  requester    User        @relation("MatchRequester", fields: [requesterId], references: [id])
-  listingId    String
-  listing      Listing     @relation(fields: [listingId], references: [id])
-  requestId    String
-  request      Request     @relation(fields: [requestId], references: [id])
-  status       MatchStatus @default(ACTIVE)
+  id                   String      @id @default(uuid(7))
+  offerId              String      @unique
+  offer                Offer       @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  donorId              String
+  donor                User        @relation("MatchDonor", fields: [donorId], references: [id])
+  requesterId          String
+  requester            User        @relation("MatchRequester", fields: [requesterId], references: [id])
+  listingId            String
+  listing              Listing     @relation(fields: [listingId], references: [id])
+  requestId            String
+  request              Request     @relation(fields: [requestId], references: [id])
+  status               MatchStatus @default(ACTIVE)
   // Each side opts in to sharing their phone number with the other.
-  donorSharedPhone       Boolean   @default(false)
-  requesterSharedPhone   Boolean   @default(false)
+  donorSharedPhone     Boolean     @default(false)
+  requesterSharedPhone Boolean     @default(false)
   // Handoff is complete (HANDED_OVER) once both sides have confirmed.
-  donorConfirmedAt       DateTime?
-  requesterConfirmedAt   DateTime?
-  handedOverAt DateTime?
+  donorConfirmedAt     DateTime?
+  requesterConfirmedAt DateTime?
+  handedOverAt         DateTime?
   // Who called the match off (cancel button, or the blocker when a block cancels it) and when.
-  cancelledById String?
-  cancelledBy   User?     @relation("MatchCancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull)
-  cancelledAt   DateTime?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  cancelledById        String?
+  cancelledBy          User?       @relation("MatchCancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull)
+  cancelledAt          DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 
   conversation Conversation?
   ratings      Rating[]
@@ -542,4 +547,40 @@ model BlockedDocument {
   expiresAt     DateTime
 
   @@index([expiresAt])
+}
+
+// better-auth two-factor plugin (TOTP + backup codes). `secret` and `backupCodes` are stored
+// encrypted by the plugin.
+model TwoFactor {
+  id                      String    @id
+  secret                  String
+  backupCodes             String
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified                Boolean?  @default(true)
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+
+  @@index([secret])
+  @@index([userId])
+  @@map("twoFactor")
+}
+
+// An admin's invitation to join the staff. Only the SHA-256 of the token is stored. Single use
+// (usedAt), valid for 72 hours (expiresAt), and the address must be on a staff domain (lib/staff-invites.ts).
+model StaffInvite {
+  id          String    @id @default(uuid(7))
+  email       String
+  role        StaffRole
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  usedById    String?
+  revokedAt   DateTime?
+  invitedById String
+  invitedBy   User      @relation("StaffInviteBy", fields: [invitedById], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@index([email])
+  @@index([invitedById])
 }

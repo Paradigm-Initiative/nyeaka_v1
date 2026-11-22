@@ -70,6 +70,8 @@ Create `.env`. Names only here; never commit values.
 | `ADMIN_EMAIL` | Where reports and restriction notices go. If unset, reports are still saved, a warning is logged, and nobody is emailed. Also quoted to restricted users as the contact address. |
 | `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_URL` | Listing photo uploads (R2). |
 | `ALLOW_SEED` | Set to `true` only to run the seed script. |
+| `STAFF_EMAIL_DOMAINS` | Comma-separated email domains staff may be invited from (for example `pin.org`). Exact match. If unset, staff invites are switched off. |
+| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_COUNTRY` | Only for `pnpm admin:first`: the first admin's address and an optional two-letter country code (default `NG`). Does nothing once an admin exists, so it is safe in production. |
 
 ### Install and run
 
