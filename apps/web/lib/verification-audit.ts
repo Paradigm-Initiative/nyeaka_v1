@@ -113,7 +113,7 @@ export async function overturnVerification(adminId: string, id: string, note: st
       data: reopen
         ? {
             ...mark, status: "PENDING", reviewedById: null, decidedAt: null, rejectionCode: null, rejectionReason: null,
-            imagesPurgeAt: null, claimedById: null, claimedAt: null,
+            imagesPurgeAt: null, claimedById: null, claimedAt: null, staleAlertedAt: null,
             firstDecisionById: null, firstDecisionAt: null, firstOutcome: null, firstRejectionCode: null,
           }
         : mark,

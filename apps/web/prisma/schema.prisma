@@ -520,6 +520,9 @@ model IdVerification {
   overturnedById     String?
   overturnedBy       User?               @relation("IdOverturner", fields: [overturnedById], references: [id], onDelete: SetNull)
   overturnNote       String?
+  // When the 36-hour "still waiting" alert was sent for this case, so it is emailed once, not daily.
+  // Cleared when a case is reopened (lib/review-alerts.ts).
+  staleAlertedAt     DateTime?
   imagesPurgeAt      DateTime?
   imagesPurgedAt     DateTime?
   createdAt          DateTime            @default(now())

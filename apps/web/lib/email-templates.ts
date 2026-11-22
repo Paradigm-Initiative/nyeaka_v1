@@ -103,6 +103,42 @@ export function staffInviteEmail(d: { role: string; inviterName: string; url: st
   };
 }
 
+/** To admins and the review contacts: ID cases waiting past the target. Staff email, English only. */
+export function staleQueueEmail(d: { cases: { name: string; country: string; waiting: string }[]; targetHours: number; url: string }) {
+  const list = d.cases.map((c) => `${esc(c.name)} (${esc(c.country)}), waiting ${esc(c.waiting)}`).join("<br>");
+  return {
+    subject: `[Nyeaka] ${d.cases.length} ID review${d.cases.length === 1 ? "" : "s"} waiting over ${d.targetHours} hours`,
+    html: layout(
+      "ID reviews are waiting too long",
+      `${d.cases.length} ID review${d.cases.length === 1 ? " has" : "s have"} now waited more than ${d.targetHours} hours. You will not be emailed about the same case again.<br><br>${list}`,
+      { label: "Open the queue", url: d.url },
+      "en",
+    ),
+  };
+}
+
+/** To admins and the review contacts, weekly. Plain English, no jargon. */
+export function weeklySummaryEmail(d: {
+  received: number; decided: number; approved: number; rejected: number;
+  waiting: number; oldestWaiting: string | null; overTarget: number; targetHours: number; url: string;
+}) {
+  const s = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+  const lines = [
+    `${s(d.received, "person", "people")} sent in ID documents this week.`,
+    `Reviewers decided ${s(d.decided, "case")} (${d.approved} approved, ${d.rejected} rejected).`,
+    d.waiting === 0
+      ? "Nothing is waiting for review right now."
+      : `${d.waiting} ${d.waiting === 1 ? "is" : "are"} waiting for review right now. The longest wait is ${d.oldestWaiting}.`,
+    d.overTarget === 0
+      ? `No case has waited more than ${d.targetHours} hours.`
+      : `${d.overTarget} ${d.overTarget === 1 ? "has" : "have"} waited more than our ${d.targetHours}-hour target.`,
+  ];
+  return {
+    subject: "[Nyeaka] Weekly ID review summary",
+    html: layout("This week in ID review", lines.map(esc).join("<br><br>"), { label: "Open the queue", url: d.url }, "en"),
+  };
+}
+
 /** To the admin: an account was restricted automatically. */
 export function restrictionAdminEmail(d: { user: Person; reason: string }) {
   return {

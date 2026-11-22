@@ -70,6 +70,8 @@ Create `.env`. Names only here; never commit values.
 | `ADMIN_EMAIL` | Where reports and restriction notices go. If unset, reports are still saved, a warning is logged, and nobody is emailed. Also quoted to restricted users as the contact address. |
 | `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_URL` | Listing photo uploads (R2). |
 | `ALLOW_SEED` | Set to `true` only to run the seed script. |
+| `CRON_SECRET` | Required in production. The scheduled-job routes answer only to `Authorization: Bearer $CRON_SECRET` (503 if unset, 401 if wrong). |
+| `REVIEW_ALERT_EMAILS` | Comma-separated extra addresses (for example a manager) for the ID review alert and weekly summary. Every admin is emailed as well. If there is nobody to email, a warning is logged and nothing is marked as sent. |
 | `STAFF_EMAIL_DOMAINS` | Comma-separated email domains staff may be invited from (for example `pin.org`). Exact match. If unset, staff invites are switched off. |
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_COUNTRY` | Only for `pnpm admin:first`: the first admin's address and an optional two-letter country code (default `NG`). Does nothing once an admin exists, so it is safe in production. |
 
@@ -132,3 +134,21 @@ Sign in as `alice`, `bob`, `carol` or `dave` (`<name>@dev.nyeaka.test`, password
 ## Deployment
 
 Configured for Vercel (`https://nyeaka-v1.vercel.app` and `https://nyeaka.paradigmhq.org` are trusted origins in `lib/auth.ts`). A `Dockerfile` and `output: "standalone"` are present, but the Docker build has not been tested. Email is sent after the response using Next's `after()`.
+
+### Scheduled jobs
+
+Each is a protected route handler (`lib/cron-auth.ts`), safe to call more than once.
+
+| Route | What it does | Schedule (UTC) |
+|---|---|---|
+| `/api/cron/purge` | Deletes ID images 30 days after the decision, closes unreviewed submissions, expires old document hashes. | daily 03:00 |
+| `/api/cron/review-alerts` | Emails once per case that has waited over 36 hours (tracked in `IdVerification.staleAlertedAt`). | daily 08:00 |
+| `/api/cron/review-summary` | Weekly plain-English summary: received, decided, oldest waiting, cases over target. Schedule it weekly, since each call sends it. | Mondays 08:00 |
+
+On Vercel these are in `vercel.json` (Vercel Cron sends the bearer token itself when `CRON_SECRET` is set). Hobby plans allow one run a day per job; the alert checks daily, so a case can be flagged up to a day after it crosses 36 hours. On Coolify, create one scheduled task per job on the same schedule, running:
+
+```bash
+curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://YOUR-DOMAIN/api/cron/review-alerts
+```
+
+For a tighter alert on Coolify, run `review-alerts` hourly (`0 * * * *`); it never repeats an alert for the same case.
